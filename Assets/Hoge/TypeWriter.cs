@@ -14,10 +14,10 @@ public class TypeWriter : MonoBehaviour
         public String[] msgs;
     }
 
-    [SerializeField] private Text textUI;
+    [SerializeField] private Text textUI = null;
     [SerializeField] private float charInterval = 0.05f;
-    [SerializeField] private Sprite[] sprites;
-    [SerializeField] private Image image;
+    [SerializeField] private Sprite[] sprites = null;
+    [SerializeField] private Image image = null;
 
     [SerializeField]
     private SceneMsgs[] sceneMsgs;
@@ -37,7 +37,11 @@ public class TypeWriter : MonoBehaviour
 
     private void Start()
     {
-        image.sprite = sprites[0];
+        if (sprites != null && sprites.Length > 0 && image != null)
+        {
+            image.sprite = sprites[0];
+        }
+        
         ShowCurrentText();
     }
 
@@ -85,7 +89,11 @@ public class TypeWriter : MonoBehaviour
                 }
 
                 ShowCurrentText();
-                image.sprite = sprites[sceneIndex];
+
+                if (sprites != null && sprites.Length > 0 && image != null)
+                {
+                    image.sprite = sprites[sceneIndex];
+                }
             }
         }
     }
