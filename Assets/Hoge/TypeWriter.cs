@@ -9,7 +9,8 @@ public class TypeWriter : MonoBehaviour
 {
     [SerializeField] private Text textUI;
     [SerializeField] private float charInterval = 0.05f;
-    [SerializeField] private Image[] images;
+    [SerializeField] private Sprite[] sprites;
+    [SerializeField] private Image image;
 
     private string[][] texts; // 2行ずつ用意
 
@@ -49,6 +50,7 @@ public class TypeWriter : MonoBehaviour
 
     private void Start()
     {
+        image.sprite = sprites[0];
         ShowCurrentText();
     }
 
@@ -73,7 +75,7 @@ public class TypeWriter : MonoBehaviour
         {
             if (sceneIndex >= texts.Length)
             {
-                Debug.Log($"テキスト終了 : {sceneIndex}");
+                Debug.Log($"Scene遷移 : {sceneIndex}");
                 return;
             }
 
@@ -96,6 +98,7 @@ public class TypeWriter : MonoBehaviour
                 }
 
                 ShowCurrentText();
+                image.sprite = sprites[sceneIndex];
             }
         }
     }
