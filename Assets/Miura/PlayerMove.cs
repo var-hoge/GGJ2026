@@ -7,7 +7,7 @@ public class PlayerMove : MonoBehaviour
     //まずはプレイヤーのトランスフォームを取得する
     Transform _playerTrs;
     PlayerDirection _playerDirection; //
-    float _moveSpeed = 1; //仮で10
+    float _moveSpeed = 0.1f; //仮で10
     bool _isDiving = false;
     float _intervalTime = 0.5f;
     float _catchEndTime = 1.2f;
@@ -21,71 +21,95 @@ public class PlayerMove : MonoBehaviour
     {
         if (!_isDiving)
         {
-            float vertical = 0;
-            float horizontal = 0;
-            if (_playerDirection == PlayerDirection.Up || _playerDirection == PlayerDirection.Down)
+            // 移動制御
+            Vector2 moveDirection = Vector2.zero;
+            if (_playerDirection == PlayerDirection.North || _playerDirection == PlayerDirection.South)
             {
-                vertical = Input.GetAxisRaw("Vertical"); //マップ上、上下方向に動ける場合だけここのコードが動くようにする
+                moveDirection = new Vector2(0, Input.GetAxisRaw("Vertical"));
             }
-            if (_playerDirection == PlayerDirection.Left || _playerDirection == PlayerDirection.Right)
+            else if (_playerDirection == PlayerDirection.East || _playerDirection == PlayerDirection.West) 
             {
-                horizontal = Input.GetAxisRaw("Horizontal");
+                moveDirection = new Vector2(Input.GetAxisRaw("Horizontal"), 0);
             }
-            _playerTrs.Translate(new Vector3(horizontal, vertical) * _moveSpeed); //キー入力で上下左右 //斜め押し対応はどうすれば良いのだろうか？ → 
-            // CatchDive
+            _playerTrs.Translate(moveDirection * _moveSpeed, Space.World);
+            // キャッチダイブ
             if (Keyboard.current.spaceKey.wasPressedThisFrame)
             {
                 CatchDive();
             }
+            // 多機能ステートマシン
+            switch (_playerDirection)
+            {
+                case PlayerDirection.North:
+                    _playerTrs.eulerAngles = new Vector3(0, 0, 0);
+                    break;
+                case PlayerDirection.South:
+                    _playerTrs.eulerAngles = new Vector3(0, 0, 180);
+                    break;
+                case PlayerDirection.West:
+                    _playerTrs.eulerAngles = new Vector3(0, 0, 90);
+                    break;
+                case PlayerDirection.East:
+                    _playerTrs.eulerAngles = new Vector3(0, 0, -90);
+                    break;
+            }
         }
     }
-
+    // PlayerDirectionの定義
+    public void OnMove(InputAction.CallbackContext context)
+    {
+        Vector2 readValue = context.ReadValue<Vector2>();
+        if (readValue.x > 0) // D入力
+        {
+            _playerDirection = PlayerDirection.East;
+        }
+        else if (readValue.x < 0) // A入力
+        {
+            _playerDirection = PlayerDirection.West;
+        }
+        else if (readValue.y > 0) // W入力
+        {
+            _playerDirection = PlayerDirection.North;
+        }
+        else if (readValue.y < 0) // S入力
+        {
+            _playerDirection = PlayerDirection.South;
+        }
+    }
     void CatchDive()
     {
         _isDiving = true;
-        Vector2 diveDirection = Vector2.zero;
+        Vector3 diveDirection = Vector2.zero;
         Sequence sequence = DOTween.Sequence();
         // 向いている方向にイージングを付けて移動する
         switch (_playerDirection)
         {
-            case PlayerDirection.Up:
-                diveDirection = Vector2.up;
+            case PlayerDirection.North:
+                diveDirection = _playerTrs.position + new Vector3(0, _catchDistance, 0);
                 break;
-            case PlayerDirection.Down:
-                diveDirection = Vector2.down;
+            case PlayerDirection.South:
+                diveDirection = _playerTrs.position + new Vector3(0, -_catchDistance, 0);
                 break;
-            case PlayerDirection.Left:
-                diveDirection = Vector2.left;
+            case PlayerDirection.West:
+                diveDirection = _playerTrs.position + new Vector3(-_catchDistance, 0, 0);
                 break;
-            case PlayerDirection.Right:
-                diveDirection = Vector2.right;
+            case PlayerDirection.East:
+                diveDirection = _playerTrs.position + new Vector3(_catchDistance, 0, 0);;
                 break;
         }
         sequence.Append(_playerTrs.DOMove(diveDirection, _catchEndTime));
-        sequence.AppendInterval(0.1f);
+        sequence.AppendInterval(_intervalTime);
         sequence.AppendCallback(() => _isDiving = false);
     }
 
-    public void OnMove(InputAction.CallbackContext context)
-    {
-        Debug.Log("OnMove");
-        Vector2 readValue = context.ReadValue<Vector2>();
-        if (readValue.x > 0) // D入力
-            _playerDirection = PlayerDirection.Right;
-        else if (readValue.x < 0) // A入力
-            _playerDirection = PlayerDirection.Left;
-        else if (readValue.y > 0) // W入力
-            _playerDirection = PlayerDirection.Up;
-        else if (readValue.y < 0) // S入力
-            _playerDirection = PlayerDirection.Down;
-    }
 }
 public enum PlayerDirection
 {
-    Up,
-    Down,
-    Right,
-    Left
+    None,
+    North,
+    South,
+    East,
+    West
 }
 public enum CanMoveDirection
 {
