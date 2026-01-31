@@ -95,7 +95,7 @@ public class TypeWriter : MonoBehaviour
         if (typingCoroutine != null)
             StopCoroutine(typingCoroutine);
 
-        currentMessage = sceneMsgs[sceneIndex].msgs[textIndex];
+        currentMessage = sceneMsgs[sceneIndex].msgs[textIndex].Replace("\\n", "\n");
         typingCoroutine = StartCoroutine(TypeText(currentMessage));
     }
 
