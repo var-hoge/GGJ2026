@@ -574,6 +574,7 @@ MonoBehaviour:
   - {fileID: -5851687036502684560, guid: 5f8c4a09e92f8452da41f1f4371a252a, type: 3}
   - {fileID: -1879189859949852898, guid: 927ad2512f6ae4b839a3b28a14ce38c6, type: 3}
   image: {fileID: 684437684}
+  isManager: 1
   sceneMsgs:
   - msgs:
     - "\u898F\u5F8B\u3068\u79E9\u5E8F\u3092\u91CD\u3093\u3058\u3001\u793E\u4F1A\u3084\u7D44\u7E54\u306E\u5B89\u5B9A\u3084\u8ABF\u548C\u3092\u5927\u5207\u306B\u3059\u308B\u300C\u72AC\u300D\u305F\u3061\u3002"
@@ -615,6 +616,7 @@ MonoBehaviour:
   charInterval: 0.02
   sprites: []
   image: {fileID: 0}
+  isManager: 0
   sceneMsgs:
   - msgs:
     - 'The "dogs" value discipline and order, and cherish the stability and harmony

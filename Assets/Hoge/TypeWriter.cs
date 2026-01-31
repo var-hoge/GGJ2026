@@ -18,9 +18,9 @@ public class TypeWriter : MonoBehaviour
     [SerializeField] private float charInterval = 0.05f;
     [SerializeField] private Sprite[] sprites = null;
     [SerializeField] private Image image = null;
+    [SerializeField] private bool isManager = false;
 
-    [SerializeField]
-    private SceneMsgs[] sceneMsgs;
+    [SerializeField] private SceneMsgs[] sceneMsgs;
 
     private int sceneIndex = 0;
     private int textIndex = 0;
@@ -37,7 +37,7 @@ public class TypeWriter : MonoBehaviour
 
     private void Start()
     {
-        if (sprites != null && sprites.Length > 0 && image != null)
+        if (isManager)
         {
             image.sprite = sprites[0];
         }
@@ -64,9 +64,12 @@ public class TypeWriter : MonoBehaviour
         }
         else
         {
-            if (sceneIndex >= sceneMsgs.Length)
+            if (sceneIndex >= sceneMsgs.Length - 1)
             {
-                Debug.Log($"Scene遷移 : {sceneIndex}");
+                if (isManager)
+                {
+                    Debug.Log($"Scene遷移 : {sceneIndex}");
+                }
                 return;
             }
 
@@ -90,7 +93,7 @@ public class TypeWriter : MonoBehaviour
 
                 ShowCurrentText();
 
-                if (sprites != null && sprites.Length > 0 && image != null)
+                if (isManager)
                 {
                     image.sprite = sprites[sceneIndex];
                 }
