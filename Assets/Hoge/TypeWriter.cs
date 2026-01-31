@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,12 +8,19 @@ using UnityEngine.UI;
 
 public class TypeWriter : MonoBehaviour
 {
-    [SerializeField] private Text textUI;
-    [SerializeField] private float charInterval = 0.05f;
-    [SerializeField] private Sprite[] sprites;
-    [SerializeField] private Image image;
+    [Serializable]
+    public class SceneMsgs
+    {
+        public String[] msgs;
+    }
 
-    private string[][] texts; // 2行ずつ用意
+    [SerializeField] private Text textUI = null;
+    [SerializeField] private float charInterval = 0.05f;
+    [SerializeField] private Sprite[] sprites = null;
+    [SerializeField] private Image image = null;
+    [SerializeField] private bool isManager = false;
+
+    [SerializeField] private SceneMsgs[] sceneMsgs;
 
     private int sceneIndex = 0;
     private int textIndex = 0;
@@ -24,33 +32,16 @@ public class TypeWriter : MonoBehaviour
 
     private void Awake()
     {
-        var scene1 = new string[]
-        {
-            "規律と秩序を重んじ、社会や組織の安定や調和を大切にする「犬」たち。",
-            "その行動理念と長年に渡る人間との信頼関係が評価されて、公共の安全と秩序を維持する治安機関を担うこととなる。",
-            "しかし、権力を手にすることで、癒着や汚職が横行。一方、搾取をされて貧しいながらも、自由や公平な社会を望む「猫」たち",
-        };
-        var scene2 = new string[]
-        {
-            "莫大な富と権力を握る「人間」と「犬」に管理された、息苦しくて退屈な社会に対して、一石を投じるべく、「怪盗キャット」が立ち上がる",
-        };
-        var scene3 = new string[]
-        {
-            "怪盗キャットは、貧しい猫たちを救うべく、犬たちがため込んだ宝石を厳重に保管している銀行へ忍び込む。",
-            "首尾よく財宝を盗み出すことに成功するが、警備の犬に見つかり警報がなる。",
-        };
-        texts = new string[][]
-        {
-            scene1,
-            scene2,
-            scene3,
-        };
         wait = new WaitForSeconds(charInterval);
     }
 
     private void Start()
     {
-        image.sprite = sprites[0];
+        if (isManager)
+        {
+            image.sprite = sprites[0];
+        }
+        
         ShowCurrentText();
     }
 
@@ -73,16 +64,19 @@ public class TypeWriter : MonoBehaviour
         }
         else
         {
-            if (sceneIndex >= texts.Length)
+            if (sceneIndex >= sceneMsgs.Length - 1)
             {
-                Debug.Log($"Scene遷移 : {sceneIndex}");
+                if (isManager)
+                {
+                    Debug.Log($"Scene遷移 : {sceneIndex}");
+                }
                 return;
             }
 
             // 次のテキストへ
             textIndex++;
 
-            var textArray = texts[sceneIndex];
+            var textArray = sceneMsgs[sceneIndex].msgs;
             if (textIndex < textArray.Length)
             {
                 ShowCurrentText();
@@ -92,13 +86,17 @@ public class TypeWriter : MonoBehaviour
                 sceneIndex++;
                 textIndex = 0;
 
-                if (sceneIndex >= texts.Length)
+                if (sceneIndex >= sceneMsgs.Length)
                 {
                     return;
                 }
 
                 ShowCurrentText();
-                image.sprite = sprites[sceneIndex];
+
+                if (isManager)
+                {
+                    image.sprite = sprites[sceneIndex];
+                }
             }
         }
     }
@@ -108,7 +106,7 @@ public class TypeWriter : MonoBehaviour
         if (typingCoroutine != null)
             StopCoroutine(typingCoroutine);
 
-        currentMessage = texts[sceneIndex][textIndex];
+        currentMessage = sceneMsgs[sceneIndex].msgs[textIndex].Replace("\\n", "\n");
         typingCoroutine = StartCoroutine(TypeText(currentMessage));
     }
 
