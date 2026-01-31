@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6944606959815521778}
+  - component: {fileID: 4143860337456038005}
   m_Layer: 0
   m_Name: LightObject
   m_TagString: Untagged
@@ -33,6 +34,29 @@ Transform:
   - {fileID: 362501436864108145}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4143860337456038005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1026037349633326092}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1775adc4fe144a79a98b9606cdbb344, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  lightObjectSetting: {fileID: 1981747826962741449}
+  movePatternList:
+  - reachedSpan: 3
+    startPosition: {x: 5, y: 1}
+    endPosition: {x: 3, y: 0}
+  - reachedSpan: 7
+    startPosition: {x: 3, y: 0}
+    endPosition: {x: 1, y: 1}
+  - reachedSpan: 10
+    startPosition: {x: 1, y: 1}
+    endPosition: {x: 5, y: 1}
 --- !u!1 &6909471308064370082
 GameObject:
   m_ObjectHideFlags: 0
