@@ -352,6 +352,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: "(\u4EEE)Player"
       objectReference: {fileID: 0}
+    - target: {fileID: 7068990072291472168, guid: 7671ab3a6d3f60445b4feb3c36bcda19, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 7482667652216324306, guid: 75f5f34dc1b5347e0b8351032682f224, type: 3}
     - target: {fileID: 9084952048396840643, guid: 7671ab3a6d3f60445b4feb3c36bcda19, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
