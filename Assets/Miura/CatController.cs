@@ -63,15 +63,31 @@ public class CatController : MonoBehaviour
     }
     Dictionary<Vector2Int, bool> SearchAroundTiles() //IsoPosをそのままとっても良い
     {
-        Vector2 pos = transform.position;
+        Vector2Int pos = new Vector2Int((int)transform.position.x, (int)transform.position.y);
         int directionCount = 4;
-        Dictionary<Vector2Int, bool> searchTilesDict = new Dictionary<Vector2Int, bool>();
+        Dictionary<Vector2Int, bool> isCanWalkTilesDict = InGameObjectContainer.Instance.IsCanWalkTilesDict;
         for (int i = 0; i < directionCount; i++)
         {
-            // searchTilesDict.Add(InGameObjectContainer.Instance());
+            switch (i)
+            {
+                case 0: //左上
+                    pos += new Vector2Int(-1, 1);
+                    break;
+                case 1: //右下
+                    pos += new Vector2Int(1, -1);
+                    break;
+                case 2: //左下
+                    pos += new Vector2Int(-1, -1);
+                    break;
+                case 3: //右上
+                    pos += new Vector2Int(1, 1);
+                    break;
+            }
+            bool isCanWalk = isCanWalkTilesDict[pos];
+            isCanWalkTilesDict.Add(pos, isCanWalk);
         }
-
-        return null;
+        Debug.Log(isCanWalkTilesDict.Count == 4? "Success_isCanWalkTilesDict" : "Fail_isCanWalkTilesDict");
+        return isCanWalkTilesDict;
     }
 }
 public enum CatState

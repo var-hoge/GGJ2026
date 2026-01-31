@@ -5,6 +5,7 @@ using IsoTools;
 public class InGameObjectContainer : MonoBehaviour
 {
     Dictionary<Vector2Int, bool> _isCanWalkTilesDict = new Dictionary<Vector2Int, bool>();
+    public Dictionary<Vector2Int, bool> IsCanWalkTilesDict => _isCanWalkTilesDict;
     public static InGameObjectContainer Instance;
     void Awake()
     {
