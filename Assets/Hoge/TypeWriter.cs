@@ -79,7 +79,7 @@ public class TypeWriter : MonoBehaviour
                 sceneIndex++;
                 textIndex = 0;
 
-                if (sceneIndex >= textArray.Length)
+                if (sceneIndex >= sceneMsgs.Length)
                 {
                     return;
                 }
