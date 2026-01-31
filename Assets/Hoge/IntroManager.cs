@@ -6,7 +6,7 @@ public class IntroManager : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        BGMManager.Instance.Play(BGMPath.BATTLE27);
+        BGMManager.Instance.Play(BGMPath.MUSIC_MENU_LOOP);
     }
 
     // Update is called once per frame
