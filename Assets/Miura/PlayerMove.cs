@@ -6,7 +6,7 @@ public class PlayerMove : MonoBehaviour
 {
     //まずはプレイヤーのトランスフォームを取得する
     Transform _playerTrs;
-    PlayerDirection _playerDirection; //
+    CharacterDirection _characterDirection; //
     float _moveSpeed = 0.1f; //仮で10
     bool _isDiving = false;
     float _intervalTime = 0.5f;
@@ -23,11 +23,11 @@ public class PlayerMove : MonoBehaviour
         {
             // 移動制御
             Vector2 moveDirection = Vector2.zero;
-            if (_playerDirection == PlayerDirection.North || _playerDirection == PlayerDirection.South)
+            if (_characterDirection == CharacterDirection.North || _characterDirection == CharacterDirection.South)
             {
                 moveDirection = new Vector2(0, Input.GetAxisRaw("Vertical"));
             }
-            else if (_playerDirection == PlayerDirection.East || _playerDirection == PlayerDirection.West) 
+            else if (_characterDirection == CharacterDirection.East || _characterDirection == CharacterDirection.West) 
             {
                 moveDirection = new Vector2(Input.GetAxisRaw("Horizontal"), 0);
             }
@@ -38,18 +38,18 @@ public class PlayerMove : MonoBehaviour
                 CatchDive();
             }
             // 多機能ステートマシン
-            switch (_playerDirection)
+            switch (_characterDirection)
             {
-                case PlayerDirection.North:
+                case CharacterDirection.North:
                     _playerTrs.eulerAngles = new Vector3(0, 0, 0);
                     break;
-                case PlayerDirection.South:
+                case CharacterDirection.South:
                     _playerTrs.eulerAngles = new Vector3(0, 0, 180);
                     break;
-                case PlayerDirection.West:
+                case CharacterDirection.West:
                     _playerTrs.eulerAngles = new Vector3(0, 0, 90);
                     break;
-                case PlayerDirection.East:
+                case CharacterDirection.East:
                     _playerTrs.eulerAngles = new Vector3(0, 0, -90);
                     break;
             }
@@ -61,19 +61,19 @@ public class PlayerMove : MonoBehaviour
         Vector2 readValue = context.ReadValue<Vector2>();
         if (readValue.x > 0) // D入力
         {
-            _playerDirection = PlayerDirection.East;
+            _characterDirection = CharacterDirection.East;
         }
         else if (readValue.x < 0) // A入力
         {
-            _playerDirection = PlayerDirection.West;
+            _characterDirection = CharacterDirection.West;
         }
         else if (readValue.y > 0) // W入力
         {
-            _playerDirection = PlayerDirection.North;
+            _characterDirection = CharacterDirection.North;
         }
         else if (readValue.y < 0) // S入力
         {
-            _playerDirection = PlayerDirection.South;
+            _characterDirection = CharacterDirection.South;
         }
     }
     void CatchDive()
@@ -82,18 +82,18 @@ public class PlayerMove : MonoBehaviour
         Vector3 diveDirection = Vector2.zero;
         Sequence sequence = DOTween.Sequence();
         // 向いている方向にイージングを付けて移動する
-        switch (_playerDirection)
+        switch (_characterDirection)
         {
-            case PlayerDirection.North:
+            case CharacterDirection.North:
                 diveDirection = _playerTrs.position + new Vector3(0, _catchDistance, 0);
                 break;
-            case PlayerDirection.South:
+            case CharacterDirection.South:
                 diveDirection = _playerTrs.position + new Vector3(0, -_catchDistance, 0);
                 break;
-            case PlayerDirection.West:
+            case CharacterDirection.West:
                 diveDirection = _playerTrs.position + new Vector3(-_catchDistance, 0, 0);
                 break;
-            case PlayerDirection.East:
+            case CharacterDirection.East:
                 diveDirection = _playerTrs.position + new Vector3(_catchDistance, 0, 0);;
                 break;
         }
@@ -103,7 +103,7 @@ public class PlayerMove : MonoBehaviour
     }
 
 }
-public enum PlayerDirection
+public enum CharacterDirection
 {
     None,
     North,

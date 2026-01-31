@@ -179,6 +179,9 @@ namespace IsoTools {
 				FixTransform();
 			}
 		}
+		[Header("歩けますか？"), SerializeField]
+		bool _isCantWalk = false;
+		public bool IsCantWalk { get => _isCantWalk; set => _isCantWalk = value;}
 
 		// ---------------------------------------------------------------------
 		//
