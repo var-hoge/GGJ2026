@@ -7,8 +7,10 @@ public class CatController : MonoBehaviour
     [Header("怪盗であるかどうか"), SerializeField]
     bool _isPhantom = false;
     public bool IsPhantom => _isPhantom;
-    CatState _catState = CatState.None;
-    CharacterDirection _characterDirection = CharacterDirection.None;
+    private CatState _catState = CatState.None;
+    public CatState CatState{get => _catState;set{if (_catState != value){Debug.Log($"CatState changed: {_catState} → {value}");_catState = value;}}}
+    private CharacterDirection _characterDirection = CharacterDirection.None;
+    public CharacterDirection CharacterDirection{get => _characterDirection;set{if (_characterDirection != value){Debug.Log($"CharacterDirection changed: {_characterDirection} → {value}");_characterDirection = value;}}}
     Dictionary<Vector2Int, bool> _isCanWalkTilesDict = new Dictionary<Vector2Int, bool>();
     CanMoveDirection _canMoveDirection = CanMoveDirection.None;
     // パラメーター関連
@@ -89,10 +91,10 @@ public class CatController : MonoBehaviour
     Dictionary<Vector2Int, bool> SearchAroundTiles() //IsoPosをそのままとっても良い
     {
         int directionCount = 4;
-        Dictionary<Vector2Int, bool> isCanWalkTilesDict = InGameObjectContainer.Instance.IsCanWalkTilesDict;
+        Dictionary<Vector2Int, bool> isCanWalkTilesDict = new Dictionary<Vector2Int, bool>();
         for (int i = 0; i < directionCount; i++)
         {
-            Vector2Int posInt = new Vector2Int((int)transform.position.x, (int)transform.position.y);
+            Vector2Int posInt = new Vector2Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y));
             switch (i)
             {
                 case 0: //左上
@@ -108,10 +110,9 @@ public class CatController : MonoBehaviour
                     posInt += new Vector2Int(1, 1);
                     break;
             }
-            bool isCanWalk = isCanWalkTilesDict[posInt];
+            bool isCanWalk = InGameObjectContainer.Instance.IsCanWalkTilesDict[posInt];
             isCanWalkTilesDict.Add(posInt, isCanWalk);
         }
-        Debug.Log(isCanWalkTilesDict.Count == 4? "Success_isCanWalkTilesDict" : "Fail_isCanWalkTilesDict");
         return isCanWalkTilesDict;
     }
     /// <summary> _canMoveDirectionの更新 </summary>
@@ -120,9 +121,9 @@ public class CatController : MonoBehaviour
     CanMoveDirection UpdateCanMoveDirection(Dictionary<Vector2Int, bool> isCanWalkTilesDict)
     {
         CanMoveDirection canMoveDirection = CanMoveDirection.None;
-        Vector2 pos = transform.position;
-        Vector2Int posIntNorth = new Vector2Int((int)pos.x - 1, (int)pos.y + 1),posIntSouth = new Vector2Int((int)pos.x + 1, (int)pos.y - 1),
-                posIntEast = new Vector2Int((int)pos.x - 1, (int)pos.y - 1), posIntWest = new Vector2Int((int)pos.x + 1, (int)pos.y + 1);
+        int x = Mathf.RoundToInt(transform.position.x), y = Mathf.RoundToInt(transform.position.y);
+        Vector2Int posIntNorth = new Vector2Int(x - 1, y + 1), posIntSouth = new Vector2Int(x + 1, y - 1),
+                posIntEast = new Vector2Int(x - 1, y - 1), posIntWest = new Vector2Int(x + 1, y + 1);
         int directionCount = 4;
         for (int i = 0; i < directionCount; i++)
         {
