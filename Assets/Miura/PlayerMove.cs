@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using DG.Tweening;
@@ -111,13 +112,14 @@ public enum CharacterDirection
     East,
     West
 }
+[Flags]
 public enum CanMoveDirection
 {
-    None = 1 << 0,
-    North = 1 << 1,
-    South = 1 << 2,
-    East = 1 << 3,
-    West = 1 << 4,
+    None  = 0,     
+    North = 1 << 0,
+    South = 1 << 1,
+    East  = 1 << 2,
+    West  = 1 << 3
     //ON → CanMoveDirection |= Enum.North
     //Off →CanMoveDirection &= ~Enum.North
 }

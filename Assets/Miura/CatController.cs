@@ -7,15 +7,20 @@ public class CatController : MonoBehaviour
     [Header("怪盗であるかどうか"), SerializeField]
     bool _isPhantom = false;
     public bool IsPhantom => _isPhantom;
-    private CatState _catState = CatState.None;
-    public CatState CatState{get => _catState;set{if (_catState != value){Debug.Log($"CatState changed: {_catState} → {value}");_catState = value;}}}
-    private CharacterDirection _characterDirection = CharacterDirection.None;
-    public CharacterDirection CharacterDirection{get => _characterDirection;set{if (_characterDirection != value){Debug.Log($"CharacterDirection changed: {_characterDirection} → {value}");_characterDirection = value;}}}
+    CatState _catState = CatState.None;
+    CatState _CatState{get => _catState;set{if (_catState != value){
+        // Debug.Log($"CatState changed: {_catState} → {value}");
+            _catState = value;}}}
+    CharacterDirection _characterDirection = CharacterDirection.None;
+    CharacterDirection _CharacterDirection{get => _characterDirection;set{if (_characterDirection != value){
+            // Debug.Log($"CharacterDirection changed: {_characterDirection} → {value}");
+            _characterDirection = value;}}}
     Dictionary<Vector2Int, bool> _isCanWalkTilesDict = new Dictionary<Vector2Int, bool>();
     CanMoveDirection _canMoveDirection = CanMoveDirection.None;
     // パラメーター関連
     float _moveSpeed = 0.001f;
-    
+    float _moveX = 1f;
+    float _moveY = 0.25f;
 #if UNITY_EDITOR
     void Start()
     {  
@@ -25,8 +30,9 @@ public class CatController : MonoBehaviour
 #endif
     void Update()
     {
+        // Debug.Log($"update_{_}");
         // ステートマシン
-        switch (_catState)
+        switch (_CatState)
         {
             case CatState.None:
                 break;
@@ -34,8 +40,9 @@ public class CatController : MonoBehaviour
                 Move();
                 break;
             case CatState.DirectionJudge:
-                _characterDirection = ChangeDirection(_canMoveDirection);
-                _catState = CatState.Walking;
+                _CharacterDirection = ChangeDirection(_canMoveDirection);
+                // Debug.Log($"ディレクション{_canMoveDirection}");
+                _CatState = CatState.Walking;
                 break;
         }
         Dictionary<Vector2Int, bool> isCanWalkTilesDict = SearchAroundTiles();
@@ -45,7 +52,7 @@ public class CatController : MonoBehaviour
             _canMoveDirection = UpdateCanMoveDirection(isCanWalkTilesDict); // CanMoveDirectionを変える 
             if (beforeIsCanWalkTileCount < isCanWalkTileCount) // 歩ける場所が増えたのなら
             {
-                _catState = CatState.DirectionJudge; // = CatState.DirectionJudge
+                _CatState = CatState.DirectionJudge; // = CatState.DirectionJudge
             }
         }
         // 更新処理
@@ -54,19 +61,19 @@ public class CatController : MonoBehaviour
     void Move()
     {
         // 多機能ステートマシン
-        switch (_characterDirection)
+        switch (_CharacterDirection)
         {
             case CharacterDirection.North: //左上
-                transform.Translate(new Vector2(-1, 1) * _moveSpeed, Space.World);
+                transform.Translate(new Vector2(-_moveX, _moveY) * _moveSpeed, Space.World);
                 break;
             case CharacterDirection.South: //右下
-                transform.Translate(new Vector2(1, -1) * _moveSpeed, Space.World);
+                transform.Translate(new Vector2(_moveX, -_moveY) * _moveSpeed, Space.World);
                 break;
             case CharacterDirection.West: //左下
-                transform.Translate(new Vector2(-1, -1) * _moveSpeed, Space.World);
+                transform.Translate(new Vector2(-_moveX, -_moveY) * _moveSpeed, Space.World);
                 break;
             case CharacterDirection.East: //右上
-                transform.Translate(new Vector2(1, 1)  * _moveSpeed, Space.World);
+                transform.Translate(new Vector2(_moveX, _moveY)  * _moveSpeed, Space.World);
                 break;
         }
     }
@@ -130,16 +137,16 @@ public class CatController : MonoBehaviour
             switch (i)
             {
                 case 0: //左上
-                    canMoveDirection = isCanWalkTilesDict[posIntNorth] ? canMoveDirection | CanMoveDirection.North : canMoveDirection & ~CanMoveDirection.North;
+                    canMoveDirection = isCanWalkTilesDict[posIntNorth]? canMoveDirection | CanMoveDirection.North : canMoveDirection & ~CanMoveDirection.North;
                     break;
                 case 1: //右下
-                    canMoveDirection = isCanWalkTilesDict[posIntSouth] ? canMoveDirection | CanMoveDirection.South : canMoveDirection & ~CanMoveDirection.South;
+                    canMoveDirection = isCanWalkTilesDict[posIntSouth]? canMoveDirection | CanMoveDirection.South : canMoveDirection & ~CanMoveDirection.South;
                     break;
                 case 2: //左下
-                    canMoveDirection = isCanWalkTilesDict[posIntWest] ? canMoveDirection | CanMoveDirection.West : canMoveDirection & ~CanMoveDirection.West;
+                    canMoveDirection = isCanWalkTilesDict[posIntWest]? canMoveDirection | CanMoveDirection.West : canMoveDirection & ~CanMoveDirection.West;
                     break;
                 case 3: //右上
-                    canMoveDirection = isCanWalkTilesDict[posIntEast] ? canMoveDirection | CanMoveDirection.East : canMoveDirection & ~CanMoveDirection.East;
+                    canMoveDirection = isCanWalkTilesDict[posIntEast]? canMoveDirection | CanMoveDirection.East : canMoveDirection & ~CanMoveDirection.East;
                     break;
             }
         }
