@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : SingletonBehaviour<GameManager>
 {
@@ -13,7 +14,16 @@ public class GameManager : SingletonBehaviour<GameManager>
     // Update is called once per frame
     void Update()
     {
-        remainSecond -= Time.deltaTime;
+        remainSecond = Mathf.Max(remainSecond - Time.deltaTime, 0);
+        if (remainSecond <= 0f)
+        {
+            this.MoveToFailScene();
+        }
+    }
+
+    public void MoveToFailScene()
+    {
+        SceneManager.LoadScene("HappyEnd");
     }
 
     public float RemainTimeSecond {
