@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6944606959815521778}
   - component: {fileID: 4143860337456038005}
+  - component: {fileID: 7671144995423025116}
   m_Layer: 0
   m_Name: LightObject
   m_TagString: Untagged
@@ -49,14 +50,31 @@ MonoBehaviour:
   lightObjectSetting: {fileID: 1981747826962741449}
   movePatternList:
   - reachedSpan: 3
-    startPosition: {x: 5, y: 1}
-    endPosition: {x: 3, y: 0}
+    startPosition: {x: 6, y: 2}
+    endPosition: {x: 2, y: 2}
   - reachedSpan: 7
-    startPosition: {x: 3, y: 0}
-    endPosition: {x: 1, y: 1}
+    startPosition: {x: 2, y: 2}
+    endPosition: {x: 2, y: 6}
   - reachedSpan: 10
-    startPosition: {x: 1, y: 1}
-    endPosition: {x: 5, y: 1}
+    startPosition: {x: 2, y: 6}
+    endPosition: {x: 6, y: 2}
+--- !u!114 &7671144995423025116
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1026037349633326092}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a9c584f9a39449438abc7ba59a68778, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::IsoTools.IsoObject
+  _size: {x: 1, y: 1, z: 1}
+  _position: {x: 6, y: 2, z: 0}
+  _renderersMode: 0
+  _cachedRenderers: 0
+  _isCantWalk: 0
 --- !u!1 &6909471308064370082
 GameObject:
   m_ObjectHideFlags: 0
