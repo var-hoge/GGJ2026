@@ -7,6 +7,7 @@ public class IntroManager : MonoBehaviour
     void Start()
     {
         BGMManager.Instance.Play(BGMPath.MUSIC_GAME_LOOP);
+        SEManager.Instance.Play(SEPath.SD_GAME_LOOP);
     }
 
     // Update is called once per frame
