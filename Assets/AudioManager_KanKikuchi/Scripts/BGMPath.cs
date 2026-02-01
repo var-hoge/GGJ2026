@@ -5,6 +5,8 @@
 /// </summary>
 public static class BGMPath{
 
+	public const string AUDIO_CUTSCENE  = "BGM/Audio_Cutscene";
+	public const string AUDIO_ENDING    = "BGM/Audio_Ending";
 	public const string BATTLE27        = "BGM/Battle/battle27";
 	public const string FANTASY14       = "BGM/fantasy14";
 	public const string HEARTBEAT01     = "BGM/heartbeat01";
