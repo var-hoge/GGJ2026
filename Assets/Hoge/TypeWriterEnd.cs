@@ -17,8 +17,6 @@ public class TypeWriterEnd : MonoBehaviour
     [SerializeField] private Text textUI = null;
     [SerializeField] private float charInterval = 0.05f;
     [SerializeField] private Sprite[] sprites = null;
-    [SerializeField] private Image image = null;
-    [SerializeField] private bool isManager = false;
 
     [SerializeField] private SceneMsgs[] sceneMsgs;
 
@@ -37,13 +35,7 @@ public class TypeWriterEnd : MonoBehaviour
 
     private void Start()
     {
-        if (isManager)
-        {
-            image.sprite = sprites[0];
-        }
-        
         ShowCurrentText();
-        // StartCoroutine(WriteMsgAuto());
     }
 
     private void Update()
@@ -54,76 +46,37 @@ public class TypeWriterEnd : MonoBehaviour
         }
     }
 
-    private IEnumerator WriteMsgAuto()
-    {
-        // Scene1
-        yield return new WaitForSeconds(4.07f);
-        OnSpaceKey();
-
-        // Scene2
-        yield return new WaitForSeconds(3f);
-        OnSpaceKey();
-
-        // Scene3
-        yield return new WaitForSeconds(2.9f);
-        OnSpaceKey();
-
-        // Scene4
-        yield return new WaitForSeconds(3.5f);
-        OnSpaceKey();
-
-        // Scene遷移
-        yield return new WaitForSeconds(5f);
-        OnSpaceKey();
-
-    }
-
     private void OnSpaceKey()
     {
+        // 文字送り中ならば全文表示する
         if (isTyping)
         {
-            // 文字送り中 → 全文表示
             StopCoroutine(typingCoroutine);
             textUI.text = currentMessage;
             isTyping = false;
+            return;
         }
-        else
+
+        // スライドの最終テキストでない場合、次のテキストを表示
+        textIndex++;
+        var textArray = sceneMsgs[sceneIndex].msgs;
+        if (textIndex < textArray.Length)
         {
-            if (sceneIndex >= sceneMsgs.Length - 1)
-            {
-                if (isManager)
-                {
-                    Debug.Log($"Scene遷移 : {sceneIndex}");
-                }
-                return;
-            }
-
-            // 次のテキストへ
-            textIndex++;
-
-            var textArray = sceneMsgs[sceneIndex].msgs;
-            if (textIndex < textArray.Length)
-            {
-                ShowCurrentText();
-            }
-            else
-            {
-                sceneIndex++;
-                textIndex = 0;
-
-                if (sceneIndex >= sceneMsgs.Length)
-                {
-                    return;
-                }
-
-                ShowCurrentText();
-
-                if (isManager)
-                {
-                    image.sprite = sprites[sceneIndex];
-                }
-            }
+            ShowCurrentText();
+            return;
         }
+
+        // 最終テキストの場合、次のスライドに移動
+        sceneIndex++;
+        textIndex = 0;
+
+        // 最終スライドの場合、テキスト送り終了
+        if (sceneIndex >= sceneMsgs.Length)
+        {
+            return;
+        }
+
+        ShowCurrentText();
     }
 
     private void ShowCurrentText()

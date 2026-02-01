@@ -417,8 +417,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1273628475}
-  - component: {fileID: 1273628476}
   - component: {fileID: 1273628477}
+  - component: {fileID: 1273628478}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -441,30 +441,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1273628476
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1273628473}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec11e70bf1b6146608404d6e21db2668, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TypeWriter
-  textUI: {fileID: 669615003}
-  charInterval: 0.05
-  sprites:
-  - {fileID: -7157723365278473819, guid: 47aff412c15864b4ca516a9ac21fb345, type: 3}
-  image: {fileID: 684437684}
-  isManager: 1
-  sceneMsgs:
-  - msgs:
-    - "\u3042\u306A\u305F\u306F\u3001\u305F\u307E\u305F\u307E\u73FE\u5834\u8FD1\u304F\u306B\u3044\u305F\u65B0\u5165\u308A\u306E\u8B66\u5BDF\u72AC\u3060\u3002
-      \u3044\u3061\u65E9\u304F\u99C6\u3051\u3064\u3051\u3066\u3001\u602A\u76D7\u30AD\u30E3\u30C3\u30C8\u3092\u8FFD\u3048\uFF01 "
-    - "\u3060\u304C\u591C\u306E\u8857\u306B\u306F\u3001\u4EEE\u9762\u3092\u3064\u3051\u305F\u732B\u305F\u3061\u304C\u307E\u304E\u308C\u3066\u3044\u308B\u3002
-      \u672C\u7269\u3092\u898B\u629C\u304D\u3001\u5236\u9650\u6642\u9593\u5185\u306B\u902E\u6355\u3067\u304D\u308B\u306E\u304B\uFF1F "
 --- !u!114 &1273628477
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -477,6 +453,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4aa21f73fc4b642c18d30a133634766d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::IntroManager
+--- !u!114 &1273628478
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1273628473}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7318af020114d47c2bcecbbe6b90fb59, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TypeWriterEnd
+  textUI: {fileID: 669615003}
+  charInterval: 0.05
+  sprites:
+  - {fileID: -1879189859949852898, guid: 927ad2512f6ae4b839a3b28a14ce38c6, type: 3}
+  image: {fileID: 0}
+  isManager: 0
+  sceneMsgs:
+  - msgs:
+    - "\u3042\u306A\u305F\u306F\u3001\u305F\u307E\u305F\u307E\u73FE\u5834\u8FD1\u304F\u306B\u3044\u305F\u65B0\u5165\u308A\u306E\u8B66\u5BDF\u72AC\u3060\u3002
+      \u3044\u3061\u65E9\u304F\u99C6\u3051\u3064\u3051\u3066\u3001\u602A\u76D7\u30AD\u30E3\u30C3\u30C8\u3092\u8FFD\u3048\uFF01 "
+    - "\u3060\u304C\u591C\u306E\u8857\u306B\u306F\u3001\u4EEE\u9762\u3092\u3064\u3051\u305F\u732B\u305F\u3061\u304C\u307E\u304E\u308C\u3066\u3044\u308B\u3002
+      \u672C\u7269\u3092\u898B\u629C\u304D\u3001\u5236\u9650\u6642\u9593\u5185\u306B\u902E\u6355\u3067\u304D\u308B\u306E\u304B\uFF1F "
 --- !u!1 &1379308034
 GameObject:
   m_ObjectHideFlags: 0

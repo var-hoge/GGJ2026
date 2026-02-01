@@ -17,8 +17,6 @@ public class TypeWriter : MonoBehaviour
     [SerializeField] private Text textUI = null;
     [SerializeField] private float charInterval = 0.05f;
     [SerializeField] private Sprite[] sprites = null;
-    [SerializeField] private Image image = null;
-    [SerializeField] private bool isManager = false;
 
     [SerializeField] private SceneMsgs[] sceneMsgs;
 
@@ -37,11 +35,6 @@ public class TypeWriter : MonoBehaviour
 
     private void Start()
     {
-        if (isManager)
-        {
-            image.sprite = sprites[0];
-        }
-        
         ShowCurrentText();
         StartCoroutine(WriteMsgAuto());
     }
@@ -84,10 +77,7 @@ public class TypeWriter : MonoBehaviour
         // 最後のスライドなら次のSceneに遷移する
         if (sceneIndex >= sceneMsgs.Length - 1)
         {
-            if (isManager)
-            {
-                Debug.Log($"Scene遷移 : {sceneIndex}");
-            }
+            Debug.Log($"Scene遷移 : {sceneIndex}");
             return;
         }
 
@@ -111,11 +101,6 @@ public class TypeWriter : MonoBehaviour
         }
 
         ShowCurrentText();
-
-        if (isManager)
-        {
-            image.sprite = sprites[sceneIndex];
-        }
     }
 
     private void ShowCurrentText()
