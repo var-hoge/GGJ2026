@@ -21,7 +21,7 @@ public class InGameObjectContainer : MonoBehaviour
         {
             _isCanWalkTilesDict
                 .Add(new Vector2Int((int)isoObj.position.x, (int)isoObj.position.y),
-                    isoObj.IsCantWalk);
+                    isoObj.IsCanWalk);
         }
     }
 }

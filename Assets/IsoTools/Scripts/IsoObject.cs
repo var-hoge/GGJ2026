@@ -180,8 +180,8 @@ namespace IsoTools {
 			}
 		}
 		[Header("歩けますか？"), SerializeField]
-		bool _isCantWalk = false;
-		public bool IsCantWalk { get => _isCantWalk; set => _isCantWalk = value;}
+		bool _isCanWalk = false;
+		public bool IsCanWalk { get => _isCanWalk; set => _isCanWalk = value;}
 
 		// ---------------------------------------------------------------------
 		//

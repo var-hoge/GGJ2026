@@ -6,7 +6,7 @@ public class CatController : MonoBehaviour
 {
     [Header("怪盗であるかどうか"), SerializeField]
     bool _isPhantom = false;
-    public bool isPhantom => _isPhantom;
+    public bool IsPhantom => _isPhantom;
     CatState _catState = CatState.None;
     CharacterDirection _characterDirection = CharacterDirection.None;
     Dictionary<Vector2Int, bool> _isCanWalkTilesDict = new Dictionary<Vector2Int, bool>();
@@ -32,14 +32,22 @@ public class CatController : MonoBehaviour
                 Move();
                 break;
             case CatState.DirectionJudge:
-                ChangeDirection();
+                _characterDirection = ChangeDirection(_canMoveDirection);
+                _catState = CatState.Walking;
                 break;
         }
         Dictionary<Vector2Int, bool> isCanWalkTilesDict = SearchAroundTiles();
-        if (_isCanWalkTilesDict.Values.Count(v => v) < isCanWalkTilesDict.Values.Count(v => v)) // 歩ける場所が増えたのなら = CatState.DirectionJudge → 重ければBefore系変数を用意
-        // 周囲の情報を取得
-        _isCanWalkTilesDict = SearchAroundTiles();
-        _canMoveDirection = GetCanMoveDirection(_isCanWalkTilesDict);
+        int isCanWalkTileCount = isCanWalkTilesDict.Values.Count(v => v), beforeIsCanWalkTileCount = _isCanWalkTilesDict.Values.Count(v => v);
+        if (beforeIsCanWalkTileCount != isCanWalkTileCount) // 歩ける場所の数が違うのなら  
+        {
+            _canMoveDirection = UpdateCanMoveDirection(isCanWalkTilesDict); // CanMoveDirectionを変える 
+            if (beforeIsCanWalkTileCount < isCanWalkTileCount) // 歩ける場所が増えたのなら
+            {
+                _catState = CatState.DirectionJudge; // = CatState.DirectionJudge
+            }
+        }
+        // 更新処理
+        _isCanWalkTilesDict = isCanWalkTilesDict;
     }
     void Move()
     {
@@ -60,10 +68,19 @@ public class CatController : MonoBehaviour
                 break;
         }
     }
-    void ChangeDirection()
+    CharacterDirection ChangeDirection(CanMoveDirection canMoveDirection)
     {
         // ランダムに方向転換
-        
+        List<CharacterDirection> canMoveDirectionList = new List<CharacterDirection>();
+        if ((canMoveDirection & CanMoveDirection.North) != 0) canMoveDirectionList.Add(CharacterDirection.North);
+        if ((canMoveDirection & CanMoveDirection.South) != 0) canMoveDirectionList.Add(CharacterDirection.South);
+        if ((canMoveDirection & CanMoveDirection.East) != 0) canMoveDirectionList.Add(CharacterDirection.East);
+        if ((canMoveDirection & CanMoveDirection.West) != 0) canMoveDirectionList.Add(CharacterDirection.West);
+        if (canMoveDirectionList.Count == 0)
+        {
+            Debug.LogWarning("通過できる通路がありません"); return CharacterDirection.None;
+        }
+        return canMoveDirectionList[Random.Range(0, canMoveDirectionList.Count)];
     }
     /// <summary>
     /// キャラクターの周囲にあるタイルをすべて取得する
@@ -100,7 +117,7 @@ public class CatController : MonoBehaviour
     /// <summary> _canMoveDirectionの更新 </summary>
     /// <param name="isCanWalkTilesDict"></param>
     /// <returns></returns>
-    CanMoveDirection GetCanMoveDirection(Dictionary<Vector2Int, bool> isCanWalkTilesDict)
+    CanMoveDirection UpdateCanMoveDirection(Dictionary<Vector2Int, bool> isCanWalkTilesDict)
     {
         CanMoveDirection canMoveDirection = CanMoveDirection.None;
         Vector2 pos = transform.position;
