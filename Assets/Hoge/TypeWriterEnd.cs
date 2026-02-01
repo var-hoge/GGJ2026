@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using KanKikuchi.AudioManager;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -38,6 +39,8 @@ public class TypeWriterEnd : MonoBehaviour
     private void Start()
     {
         ShowCurrentText();
+        SEManager.Instance.Play(SEPath.AUDIO_ENDING);
+        BGMManager.Instance.Play(BGMPath.MUSIC_GAME_LOOP);
     }
 
     private void Update()

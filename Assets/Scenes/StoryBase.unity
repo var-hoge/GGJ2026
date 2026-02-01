@@ -599,7 +599,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1273628475}
   - component: {fileID: 1273628476}
-  - component: {fileID: 1273628477}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -651,18 +650,6 @@ MonoBehaviour:
   - msgs:
     - "\u30D7\u30EC\u30A4\u30E4\u30FC\u3067\u3042\u308B\u3042\u306A\u305F\u306F\u3001\u512A\u79C0\u306A\u82E5\u624B\u8B66\u5BDF\u72AC\u3067\u3059\u3002\u8857\u3078\u9003\u3052\u305F\u602A\u76D7\u30AD\u30E3\u30C3\u30C8\u3092\u898B\u3064\u3051\u3066\u902E\u6355\u3057\u307E\u3057\u3087\u3046\uFF01"
   videoPlayer: {fileID: 293118806}
---- !u!114 &1273628477
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1273628473}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4aa21f73fc4b642c18d30a133634766d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::IntroManager
 --- !u!1 &1379308034
 GameObject:
   m_ObjectHideFlags: 0

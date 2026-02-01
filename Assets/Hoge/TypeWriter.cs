@@ -6,6 +6,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Video;
+using KanKikuchi.AudioManager;
 
 public class TypeWriter : MonoBehaviour
 {
@@ -62,6 +63,7 @@ public class TypeWriter : MonoBehaviour
 
         ShowCurrentText();
         StartCoroutine(WriteMsgAuto());
+        BGMManager.Instance.Play(BGMPath.AUDIO_CUTSCENE);
     }
 
     private IEnumerator WriteMsgAuto()
