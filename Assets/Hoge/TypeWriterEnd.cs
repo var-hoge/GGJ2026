@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using KanKikuchi.AudioManager;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -28,6 +29,8 @@ public class TypeWriterEnd : MonoBehaviour
     private WaitForSeconds wait;
     private string currentMessage;
 
+    private string[] Messages => sceneMsgs[0].msgs;
+
     private void Awake()
     {
         wait = new WaitForSeconds(charInterval);
@@ -36,6 +39,8 @@ public class TypeWriterEnd : MonoBehaviour
     private void Start()
     {
         ShowCurrentText();
+        SEManager.Instance.Play(SEPath.AUDIO_ENDING);
+        BGMManager.Instance.Play(BGMPath.MUSIC_GAME_LOOP);
     }
 
     private void Update()
@@ -54,6 +59,12 @@ public class TypeWriterEnd : MonoBehaviour
             StopCoroutine(typingCoroutine);
             textUI.text = currentMessage;
             isTyping = false;
+            return;
+        }
+
+        if (textIndex >= Messages.Length - 1)
+        {
+            Debug.Log("文字送り終了");
             return;
         }
 

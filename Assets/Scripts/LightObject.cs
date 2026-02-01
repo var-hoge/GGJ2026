@@ -12,19 +12,41 @@ public class LightObjectMovePattern {
     public Vector2 endPosition;
 }
 
+public enum HeliTypes
+{
+    HeliType1,
+    HeliType2
+}
+
 [RequireComponent(typeof(IsoObject))]
 public class LightObject : MonoBehaviour
 {
     [SerializeField] private Light2D lightObjectSetting;
+    [SerializeField] private Sprite enemyHeli1Sprite;
+    [SerializeField] private Sprite enemyHeli2Sprite;
+    [SerializeField] private HeliTypes heliType;
+    [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private List<LightObjectMovePattern> movePatternList = new List<LightObjectMovePattern>();
 
     private LightObjectMovePattern currentPattern;
     private int patternIndex = 0;
     private IsoObject currentIsoObject;
 
+    public void Init(HeliTypes heliType)
+    {
+        this.heliType = heliType;
+    }
+
     void Start()
     {
         this.currentIsoObject = GetComponent<IsoObject>();
+        if(heliType == HeliTypes.HeliType1)
+        {
+            spriteRenderer.sprite = enemyHeli1Sprite;
+        } else
+        {
+            spriteRenderer.sprite = enemyHeli2Sprite;
+        }
         this.currentPattern = movePatternList[patternIndex];
         this.currentIsoObject.positionX = currentPattern.startPosition.x;
         this.currentIsoObject.positionY = currentPattern.startPosition.y;
@@ -35,6 +57,7 @@ public class LightObject : MonoBehaviour
         float frameTime = 0f;
         Vector2 startPosition = new Vector2(this.currentIsoObject.positionX, this.currentIsoObject.positionY);
         while (true) {
+            float prevIsoPositionX = this.currentIsoObject.positionX;
             frameTime += Time.deltaTime;
             float ratio = frameTime / currentPattern.reachedSpan;
             Vector2 isoPosition = Vector2.Lerp(
@@ -44,7 +67,14 @@ public class LightObject : MonoBehaviour
             );
             this.currentIsoObject.positionX = isoPosition.x;
             this.currentIsoObject.positionY = isoPosition.y;
-            yield return null;
+            if (isoPosition.x - prevIsoPositionX > 0)
+            {
+                spriteRenderer.flipX = heliType == HeliTypes.HeliType1;
+            } else
+            {
+                spriteRenderer.flipX = heliType == HeliTypes.HeliType2;
+            }
+                yield return null;
             if (frameTime >= currentPattern.reachedSpan) {
                 ++patternIndex;
                 if (patternIndex >= movePatternList.Count) {
