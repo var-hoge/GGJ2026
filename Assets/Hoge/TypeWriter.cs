@@ -46,14 +46,6 @@ public class TypeWriter : MonoBehaviour
         StartCoroutine(WriteMsgAuto());
     }
 
-    private void Update()
-    {
-        // if (Input.GetKeyDown(KeyCode.Space))
-        // {
-        //     OnSpaceKey();
-        // }
-    }
-
     private IEnumerator WriteMsgAuto()
     {
         // Scene1
@@ -80,49 +72,49 @@ public class TypeWriter : MonoBehaviour
 
     private void OnSpaceKey()
     {
+        // 文字送り中ならば全文表示する
         if (isTyping)
         {
-            // 文字送り中 → 全文表示
             StopCoroutine(typingCoroutine);
             textUI.text = currentMessage;
             isTyping = false;
+            return;
         }
-        else
+
+        // 最後のスライドなら次のSceneに遷移する
+        if (sceneIndex >= sceneMsgs.Length - 1)
         {
-            if (sceneIndex >= sceneMsgs.Length - 1)
+            if (isManager)
             {
-                if (isManager)
-                {
-                    Debug.Log($"Scene遷移 : {sceneIndex}");
-                }
-                return;
+                Debug.Log($"Scene遷移 : {sceneIndex}");
             }
+            return;
+        }
 
-            // 次のテキストへ
-            textIndex++;
+        // スライドの最終テキストでない場合、次のテキストを表示
+        textIndex++;
+        var textArray = sceneMsgs[sceneIndex].msgs;
+        if (textIndex < textArray.Length)
+        {
+            ShowCurrentText();
+            return;
+        }
 
-            var textArray = sceneMsgs[sceneIndex].msgs;
-            if (textIndex < textArray.Length)
-            {
-                ShowCurrentText();
-            }
-            else
-            {
-                sceneIndex++;
-                textIndex = 0;
+        // 最終テキストの場合、次のスライドに移動
+        sceneIndex++;
+        textIndex = 0;
 
-                if (sceneIndex >= sceneMsgs.Length)
-                {
-                    return;
-                }
+        // 最終スライドの場合、テキスト送り終了
+        if (sceneIndex >= sceneMsgs.Length)
+        {
+            return;
+        }
 
-                ShowCurrentText();
+        ShowCurrentText();
 
-                if (isManager)
-                {
-                    image.sprite = sprites[sceneIndex];
-                }
-            }
+        if (isManager)
+        {
+            image.sprite = sprites[sceneIndex];
         }
     }
 

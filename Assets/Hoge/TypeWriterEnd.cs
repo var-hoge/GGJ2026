@@ -43,15 +43,15 @@ public class TypeWriterEnd : MonoBehaviour
         }
         
         ShowCurrentText();
-        StartCoroutine(WriteMsgAuto());
+        // StartCoroutine(WriteMsgAuto());
     }
 
     private void Update()
     {
-        // if (Input.GetKeyDown(KeyCode.Space))
-        // {
-        //     OnSpaceKey();
-        // }
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            OnSpaceKey();
+        }
     }
 
     private IEnumerator WriteMsgAuto()

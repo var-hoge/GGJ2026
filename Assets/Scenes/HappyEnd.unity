@@ -119,74 +119,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &293118805
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 293118807}
-  - component: {fileID: 293118806}
-  m_Layer: 0
-  m_Name: VideoPlayer
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!328 &293118806
-VideoPlayer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 293118805}
-  m_Enabled: 1
-  m_VideoClip: {fileID: 32900000, guid: 864d9274a917447f5a035ae094f4af10, type: 3}
-  m_TargetCameraAlpha: 1
-  m_TargetCamera3DLayout: 0
-  m_TargetCamera: {fileID: 0}
-  m_TargetTexture: {fileID: 8400000, guid: fc462cb660f0e46e4979fe08031ae900, type: 2}
-  m_TimeReference: 0
-  m_TargetMaterialRenderer: {fileID: 0}
-  m_TargetMaterialProperty: <noninit>
-  m_RenderMode: 2
-  m_AspectRatio: 5
-  m_DataSource: 0
-  m_TimeUpdateMode: 2
-  m_PlaybackSpeed: 1
-  m_AudioOutputMode: 2
-  m_TargetAudioSources:
-  - {fileID: 0}
-  m_DirectAudioVolumes:
-  - 1
-  m_Url: 
-  m_EnabledAudioTracks: 01
-  m_DirectAudioMutes: 01
-  m_ControlledAudioTrackCount: 1
-  m_PlayOnAwake: 1
-  m_SkipOnDrop: 1
-  m_Looping: 0
-  m_WaitForFirstFrame: 1
-  m_FrameReadyEventEnabled: 0
-  m_VideoShaders: []
---- !u!4 &293118807
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 293118805}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &669615001
 GameObject:
   m_ObjectHideFlags: 0
@@ -315,7 +247,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &684437683
 RectTransform:
   m_ObjectHideFlags: 0
@@ -355,7 +287,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: -1879189859949852898, guid: 927ad2512f6ae4b839a3b28a14ce38c6, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -372,117 +304,6 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 684437682}
-  m_CullTransparentMesh: 1
---- !u!1 &878186817
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 878186818}
-  - component: {fileID: 878186822}
-  - component: {fileID: 878186821}
-  - component: {fileID: 878186820}
-  - component: {fileID: 878186819}
-  m_Layer: 5
-  m_Name: MessageENG
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!224 &878186818
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 878186817}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 989944197}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -272}
-  m_SizeDelta: {x: 1600, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &878186819
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 878186817}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Outline
-  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5882353}
-  m_EffectDistance: {x: -2, y: 2}
-  m_UseGraphicAlpha: 1
---- !u!114 &878186820
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 878186817}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Outline
-  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5882353}
-  m_EffectDistance: {x: 2, y: -2}
-  m_UseGraphicAlpha: 1
---- !u!114 &878186821
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 878186817}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 32
-    m_FontStyle: 0
-    m_BestFit: 0
-    m_MinSize: 0
-    m_MaxSize: 40
-    m_Alignment: 0
-    m_AlignByGeometry: 0
-    m_RichText: 1
-    m_HorizontalOverflow: 0
-    m_VerticalOverflow: 0
-    m_LineSpacing: 1
-  m_Text: English
---- !u!222 &878186822
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 878186817}
   m_CullTransparentMesh: 1
 --- !u!1 &989944193
 GameObject:
@@ -579,8 +400,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 684437683}
-  - {fileID: 1927602583}
-  - {fileID: 878186818}
   - {fileID: 669615002}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -600,7 +419,6 @@ GameObject:
   - component: {fileID: 1273628475}
   - component: {fileID: 1273628476}
   - component: {fileID: 1273628477}
-  - component: {fileID: 1273628478}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -639,20 +457,14 @@ MonoBehaviour:
   charInterval: 0.05
   sprites:
   - {fileID: -7157723365278473819, guid: 47aff412c15864b4ca516a9ac21fb345, type: 3}
-  - {fileID: -1879189859949852898, guid: 927ad2512f6ae4b839a3b28a14ce38c6, type: 3}
-  - {fileID: -5851687036502684560, guid: 5f8c4a09e92f8452da41f1f4371a252a, type: 3}
-  - {fileID: -1879189859949852898, guid: 927ad2512f6ae4b839a3b28a14ce38c6, type: 3}
   image: {fileID: 684437684}
   isManager: 1
   sceneMsgs:
   - msgs:
-    - "\u898F\u5F8B\u3068\u79E9\u5E8F\u3092\u91CD\u3093\u3058\u3001\u793E\u4F1A\u3084\u7D44\u7E54\u306E\u5B89\u5B9A\u3084\u8ABF\u548C\u3092\u5927\u5207\u306B\u3059\u308B\u300C\u72AC\u300D\u305F\u3061\u3002"
-  - msgs:
-    - "\u83AB\u5927\u306A\u5BCC\u3068\u6A29\u529B\u3092\u63E1\u308B\u300C\u4EBA\u9593\u300D\u3068\u300C\u72AC\u300D\u306B\u7BA1\u7406\u3055\u308C\u305F\u3001\u606F\u82E6\u3057\u304F\u3066\u9000\u5C48\u306A\u793E\u4F1A\u306B\u5BFE\u3057\u3066\u3001\u4E00\u77F3\u3092\u6295\u3058\u308B\u3079\u304F\u3001\u300C\u602A\u76D7\u30AD\u30E3\u30C3\u30C8\u300D\u304C\u7ACB\u3061\u4E0A\u304C\u308B"
-  - msgs:
-    - "\u602A\u76D7\u30AD\u30E3\u30C3\u30C8\u306F\u3001\u8CA7\u3057\u3044\u732B\u305F\u3061\u3092\u6551\u3046\u3079\u304F\u3001\u72AC\u305F\u3061\u304C\u305F\u3081\u8FBC\u3093\u3060\u5B9D\u77F3\u3092\u53B3\u91CD\u306B\u4FDD\u7BA1\u3057\u3066\u3044\u308B\u9280\u884C\u3078\u5FCD\u3073\u8FBC\u3080\u3002"
-  - msgs:
-    - "\u30D7\u30EC\u30A4\u30E4\u30FC\u3067\u3042\u308B\u3042\u306A\u305F\u306F\u3001\u512A\u79C0\u306A\u82E5\u624B\u8B66\u5BDF\u72AC\u3067\u3059\u3002\u8857\u3078\u9003\u3052\u305F\u602A\u76D7\u30AD\u30E3\u30C3\u30C8\u3092\u898B\u3064\u3051\u3066\u902E\u6355\u3057\u307E\u3057\u3087\u3046\uFF01"
+    - "\u3042\u306A\u305F\u306F\u3001\u305F\u307E\u305F\u307E\u73FE\u5834\u8FD1\u304F\u306B\u3044\u305F\u65B0\u5165\u308A\u306E\u8B66\u5BDF\u72AC\u3060\u3002
+      \u3044\u3061\u65E9\u304F\u99C6\u3051\u3064\u3051\u3066\u3001\u602A\u76D7\u30AD\u30E3\u30C3\u30C8\u3092\u8FFD\u3048\uFF01 "
+    - "\u3060\u304C\u591C\u306E\u8857\u306B\u306F\u3001\u4EEE\u9762\u3092\u3064\u3051\u305F\u732B\u305F\u3061\u304C\u307E\u304E\u308C\u3066\u3044\u308B\u3002
+      \u672C\u7269\u3092\u898B\u629C\u304D\u3001\u5236\u9650\u6642\u9593\u5185\u306B\u902E\u6355\u3067\u304D\u308B\u306E\u304B\uFF1F "
 --- !u!114 &1273628477
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -665,46 +477,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4aa21f73fc4b642c18d30a133634766d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::IntroManager
---- !u!114 &1273628478
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1273628473}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec11e70bf1b6146608404d6e21db2668, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TypeWriter
-  textUI: {fileID: 878186821}
-  charInterval: 0.02
-  sprites: []
-  image: {fileID: 0}
-  isManager: 0
-  sceneMsgs:
-  - msgs:
-    - 'The "dogs" value discipline and order, and cherish the stability and harmony
-      of society and organizations. '
-    - Their code of conduct and the trust they have built with humans over the years
-      have earned them the role of law enforcement, maintaining public safety and
-      order.
-    - 'However, with power comes rampant collusion and corruption. Meanwhile, the
-      "cats" are exploited and poor, but they still desire a free and fair society. '
-  - msgs:
-    - 'A master thief, "Phantom Cat," rises up to make a difference in a suffocating
-      and boring society controlled by "humans" and "dogs" who wield enormous wealth
-      and power. '
-  - msgs:
-    - In order to save the poor cats, Phantom Cat sneaks into a bank where the jewels
-      hoarded by the dogs are kept under strict security.
-    - He successfully steals the treasure, but is spotted by a guard dog and an alarm
-      sounds.
-  - msgs:
-    - You, the player, are an excellent young police dog. Find and arrest the Cat
-      Thief who has escaped into the city!
-    - 'There are cats in the city dressed similarly to the Cat Thief, trying to help
-      him escape. Be careful not to make the mistake of arresting him. '
 --- !u!1 &1379308034
 GameObject:
   m_ObjectHideFlags: 0
@@ -921,78 +693,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1927602582
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1927602583}
-  - component: {fileID: 1927602585}
-  - component: {fileID: 1927602584}
-  m_Layer: 5
-  m_Name: RawImage
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &1927602583
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1927602582}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 989944197}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1927602584
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1927602582}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.RawImage
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Texture: {fileID: 8400000, guid: fc462cb660f0e46e4979fe08031ae900, type: 2}
-  m_UVRect:
-    serializedVersion: 2
-    x: 0
-    y: 0
-    width: 1
-    height: 1
---- !u!222 &1927602585
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1927602582}
-  m_CullTransparentMesh: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -1001,4 +701,3 @@ SceneRoots:
   - {fileID: 989944197}
   - {fileID: 1815941483}
   - {fileID: 1273628475}
-  - {fileID: 293118807}
