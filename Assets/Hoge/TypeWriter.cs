@@ -85,8 +85,12 @@ public class TypeWriter : MonoBehaviour
         yield return new WaitForSeconds(3.6f);
         OnSpaceKey();
 
+        // Scene5
+        yield return new WaitForSeconds(3.6f);
+        OnSpaceKey();
+
         // Scene遷移
-        yield return new WaitForSeconds(8f);
+        yield return new WaitForSeconds(4f);
         OnSpaceKey();
 
     }
