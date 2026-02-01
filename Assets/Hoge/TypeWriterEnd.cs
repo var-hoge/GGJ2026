@@ -6,7 +6,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TypeWriter : MonoBehaviour
+public class TypeWriterEnd : MonoBehaviour
 {
     [Serializable]
     public class SceneMsgs
@@ -36,31 +36,14 @@ public class TypeWriter : MonoBehaviour
     private void Start()
     {
         ShowCurrentText();
-        StartCoroutine(WriteMsgAuto());
     }
 
-    private IEnumerator WriteMsgAuto()
+    private void Update()
     {
-        // Scene1
-        yield return new WaitForSeconds(4.07f);
-        OnSpaceKey();
-
-        // Scene2
-        yield return new WaitForSeconds(3f);
-        OnSpaceKey();
-
-        // Scene3
-        yield return new WaitForSeconds(2.9f);
-        OnSpaceKey();
-
-        // Scene4
-        yield return new WaitForSeconds(3.5f);
-        OnSpaceKey();
-
-        // Scene遷移
-        yield return new WaitForSeconds(5f);
-        OnSpaceKey();
-
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            OnSpaceKey();
+        }
     }
 
     private void OnSpaceKey()
@@ -71,13 +54,6 @@ public class TypeWriter : MonoBehaviour
             StopCoroutine(typingCoroutine);
             textUI.text = currentMessage;
             isTyping = false;
-            return;
-        }
-
-        // 最後のスライドなら次のSceneに遷移する
-        if (sceneIndex >= sceneMsgs.Length - 1)
-        {
-            Debug.Log($"Scene遷移 : {sceneIndex}");
             return;
         }
 
