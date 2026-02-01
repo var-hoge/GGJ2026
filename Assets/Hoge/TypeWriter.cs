@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Video;
 
 public class TypeWriter : MonoBehaviour
 {
@@ -19,6 +20,7 @@ public class TypeWriter : MonoBehaviour
     [SerializeField] private Sprite[] sprites = null;
 
     [SerializeField] private SceneMsgs[] sceneMsgs;
+    [SerializeField] private VideoPlayer videoPlayer;
 
     private int sceneIndex = 0;
     private int textIndex = 0;
@@ -35,6 +37,29 @@ public class TypeWriter : MonoBehaviour
 
     private void Start()
     {
+        StartCoroutine(PlayVideoAndWait());
+    }
+
+    IEnumerator PlayVideoAndWait()
+    {
+        // 再生準備
+        videoPlayer.Prepare();
+
+        // 準備完了まで待つ
+        while (!videoPlayer.isPrepared)
+        {
+            yield return null;
+        }
+
+        // 再生開始
+        videoPlayer.Play();
+
+        // ★ここで「再生が始まるまで待つ」
+        while (!videoPlayer.isPlaying)
+        {
+            yield return null;
+        }
+
         ShowCurrentText();
         StartCoroutine(WriteMsgAuto());
     }
@@ -42,7 +67,7 @@ public class TypeWriter : MonoBehaviour
     private IEnumerator WriteMsgAuto()
     {
         // Scene1
-        yield return new WaitForSeconds(4.07f);
+        yield return new WaitForSeconds(4.09f);
         OnSpaceKey();
 
         // Scene2
@@ -54,11 +79,11 @@ public class TypeWriter : MonoBehaviour
         OnSpaceKey();
 
         // Scene4
-        yield return new WaitForSeconds(3.5f);
+        yield return new WaitForSeconds(3.6f);
         OnSpaceKey();
 
         // Scene遷移
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(8f);
         OnSpaceKey();
 
     }

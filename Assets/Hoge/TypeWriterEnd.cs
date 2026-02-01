@@ -28,6 +28,8 @@ public class TypeWriterEnd : MonoBehaviour
     private WaitForSeconds wait;
     private string currentMessage;
 
+    private string[] Messages => sceneMsgs[0].msgs;
+
     private void Awake()
     {
         wait = new WaitForSeconds(charInterval);
@@ -54,6 +56,12 @@ public class TypeWriterEnd : MonoBehaviour
             StopCoroutine(typingCoroutine);
             textUI.text = currentMessage;
             isTyping = false;
+            return;
+        }
+
+        if (textIndex >= Messages.Length - 1)
+        {
+            Debug.Log("文字送り終了");
             return;
         }
 

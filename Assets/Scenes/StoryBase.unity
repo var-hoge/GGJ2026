@@ -166,7 +166,7 @@ VideoPlayer:
   m_EnabledAudioTracks: 01
   m_DirectAudioMutes: 01
   m_ControlledAudioTrackCount: 1
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_SkipOnDrop: 1
   m_Looping: 0
   m_WaitForFirstFrame: 1
@@ -600,7 +600,6 @@ GameObject:
   - component: {fileID: 1273628475}
   - component: {fileID: 1273628476}
   - component: {fileID: 1273628477}
-  - component: {fileID: 1273628478}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -642,8 +641,6 @@ MonoBehaviour:
   - {fileID: -1879189859949852898, guid: 927ad2512f6ae4b839a3b28a14ce38c6, type: 3}
   - {fileID: -5851687036502684560, guid: 5f8c4a09e92f8452da41f1f4371a252a, type: 3}
   - {fileID: -1879189859949852898, guid: 927ad2512f6ae4b839a3b28a14ce38c6, type: 3}
-  image: {fileID: 684437684}
-  isManager: 1
   sceneMsgs:
   - msgs:
     - "\u898F\u5F8B\u3068\u79E9\u5E8F\u3092\u91CD\u3093\u3058\u3001\u793E\u4F1A\u3084\u7D44\u7E54\u306E\u5B89\u5B9A\u3084\u8ABF\u548C\u3092\u5927\u5207\u306B\u3059\u308B\u300C\u72AC\u300D\u305F\u3061\u3002"
@@ -653,6 +650,7 @@ MonoBehaviour:
     - "\u602A\u76D7\u30AD\u30E3\u30C3\u30C8\u306F\u3001\u8CA7\u3057\u3044\u732B\u305F\u3061\u3092\u6551\u3046\u3079\u304F\u3001\u72AC\u305F\u3061\u304C\u305F\u3081\u8FBC\u3093\u3060\u5B9D\u77F3\u3092\u53B3\u91CD\u306B\u4FDD\u7BA1\u3057\u3066\u3044\u308B\u9280\u884C\u3078\u5FCD\u3073\u8FBC\u3080\u3002"
   - msgs:
     - "\u30D7\u30EC\u30A4\u30E4\u30FC\u3067\u3042\u308B\u3042\u306A\u305F\u306F\u3001\u512A\u79C0\u306A\u82E5\u624B\u8B66\u5BDF\u72AC\u3067\u3059\u3002\u8857\u3078\u9003\u3052\u305F\u602A\u76D7\u30AD\u30E3\u30C3\u30C8\u3092\u898B\u3064\u3051\u3066\u902E\u6355\u3057\u307E\u3057\u3087\u3046\uFF01"
+  videoPlayer: {fileID: 293118806}
 --- !u!114 &1273628477
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -665,46 +663,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4aa21f73fc4b642c18d30a133634766d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::IntroManager
---- !u!114 &1273628478
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1273628473}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec11e70bf1b6146608404d6e21db2668, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TypeWriter
-  textUI: {fileID: 878186821}
-  charInterval: 0.02
-  sprites: []
-  image: {fileID: 0}
-  isManager: 0
-  sceneMsgs:
-  - msgs:
-    - 'The "dogs" value discipline and order, and cherish the stability and harmony
-      of society and organizations. '
-    - Their code of conduct and the trust they have built with humans over the years
-      have earned them the role of law enforcement, maintaining public safety and
-      order.
-    - 'However, with power comes rampant collusion and corruption. Meanwhile, the
-      "cats" are exploited and poor, but they still desire a free and fair society. '
-  - msgs:
-    - 'A master thief, "Phantom Cat," rises up to make a difference in a suffocating
-      and boring society controlled by "humans" and "dogs" who wield enormous wealth
-      and power. '
-  - msgs:
-    - In order to save the poor cats, Phantom Cat sneaks into a bank where the jewels
-      hoarded by the dogs are kept under strict security.
-    - He successfully steals the treasure, but is spotted by a guard dog and an alarm
-      sounds.
-  - msgs:
-    - You, the player, are an excellent young police dog. Find and arrest the Cat
-      Thief who has escaped into the city!
-    - 'There are cats in the city dressed similarly to the Cat Thief, trying to help
-      him escape. Be careful not to make the mistake of arresting him. '
 --- !u!1 &1379308034
 GameObject:
   m_ObjectHideFlags: 0
