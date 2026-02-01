@@ -26,6 +26,11 @@ public class GameManager : SingletonBehaviour<GameManager>
         SceneManager.LoadScene("HappyEnd");
     }
 
+    public void MoveToSuccessScene()
+    {
+        SceneManager.LoadScene("VeryHappyEnd");
+    }
+
     public float RemainTimeSecond {
         get {
             return this.remainSecond;
