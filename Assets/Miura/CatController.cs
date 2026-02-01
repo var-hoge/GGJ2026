@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class CatController : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class CatController : MonoBehaviour
     CatState _catState = CatState.None;
     CharacterDirection _characterDirection = CharacterDirection.None;
     Dictionary<Vector2Int, bool> _isCanWalkTilesDict = new Dictionary<Vector2Int, bool>();
+    CanMoveDirection _canMoveDirection = CanMoveDirection.None;
     // パラメーター関連
     float _moveSpeed = 0.001f;
     
@@ -33,9 +35,11 @@ public class CatController : MonoBehaviour
                 ChangeDirection();
                 break;
         }
+        Dictionary<Vector2Int, bool> isCanWalkTilesDict = SearchAroundTiles();
+        if (_isCanWalkTilesDict.Values.Count(v => v) < isCanWalkTilesDict.Values.Count(v => v)) // 歩ける場所が増えたのなら = CatState.DirectionJudge → 重ければBefore系変数を用意
         // 周囲の情報を取得
         _isCanWalkTilesDict = SearchAroundTiles();
-        // if () // 周囲の遮蔽物の数が減少したら = CatState.DirectionJudge
+        _canMoveDirection = GetCanMoveDirection(_isCanWalkTilesDict);
     }
     void Move()
     {
@@ -61,33 +65,67 @@ public class CatController : MonoBehaviour
         // ランダムに方向転換
         
     }
+    /// <summary>
+    /// キャラクターの周囲にあるタイルをすべて取得する
+    /// </summary>
+    /// <returns></returns>
     Dictionary<Vector2Int, bool> SearchAroundTiles() //IsoPosをそのままとっても良い
     {
-        Vector2Int pos = new Vector2Int((int)transform.position.x, (int)transform.position.y);
         int directionCount = 4;
         Dictionary<Vector2Int, bool> isCanWalkTilesDict = InGameObjectContainer.Instance.IsCanWalkTilesDict;
+        for (int i = 0; i < directionCount; i++)
+        {
+            Vector2Int posInt = new Vector2Int((int)transform.position.x, (int)transform.position.y);
+            switch (i)
+            {
+                case 0: //左上
+                    posInt += new Vector2Int(-1, 1);
+                    break;
+                case 1: //右下
+                    posInt += new Vector2Int(1, -1);
+                    break;
+                case 2: //左下
+                    posInt += new Vector2Int(-1, -1);
+                    break;
+                case 3: //右上
+                    posInt += new Vector2Int(1, 1);
+                    break;
+            }
+            bool isCanWalk = isCanWalkTilesDict[posInt];
+            isCanWalkTilesDict.Add(posInt, isCanWalk);
+        }
+        Debug.Log(isCanWalkTilesDict.Count == 4? "Success_isCanWalkTilesDict" : "Fail_isCanWalkTilesDict");
+        return isCanWalkTilesDict;
+    }
+    /// <summary> _canMoveDirectionの更新 </summary>
+    /// <param name="isCanWalkTilesDict"></param>
+    /// <returns></returns>
+    CanMoveDirection GetCanMoveDirection(Dictionary<Vector2Int, bool> isCanWalkTilesDict)
+    {
+        CanMoveDirection canMoveDirection = CanMoveDirection.None;
+        Vector2 pos = transform.position;
+        Vector2Int posIntNorth = new Vector2Int((int)pos.x - 1, (int)pos.y + 1),posIntSouth = new Vector2Int((int)pos.x + 1, (int)pos.y - 1),
+                posIntEast = new Vector2Int((int)pos.x - 1, (int)pos.y - 1), posIntWest = new Vector2Int((int)pos.x + 1, (int)pos.y + 1);
+        int directionCount = 4;
         for (int i = 0; i < directionCount; i++)
         {
             switch (i)
             {
                 case 0: //左上
-                    pos += new Vector2Int(-1, 1);
+                    canMoveDirection = isCanWalkTilesDict[posIntNorth] ? canMoveDirection | CanMoveDirection.North : canMoveDirection & ~CanMoveDirection.North;
                     break;
                 case 1: //右下
-                    pos += new Vector2Int(1, -1);
+                    canMoveDirection = isCanWalkTilesDict[posIntSouth] ? canMoveDirection | CanMoveDirection.South : canMoveDirection & ~CanMoveDirection.South;
                     break;
                 case 2: //左下
-                    pos += new Vector2Int(-1, -1);
+                    canMoveDirection = isCanWalkTilesDict[posIntWest] ? canMoveDirection | CanMoveDirection.West : canMoveDirection & ~CanMoveDirection.West;
                     break;
                 case 3: //右上
-                    pos += new Vector2Int(1, 1);
+                    canMoveDirection = isCanWalkTilesDict[posIntEast] ? canMoveDirection | CanMoveDirection.East : canMoveDirection & ~CanMoveDirection.East;
                     break;
             }
-            bool isCanWalk = isCanWalkTilesDict[pos];
-            isCanWalkTilesDict.Add(pos, isCanWalk);
         }
-        Debug.Log(isCanWalkTilesDict.Count == 4? "Success_isCanWalkTilesDict" : "Fail_isCanWalkTilesDict");
-        return isCanWalkTilesDict;
+        return canMoveDirection;
     }
 }
 public enum CatState

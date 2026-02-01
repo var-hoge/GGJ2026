@@ -114,8 +114,10 @@ public enum CharacterDirection
 public enum CanMoveDirection
 {
     None = 1 << 0,
-    Up = 1 << 1,
-    Down = 1 << 2,
-    Right = 1 << 3,
-    Left = 1 << 4,
+    North = 1 << 1,
+    South = 1 << 2,
+    East = 1 << 3,
+    West = 1 << 4,
+    //ON → CanMoveDirection |= Enum.North
+    //Off →CanMoveDirection &= ~Enum.North
 }
