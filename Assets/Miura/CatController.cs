@@ -1,9 +1,8 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using Random = UnityEngine.Random;
-
+[RequireComponent(typeof(CircleCollider2D))]
 public class CatController : MonoBehaviour
 {
     [Header("怪盗であるかどうか"), SerializeField]
@@ -37,6 +36,8 @@ public class CatController : MonoBehaviour
     void Awake()
     {
         _beforeWorldPos = transform.position;
+        GetComponent<CircleCollider2D>().enabled = true;
+        GetComponent<CircleCollider2D>().isTrigger = true;
     }
     void Update()
     {
