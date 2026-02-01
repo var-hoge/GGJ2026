@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Video;
 using KanKikuchi.AudioManager;
+using UnityEngine.SceneManagement;
 
 public class TypeWriter : MonoBehaviour
 {
@@ -104,7 +105,7 @@ public class TypeWriter : MonoBehaviour
         // 最後のスライドなら次のSceneに遷移する
         if (sceneIndex >= sceneMsgs.Length - 1)
         {
-            Debug.Log($"Scene遷移 : {sceneIndex}");
+            SceneManager.LoadScene("InGame");
             return;
         }
 
