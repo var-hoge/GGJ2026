@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using KanKikuchi.AudioManager;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class TypeWriterEnd : MonoBehaviour
@@ -40,7 +41,7 @@ public class TypeWriterEnd : MonoBehaviour
     {
         ShowCurrentText();
         SEManager.Instance.Play(SEPath.AUDIO_ENDING);
-        BGMManager.Instance.Play(BGMPath.MUSIC_GAME_LOOP);
+        //BGMManager.Instance.Play(BGMPath.MUSIC_GAME_LOOP);
     }
 
     private void Update()
@@ -64,6 +65,7 @@ public class TypeWriterEnd : MonoBehaviour
 
         if (textIndex >= Messages.Length - 1)
         {
+            SceneManager.LoadScene("Title01");
             Debug.Log("文字送り終了");
             return;
         }
