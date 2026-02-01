@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using Random = UnityEngine.Random;
 
 public class CatController : MonoBehaviour
 {
@@ -18,9 +20,13 @@ public class CatController : MonoBehaviour
     Dictionary<Vector2Int, bool> _isCanWalkTilesDict = new Dictionary<Vector2Int, bool>();
     CanMoveDirection _canMoveDirection = CanMoveDirection.None;
     // パラメーター関連
+    bool _isCnaChangeState = false;
     float _moveSpeed = 0.001f;
     float _moveX = 1f;
-    float _moveY = 0.25f;
+    float _moveY = 0.5f;
+    Vector2 _beforeWorldPos = Vector2.zero;
+    float _worldPosXDistance = 0.65f;
+    float _worldPosYDistance = 0.3f;
 #if UNITY_EDITOR
     void Start()
     {  
@@ -28,9 +34,12 @@ public class CatController : MonoBehaviour
         _characterDirection = CharacterDirection.North;
     }
 #endif
+    void Awake()
+    {
+        _beforeWorldPos = transform.position;
+    }
     void Update()
     {
-        // Debug.Log($"update_{_}");
         // ステートマシン
         switch (_CatState)
         {
@@ -38,25 +47,35 @@ public class CatController : MonoBehaviour
                 break;
             case CatState.Walking:
                 Move();
+                // 違うマスに進んでいたら
+                Vector2 pos = transform.position;
+                if (_beforeWorldPos.x - _worldPosXDistance > pos.x ||_beforeWorldPos.x + _worldPosXDistance < pos.x ||
+                    _beforeWorldPos.y - _worldPosXDistance > pos.y ||_beforeWorldPos.y + _worldPosYDistance < pos.y)
+                {
+                    // Debug.Log(transform.position);
+                    float updateX = _beforeWorldPos.x + _worldPosXDistance < pos.x? _beforeWorldPos.x + _worldPosXDistance : _beforeWorldPos.x - _worldPosXDistance;
+                    float updateY = _beforeWorldPos.y + _worldPosYDistance < pos.y? _beforeWorldPos.y + _worldPosYDistance : _beforeWorldPos.y - _worldPosYDistance;
+                    _beforeWorldPos = new Vector2(updateX, updateY);  //値を整形
+                    _CatState = CatState.DataUpdate;
+                }
                 break;
-            case CatState.DirectionJudge:
-                _CharacterDirection = ChangeDirection(_canMoveDirection);
-                // Debug.Log($"ディレクション{_canMoveDirection}");
+            case CatState.DataUpdate: //更新処理
+                Dictionary<Vector2Int, bool> isCanWalkTilesDict = SearchAroundTiles();
+                int isCanWalkTileCount = isCanWalkTilesDict.Values.Count(v => v), beforeIsCanWalkTileCount = _isCanWalkTilesDict.Values.Count(v => v);
+                if (beforeIsCanWalkTileCount != isCanWalkTileCount) // 歩ける場所の数が違うのなら  
+                {
+                    _canMoveDirection = UpdateCanMoveDirection(isCanWalkTilesDict); // CanMoveDirectionを変える 
+                    // if (beforeIsCanWalkTileCount < isCanWalkTileCount) // 歩ける場所が増えたのなら
+                    // {
+                        // _CatState = CatState.DirectionJudge; // キャラクターの移動方向をランダムに決定する
+                        _CharacterDirection = ChangeDirection(_canMoveDirection);
+                        // Debug.Log(_canMoveDirection);
+                    // }
+                }
+                _isCanWalkTilesDict = isCanWalkTilesDict;
                 _CatState = CatState.Walking;
                 break;
         }
-        Dictionary<Vector2Int, bool> isCanWalkTilesDict = SearchAroundTiles();
-        int isCanWalkTileCount = isCanWalkTilesDict.Values.Count(v => v), beforeIsCanWalkTileCount = _isCanWalkTilesDict.Values.Count(v => v);
-        if (beforeIsCanWalkTileCount != isCanWalkTileCount) // 歩ける場所の数が違うのなら  
-        {
-            _canMoveDirection = UpdateCanMoveDirection(isCanWalkTilesDict); // CanMoveDirectionを変える 
-            if (beforeIsCanWalkTileCount < isCanWalkTileCount) // 歩ける場所が増えたのなら
-            {
-                _CatState = CatState.DirectionJudge; // = CatState.DirectionJudge
-            }
-        }
-        // 更新処理
-        _isCanWalkTilesDict = isCanWalkTilesDict;
     }
     void Move()
     {
@@ -79,6 +98,7 @@ public class CatController : MonoBehaviour
     }
     CharacterDirection ChangeDirection(CanMoveDirection canMoveDirection)
     {
+        Debug.Log(canMoveDirection);
         // ランダムに方向転換
         List<CharacterDirection> canMoveDirectionList = new List<CharacterDirection>();
         if ((canMoveDirection & CanMoveDirection.North) != 0) canMoveDirectionList.Add(CharacterDirection.North);
@@ -105,16 +125,16 @@ public class CatController : MonoBehaviour
             switch (i)
             {
                 case 0: //左上
-                    posInt += new Vector2Int(-1, 1);
+                    posInt += new Vector2Int(0, 1);
                     break;
                 case 1: //右下
-                    posInt += new Vector2Int(1, -1);
+                    posInt += new Vector2Int(0, -1);
                     break;
                 case 2: //左下
-                    posInt += new Vector2Int(-1, -1);
+                    posInt += new Vector2Int(-1, 0);
                     break;
                 case 3: //右上
-                    posInt += new Vector2Int(1, 1);
+                    posInt += new Vector2Int(1, 0);
                     break;
             }
             bool isCanWalk = InGameObjectContainer.Instance.IsCanWalkTilesDict[posInt];
@@ -129,8 +149,8 @@ public class CatController : MonoBehaviour
     {
         CanMoveDirection canMoveDirection = CanMoveDirection.None;
         int x = Mathf.RoundToInt(transform.position.x), y = Mathf.RoundToInt(transform.position.y);
-        Vector2Int posIntNorth = new Vector2Int(x - 1, y + 1), posIntSouth = new Vector2Int(x + 1, y - 1),
-                posIntEast = new Vector2Int(x - 1, y - 1), posIntWest = new Vector2Int(x + 1, y + 1);
+        Vector2Int posIntNorth = new Vector2Int(x, y + 1), posIntSouth = new Vector2Int(x, y - 1),
+                posIntWest = new Vector2Int(x - 1, y), posIntEast = new Vector2Int(x + 1, y);
         int directionCount = 4;
         for (int i = 0; i < directionCount; i++)
         {
@@ -157,6 +177,5 @@ public enum CatState
 {
     None,
     Walking,
-    DirectionJudge,
-    Idle,
+    DataUpdate,
 }

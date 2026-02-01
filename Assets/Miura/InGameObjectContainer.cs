@@ -21,7 +21,10 @@ public class InGameObjectContainer : MonoBehaviour
         }
         foreach (var isoObj in _isoArray) //非アクティブまで全取得)
         {
-            // if (new Vector2Int(3, 0) == new Vector2Int((int)isoObj.position.x, (int)isoObj.position.y))
+            // if (new Vector2Int(Mathf.RoundToInt(isoObj.position.x), Mathf.RoundToInt(isoObj.position.y)) == new Vector2(-2 ,1) ||
+            //     new Vector2Int(Mathf.RoundToInt(isoObj.position.x), Mathf.RoundToInt(isoObj.position.y)) == new Vector2(0 ,-1) ||
+            //     new Vector2Int(Mathf.RoundToInt(isoObj.position.x), Mathf.RoundToInt(isoObj.position.y)) == new Vector2(-2 ,-1) ||
+            //     new Vector2Int(Mathf.RoundToInt(isoObj.position.x), Mathf.RoundToInt(isoObj.position.y)) == new Vector2(0 ,1))
             //     Debug.Log(isoObj.name);
             _isCanWalkTilesDict
                 .Add(new Vector2Int(Mathf.RoundToInt(isoObj.position.x), Mathf.RoundToInt(isoObj.position.y)),
