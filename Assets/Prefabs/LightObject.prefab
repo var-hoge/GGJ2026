@@ -48,6 +48,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   lightObjectSetting: {fileID: 1981747826962741449}
+  enemyHeli1Sprite: {fileID: -6492952475605818873, guid: 16c80bf7e0e023d4faf4c4cdb54d0e0e, type: 3}
+  enemyHeli2Sprite: {fileID: 3749928575641934404, guid: fd1ea153b776bf94395fbbd16ca0ff19, type: 3}
+  heliType: 0
+  spriteRenderer: {fileID: 7397771461073766483}
   movePatternList:
   - reachedSpan: 3
     startPosition: {x: 6, y: 2}
@@ -74,7 +78,7 @@ MonoBehaviour:
   _position: {x: 6, y: 2, z: 0}
   _renderersMode: 0
   _cachedRenderers: 0
-  _isCantWalk: 0
+  _isCanWalk: 0
 --- !u!1 &6909471308064370082
 GameObject:
   m_ObjectHideFlags: 0
@@ -240,7 +244,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 679095004745108579, guid: ecd5edd6fe14547e2ad658bbc4195d74, type: 3}
+  m_Sprite: {fileID: -6492952475605818873, guid: 16c80bf7e0e023d4faf4c4cdb54d0e0e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
