@@ -46,7 +46,7 @@ public class CatController : MonoBehaviour
             case CatState.None:
                 break;
             case CatState.Walking:
-                // Move();
+                Move();
                 // 違うマスに進んでいたら
                 Vector2 pos = transform.position;
                 if (_beforeWorldPos.x - _worldPosXDistance > pos.x ||_beforeWorldPos.x + _worldPosXDistance < pos.x ||
