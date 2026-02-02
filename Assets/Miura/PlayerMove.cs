@@ -1,27 +1,34 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Unity.VisualScripting;
+using System.Linq;
 using DG.Tweening;
-using UnityEngine.Rendering.UI;
 
-[RequireComponent(typeof(CircleCollider2D))]
+[RequireComponent(typeof(CircleCollider2D), typeof(Rigidbody2D))]
 public class PlayerMove : MonoBehaviour
 {
-    //まずはプレイヤーのトランスフォームを取得する
+    [SerializeField, Range(0.001f, 0.01f)]
+    float _moveSpeed = 0.01f; //
     Transform _playerTrs;
-    CharacterDirection _characterDirection;
+    Direction _characterDirection = Direction.None;
     bool _isDiving = false;
     float _intervalTime = 0.5f;
     float _catchEndTime = 1.2f;
-    float _catchDistance = 0.05f;
-    float _moveSpeed = 0.001f; //仮で10
+    float _catchDistanceX = 1f;
+    float _catchDistanceY = 0.5f;
     float _moveX = 1f;
     float _moveY = 0.5f;
+    GameObject _activeFlashLight;
     void Awake()
     {
         _playerTrs = transform;
-        GetComponent<CircleCollider2D>().enabled = false;
+        _characterDirection = Direction.East;
         GetComponent<CircleCollider2D>().isTrigger = true;
+        GetComponent<CircleCollider2D>().enabled = false;
+        GameObject nextLight = InGameObjectContainer.Instance.PlayerFlashLightArray.FirstOrDefault(obj =>  Variables.Object(obj).Get<Direction>("Direction") == _characterDirection);
+        nextLight.SetActive(true);
+        _activeFlashLight = nextLight;
     }
     
     void Update()
@@ -30,29 +37,25 @@ public class PlayerMove : MonoBehaviour
         {
             // 移動制御
             Vector2 moveDirection = Vector2.zero;
-            if (_characterDirection == CharacterDirection.North || _characterDirection == CharacterDirection.South)
+            if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W))
             {
-                moveDirection = new Vector2(0, Input.GetAxisRaw("Vertical"));
-                if (moveDirection.y > 0)
-                {
-                    moveDirection = new Vector2(-_moveY, _moveY);
-                }
-                else if (moveDirection.y < 0)
-                {
-                    moveDirection = new Vector2(_moveY, -_moveY);
-                }
+                _characterDirection = Direction.North;
+                moveDirection = new Vector2(-_moveX, _moveY);
             }
-            else if (_characterDirection == CharacterDirection.East || _characterDirection == CharacterDirection.West) 
+            else if ( Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S))
             {
-                moveDirection = new Vector2(Input.GetAxisRaw("Horizontal"), 0);
-                if (moveDirection.x > 0) //右上
-                {
-                    moveDirection = new Vector2(+_moveX, +_moveY);
-                }
-                else if (moveDirection.x < 0)
-                {
-                    moveDirection = new Vector2(-_moveX, -_moveY);
-                }
+                _characterDirection = Direction.South;
+                moveDirection = new Vector2(_moveX, -_moveY);
+            }
+            else if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
+            {
+                _characterDirection = Direction.West;
+                moveDirection = new Vector2(-_moveX, -_moveY);
+            }
+            else if (Input.GetKey(KeyCode.RightArrow) ||  Input.GetKey(KeyCode.D))
+            {
+                _characterDirection = Direction.East;
+                moveDirection = new Vector2(_moveX, _moveY);
             }
             _playerTrs.Translate(moveDirection * _moveSpeed, Space.World);
             // キャッチダイブ
@@ -63,40 +66,19 @@ public class PlayerMove : MonoBehaviour
             // 多機能ステートマシン
             switch (_characterDirection)
             {
-                case CharacterDirection.North:
-                    _playerTrs.eulerAngles = new Vector3(0, 0, 0);
+                case Direction.North:
+                    UpdateFlashLight(Direction.North);
                     break;
-                case CharacterDirection.South:
-                    _playerTrs.eulerAngles = new Vector3(0, 0, 180);
+                case Direction.South:
+                    UpdateFlashLight(Direction.South);
                     break;
-                case CharacterDirection.West:
-                    _playerTrs.eulerAngles = new Vector3(0, 0, 90);
+                case Direction.West:
+                    UpdateFlashLight(Direction.West);
                     break;
-                case CharacterDirection.East:
-                    _playerTrs.eulerAngles = new Vector3(0, 0, -90);
+                case Direction.East:
+                    UpdateFlashLight(Direction.East);
                     break;
             }
-        }
-    }
-    // PlayerDirectionの定義
-    public void OnMove(InputAction.CallbackContext context)
-    {
-        Vector2 readValue = context.ReadValue<Vector2>();
-        if (readValue.x > 0) // D入力
-        {
-            _characterDirection = CharacterDirection.East;
-        }
-        else if (readValue.x < 0) // A入力
-        {
-            _characterDirection = CharacterDirection.West;
-        }
-        else if (readValue.y > 0) // W入力
-        {
-            _characterDirection = CharacterDirection.North;
-        }
-        else if (readValue.y < 0) // S入力
-        {
-            _characterDirection = CharacterDirection.South;
         }
     }
     void CatchDive()
@@ -104,21 +86,21 @@ public class PlayerMove : MonoBehaviour
         _isDiving = true;
         GetComponent<CircleCollider2D>().enabled = true; //コライダーオン
         Vector3 diveDirection = Vector2.zero;
-        Sequence sequence = DOTween.Sequence();
+        DG.Tweening.Sequence sequence = DOTween.Sequence();
         // 向いている方向にイージングを付けて移動する
         switch (_characterDirection)
         {
-            case CharacterDirection.North:
-                diveDirection = _playerTrs.position + new Vector3(-_catchDistance, _catchDistance, 0);
+            case Direction.North:
+                diveDirection = _playerTrs.position + new Vector3(-_catchDistanceX, _catchDistanceY, 0);
                 break;
-            case CharacterDirection.South:
-                diveDirection = _playerTrs.position + new Vector3(_catchDistance, -_catchDistance, 0);
+            case Direction.South:
+                diveDirection = _playerTrs.position + new Vector3(_catchDistanceX, -_catchDistanceY, 0);
                 break;
-            case CharacterDirection.West:
-                diveDirection = _playerTrs.position + new Vector3(-_catchDistance, -_catchDistance, 0);
+            case Direction.West:
+                diveDirection = _playerTrs.position + new Vector3(-_catchDistanceX, -_catchDistanceY, 0);
                 break;
-            case CharacterDirection.East:
-                diveDirection = _playerTrs.position + new Vector3(_catchDistance, _catchDistance, 0);
+            case Direction.East:
+                diveDirection = _playerTrs.position + new Vector3(_catchDistanceX, _catchDistanceY, 0);
                 break;
         }
         sequence.Append(_playerTrs.DOMove(diveDirection, _catchEndTime));
@@ -128,9 +110,19 @@ public class PlayerMove : MonoBehaviour
         sequence.Play();
     }
 
+    void UpdateFlashLight(Direction direction)
+    {
+        GameObject nextLight = InGameObjectContainer.Instance.PlayerFlashLightArray.FirstOrDefault(obj =>  Variables.Object(obj).Get<Direction>("Direction") == direction);
+        if (!nextLight.activeSelf)
+        {
+            _activeFlashLight.SetActive(false);
+            nextLight.SetActive(true);
+            _activeFlashLight = nextLight;
+        }
+    }
     void OnTriggerEnter2D(Collider2D other)
     {
-        CatController catController = other.GetComponent<CatController>();
+        CatController catController = other.gameObject.GetComponent<CatController>();
         if (catController != null)
         {
             if (catController.IsPhantom)
@@ -148,7 +140,7 @@ public class PlayerMove : MonoBehaviour
         }
     }
 }
-public enum CharacterDirection
+public enum Direction
 {
     None,
     North,

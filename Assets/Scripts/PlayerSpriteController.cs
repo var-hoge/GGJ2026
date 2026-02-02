@@ -1,7 +1,7 @@
 using IsoTools;
 using UnityEngine;
 
-[RequireComponent(typeof(IsoObject))]
+// [RequireComponent(typeof(IsoObject))]
 public class PlayerSpriteController : MonoBehaviour
 {
     [SerializeField] Sprite toRightSprite;
@@ -9,12 +9,6 @@ public class PlayerSpriteController : MonoBehaviour
     [SerializeField] SpriteRenderer spriteRenderer;
 
     private float? prevIsoPositionX = null;
-
-    void Start()
-    {
-        
-    }
-
     void FixedUpdate()
     {
         Vector3 position = transform.position;

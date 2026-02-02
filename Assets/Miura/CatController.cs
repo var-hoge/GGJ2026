@@ -12,9 +12,9 @@ public class CatController : MonoBehaviour
     CatState _CatState{get => _catState;set{if (_catState != value){
         // Debug.Log($"CatState changed: {_catState} → {value}");
             _catState = value;}}}
-    CharacterDirection _characterDirection = CharacterDirection.None;
-    CharacterDirection _CharacterDirection{get => _characterDirection;set{if (_characterDirection != value){
-            // Debug.Log($"CharacterDirection changed: {_characterDirection} → {value}");
+    Direction _characterDirection = Direction.None;
+    Direction _CharacterDirection{get => _characterDirection;set{if (_characterDirection != value){
+            // Debug.Log($"Direction changed: {_characterDirection} → {value}");
             _characterDirection = value;}}}
     Dictionary<Vector2Int, bool> _isCanWalkTilesDict = new Dictionary<Vector2Int, bool>();
     CanMoveDirection _canMoveDirection = CanMoveDirection.None;
@@ -30,13 +30,12 @@ public class CatController : MonoBehaviour
     void Start()
     {  
         _catState = CatState.Walking;
-        _characterDirection = CharacterDirection.North;
+        _characterDirection = Direction.North;
     }
 #endif
     void Awake()
     {
         _beforeWorldPos = transform.position;
-        GetComponent<CircleCollider2D>().enabled = true;
         GetComponent<CircleCollider2D>().isTrigger = true;
     }
     void Update()
@@ -47,7 +46,7 @@ public class CatController : MonoBehaviour
             case CatState.None:
                 break;
             case CatState.Walking:
-                Move();
+                // Move();
                 // 違うマスに進んでいたら
                 Vector2 pos = transform.position;
                 if (_beforeWorldPos.x - _worldPosXDistance > pos.x ||_beforeWorldPos.x + _worldPosXDistance < pos.x ||
@@ -83,32 +82,32 @@ public class CatController : MonoBehaviour
         // 多機能ステートマシン
         switch (_CharacterDirection)
         {
-            case CharacterDirection.North: //左上
+            case Direction.North: //左上
                 transform.Translate(new Vector2(-_moveX, _moveY) * _moveSpeed, Space.World);
                 break;
-            case CharacterDirection.South: //右下
+            case Direction.South: //右下
                 transform.Translate(new Vector2(_moveX, -_moveY) * _moveSpeed, Space.World);
                 break;
-            case CharacterDirection.West: //左下
+            case Direction.West: //左下
                 transform.Translate(new Vector2(-_moveX, -_moveY) * _moveSpeed, Space.World);
                 break;
-            case CharacterDirection.East: //右上
+            case Direction.East: //右上
                 transform.Translate(new Vector2(_moveX, _moveY)  * _moveSpeed, Space.World);
                 break;
         }
     }
-    CharacterDirection ChangeDirection(CanMoveDirection canMoveDirection)
+    Direction ChangeDirection(CanMoveDirection canMoveDirection)
     {
         Debug.Log(canMoveDirection);
         // ランダムに方向転換
-        List<CharacterDirection> canMoveDirectionList = new List<CharacterDirection>();
-        if ((canMoveDirection & CanMoveDirection.North) != 0) canMoveDirectionList.Add(CharacterDirection.North);
-        if ((canMoveDirection & CanMoveDirection.South) != 0) canMoveDirectionList.Add(CharacterDirection.South);
-        if ((canMoveDirection & CanMoveDirection.East) != 0) canMoveDirectionList.Add(CharacterDirection.East);
-        if ((canMoveDirection & CanMoveDirection.West) != 0) canMoveDirectionList.Add(CharacterDirection.West);
+        List<Direction> canMoveDirectionList = new List<Direction>();
+        if ((canMoveDirection & CanMoveDirection.North) != 0) canMoveDirectionList.Add(Direction.North);
+        if ((canMoveDirection & CanMoveDirection.South) != 0) canMoveDirectionList.Add(Direction.South);
+        if ((canMoveDirection & CanMoveDirection.East) != 0) canMoveDirectionList.Add(Direction.East);
+        if ((canMoveDirection & CanMoveDirection.West) != 0) canMoveDirectionList.Add(Direction.West);
         if (canMoveDirectionList.Count == 0)
         {
-            Debug.LogWarning("通過できる通路がありません"); return CharacterDirection.None;
+            Debug.LogWarning("通過できる通路がありません"); return Direction.None;
         }
         return canMoveDirectionList[Random.Range(0, canMoveDirectionList.Count)];
     }

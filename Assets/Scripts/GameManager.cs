@@ -11,7 +11,6 @@ public class GameManager : SingletonBehaviour<GameManager>
         this.remainSecond = timeLimitSecond;
     }
 
-    // Update is called once per frame
     void Update()
     {
         remainSecond = Mathf.Max(remainSecond - Time.deltaTime, 0);
