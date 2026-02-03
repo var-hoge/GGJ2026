@@ -261,7 +261,8 @@ namespace IsoTools {
 
 		Transform FixCachedTransform() {
 			var ret_value = Internal.Transform;
-			if ( !ret_value ) {
+			if ( !ret_value )
+			{
 				ret_value = Internal.Transform = transform;
 			}
 			return ret_value;

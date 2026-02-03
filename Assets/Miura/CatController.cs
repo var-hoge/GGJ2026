@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
@@ -28,9 +29,7 @@ public class CatController : MonoBehaviour
     float _moveY = 0.5f;
     Vector2 _beforeWorldPos = Vector2.zero;
     float _worldPosXDistance = 0.65f;
-    float _worldPosYDistance = 0.3f;
-    float _tileDistanceX = 0.65f;
-    float _tileDistanceY = 0.3f;
+    float _worldPosYDistance = 0.325f;
 #if UNITY_EDITOR
     void Start()
     {  
@@ -44,9 +43,17 @@ public class CatController : MonoBehaviour
         Vector2Int startTilePos = WorldToTilePosition(transform.position);
         _isoObject.position = new(startTilePos.x, startTilePos.y);
         _beforeWorldPos = TileToWorldPosition(startTilePos);
-        // Debug.Log($"world:{_beforeWorldPos} tile:{startTilePos}");
+        Debug.Log($"world:{_beforeWorldPos} tile:{startTilePos}");
         GetComponent<CircleCollider2D>().isTrigger = true;
     }
+    Vector2Int FixPosInt(Vector2Int startTilePos){
+        if ((startTilePos.x + startTilePos.y & 1) == 1){ //奇数なら
+            if ((startTilePos.x & 1) == 1){
+                startTilePos.x = Math.Abs(startTilePos.x) - 1;
+            }
+            else{
+                startTilePos.y = Math.Abs(startTilePos.y) - 1;}}
+        return startTilePos;}
     void Update()
     {
         // ステートマシン
@@ -64,6 +71,7 @@ public class CatController : MonoBehaviour
                     Vector2Int updateTilePos = WorldToTilePosition(pos);
                     _isoObject.position = new(updateTilePos.x, updateTilePos.y);
                     _beforeWorldPos = TileToWorldPosition(updateTilePos); //値を整形
+                    Debug.Log($"world:{_beforeWorldPos} tile:{_isoObject.position}");
                     _CatState = CatState.DataUpdate;
                 }
                 break;
@@ -77,7 +85,6 @@ public class CatController : MonoBehaviour
                     // {
                         // _CatState = CatState.DirectionJudge; // キャラクターの移動方向をランダムに決定する
                         _CharacterDirection = ChangeDirection(_canMoveDirection);
-                        // Debug.Log(_canMoveDirection);
                     // }
                 }
                 _isCanWalkTilesDict = isCanWalkTilesDict;
@@ -178,9 +185,15 @@ public class CatController : MonoBehaviour
         }
         return canMoveDirection;
     }
-    Vector2Int WorldToTilePosition(Vector3 pos) => new (Mathf.RoundToInt(pos.x / _tileDistanceX), Mathf.RoundToInt(pos.y / _tileDistanceY));
+
+    Vector2Int WorldToTilePosition(Vector3 pos)
+    {
+        int x = Mathf.RoundToInt(pos.x / _worldPosXDistance), y = Mathf.RoundToInt(pos.y / _worldPosYDistance);
+        Vector3 fixPos = TileToWorldPosition(FixPosInt(new (x, y)));
+        return InGameObjectContainer.Instance.TilesPositonDict[fixPos];
+    }
     /// <summary> タイル座標の中心点を取得する </summary> param name="pos"></param> <returns></returns>
-    Vector3 TileToWorldPosition(Vector2Int pos) => new (pos.x * _tileDistanceX, pos.y * _tileDistanceY);
+    Vector3 TileToWorldPosition(Vector2Int pos) => new (pos.x * _worldPosXDistance, pos.y * _worldPosYDistance);
 }
 public enum CatState
 {

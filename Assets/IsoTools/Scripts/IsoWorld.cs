@@ -452,7 +452,7 @@ namespace IsoTools {
 				Matrix4x4.Scale(
 					new Vector3(1.0f, tileRatio, 1.0f)) *
 				Matrix4x4.TRS(
-					Vector3.zero,
+					new Vector3(0, -1f), //もとはVector3.zero
 					Quaternion.AngleAxis(90.0f - tileAngle, IsoUtils.vec3OneZ),
 					new Vector3(tileSize * Mathf.Sqrt(2), tileSize * Mathf.Sqrt(2), tileHeight));
 			_isoRMatrix = _isoMatrix.inverse;
