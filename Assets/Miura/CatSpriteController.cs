@@ -24,7 +24,6 @@ public class CatSpriteController : MonoBehaviour
             } else if (position.x - prevIsoPositionX < 0) {
                 spriteRenderer.flipX = false;
             }
-            // if (Time.frameCount % _updateFrameDistance == 0)
             if (_frameCount > _updateFrameDistance)
             {
                 _frameCount = 0;

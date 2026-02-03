@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 using Unity.VisualScripting;
 using System.Linq;
 using DG.Tweening;
+using IsoTools;
 
 [RequireComponent(typeof(CircleCollider2D), typeof(Rigidbody2D))]
 public class PlayerMove : MonoBehaviour
