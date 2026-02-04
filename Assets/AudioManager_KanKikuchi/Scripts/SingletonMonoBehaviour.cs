@@ -16,7 +16,7 @@ public class SingletonMonoBehaviour<T> : MonoBehaviourWithInit where T : MonoBeh
 			//インスタンスがまだ作られていない
 			if (_instance == null) {
 
-				//シーン内からインスタンスを取得
+				//シーン内からインスタンスを取得s
 				_instance = (T) FindObjectOfType(typeof(T));
 
 				//シーン内に存在しない場合はエラー

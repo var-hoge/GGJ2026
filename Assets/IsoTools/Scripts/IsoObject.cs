@@ -211,11 +211,11 @@ namespace IsoTools {
 		// ---------------------------------------------------------------------
 
 		public void FixTransform() {
-			var iso_world = isoWorld;
-			var cached_transform = FixCachedTransform();
-			if ( iso_world && cached_transform ) {
+			var iso_world = isoWorld; //IsoWorldを代入
+			var cached_transform = FixCachedTransform(); //破壊的操作は行っていない
+			if ( iso_world && cached_transform ) { 
 				cached_transform.position = IsoUtils.Vec3ChangeZ(
-					iso_world.IsoToScreen(position),
+					iso_world.IsoToScreen(position), //
 					cached_transform.position.z);
 				FixScreenBounds();
 				MartDirtyIsoWorld();
@@ -258,7 +258,8 @@ namespace IsoTools {
 				Internal.QTBounds.Set(0.0f, 0.0f, 0.0f, 0.0f);
 			}
 		}
-
+		/// <summary> Internal.TransformにgameObject.transformを代入し、それをそのまま戻り値に返す </summary>
+		/// <returns></returns>
 		Transform FixCachedTransform() {
 			var ret_value = Internal.Transform;
 			if ( !ret_value )

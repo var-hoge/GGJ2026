@@ -1,7 +1,6 @@
 using IsoTools;
 using UnityEngine;
 
-// [RequireComponent(typeof(IsoObject))]
 public class PlayerSpriteController : MonoBehaviour
 {
     [SerializeField] Sprite toRightSprite;

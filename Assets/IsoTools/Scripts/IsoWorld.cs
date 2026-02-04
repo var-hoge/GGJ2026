@@ -226,10 +226,10 @@ namespace IsoTools {
 		// ---------------------------------------------------------------------
 
 		public Vector2 IsoToScreen(Vector3 iso_pnt) {
-			var screen_pos = _isoMatrix.MultiplyPoint(iso_pnt);
+			var screen_pos = _isoMatrix.MultiplyPoint(iso_pnt); //行列を用いた座標変換
 			return new Vector2(
 				screen_pos.x,
-				screen_pos.y + iso_pnt.z * tileHeight);
+				screen_pos.y + iso_pnt.z * tileHeight); //y座標のみ破壊的操作を行っている
 		}
 
 		public Vector3 ScreenToIso(Vector2 pos) {

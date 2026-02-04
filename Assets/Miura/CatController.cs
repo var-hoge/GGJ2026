@@ -1,11 +1,9 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using IsoTools;
-using UnityEngine.Tilemaps;
 using Random = UnityEngine.Random;
-[RequireComponent(typeof(CircleCollider2D))]
+[RequireComponent(typeof(CircleCollider2D), typeof(IsoObject))]
 public class CatController : MonoBehaviour
 {
     [Header("怪盗であるかどうか"), SerializeField]
@@ -13,13 +11,9 @@ public class CatController : MonoBehaviour
     public bool IsPhantom => _isPhantom;
     IsoObject _isoObject;
     CatState _catState = CatState.None;
-    CatState _CatState{get => _catState;set{if (_catState != value){
-        // Debug.Log($"CatState changed: {_catState} → {value}");
-            _catState = value;}}}
+    CatState _CatState{get => _catState;set{if (_catState != value){ _catState = value;}}}
     Direction _characterDirection = Direction.None;
-    Direction _CharacterDirection{get => _characterDirection;set{if (_characterDirection != value){
-            // Debug.Log($"Direction changed: {_characterDirection} → {value}");
-            _characterDirection = value;}}}
+    Direction _CharacterDirection{get => _characterDirection;set{if (_characterDirection != value){ _characterDirection = value;}}}
     Dictionary<Vector2Int, bool> _isCanWalkTilesDict = new Dictionary<Vector2Int, bool>();
     CanMoveDirection _canMoveDirection = CanMoveDirection.None;
     // パラメーター関連
@@ -27,7 +21,7 @@ public class CatController : MonoBehaviour
     float _moveSpeed = 0.001f;
     float _moveX = 1f;
     float _moveY = 0.5f;
-    Vector2 _beforeWorldPos = Vector2.zero;
+    Vector2 _beforeIsoPos = Vector2.zero; //タイルベースで良いのかも & マスの移動の判定にはVecTor3Intを使う必要があるかも
     float _worldPosXDistance = 0.65f;
     float _worldPosYDistance = 0.325f;
 #if UNITY_EDITOR
@@ -40,20 +34,8 @@ public class CatController : MonoBehaviour
     void Awake()
     {
         _isoObject = GetComponent<IsoObject>();
-        Vector2Int startTilePos = WorldToTilePosition(transform.position);
-        _isoObject.position = new(startTilePos.x, startTilePos.y);
-        _beforeWorldPos = TileToWorldPosition(startTilePos);
-        Debug.Log($"world:{_beforeWorldPos} tile:{startTilePos}");
         GetComponent<CircleCollider2D>().isTrigger = true;
     }
-    Vector2Int FixPosInt(Vector2Int startTilePos){
-        if ((startTilePos.x + startTilePos.y & 1) == 1){ //奇数なら
-            if ((startTilePos.x & 1) == 1){
-                startTilePos.x = Math.Abs(startTilePos.x) - 1;
-            }
-            else{
-                startTilePos.y = Math.Abs(startTilePos.y) - 1;}}
-        return startTilePos;}
     void Update()
     {
         // ステートマシン
@@ -64,14 +46,10 @@ public class CatController : MonoBehaviour
             case CatState.Walking:
                 Move();
                 // 違うマスに進んでいたら
-                Vector2 pos = transform.position;
-                if ((_beforeWorldPos.x - _worldPosXDistance > pos.x || _beforeWorldPos.x + _worldPosXDistance < pos.x) &&
-                    (_beforeWorldPos.y - _worldPosYDistance > pos.y || _beforeWorldPos.y + _worldPosYDistance < pos.y))
+                Vector2Int floorPos = IsoToFloorPosition(_isoObject.position);
+                if (floorPos.x != _beforeIsoPos.x || floorPos.y != _beforeIsoPos.y)
                 {
-                    Vector2Int updateTilePos = WorldToTilePosition(pos);
-                    _isoObject.position = new(updateTilePos.x, updateTilePos.y);
-                    _beforeWorldPos = TileToWorldPosition(updateTilePos); //値を整形
-                    Debug.Log($"world:{_beforeWorldPos} tile:{_isoObject.position}");
+                    _beforeIsoPos = floorPos;
                     _CatState = CatState.DataUpdate;
                 }
                 break;
@@ -80,12 +58,8 @@ public class CatController : MonoBehaviour
                 int isCanWalkTileCount = isCanWalkTilesDict.Values.Count(v => v), beforeIsCanWalkTileCount = _isCanWalkTilesDict.Values.Count(v => v);
                 if (beforeIsCanWalkTileCount != isCanWalkTileCount) // 歩ける場所の数が違うのなら
                 {
-                    _canMoveDirection = UpdateCanMoveDirection(isCanWalkTilesDict); // CanMoveDirectionを変える 
-                    // if (beforeIsCanWalkTileCount < isCanWalkTileCount) // 歩ける場所が増えたのなら
-                    // {
-                        // _CatState = CatState.DirectionJudge; // キャラクターの移動方向をランダムに決定する
+                    _canMoveDirection = UpdateCanMoveDirection(isCanWalkTilesDict); // CanMoveDirectionを変える
                         _CharacterDirection = ChangeDirection(_canMoveDirection);
-                    // }
                 }
                 _isCanWalkTilesDict = isCanWalkTilesDict;
                 _CatState = CatState.Walking;
@@ -97,16 +71,16 @@ public class CatController : MonoBehaviour
         switch (_CharacterDirection)
         {
             case Direction.North: //左上
-                transform.Translate(new Vector2(-_moveX, _moveY) * _moveSpeed, Space.World);
+                _isoObject.position += new Vector3(-_moveX, _moveY, 0) * _moveSpeed;
                 break;
             case Direction.South: //右下
-                transform.Translate(new Vector2(_moveX, -_moveY) * _moveSpeed, Space.World);
+                _isoObject.position += new Vector3(_moveX, -_moveY, 0) * _moveSpeed;
                 break;
             case Direction.West: //左下
-                transform.Translate(new Vector2(-_moveX, -_moveY) * _moveSpeed, Space.World);
+                _isoObject.position += new Vector3(-_moveX, -_moveY, 0) * _moveSpeed;
                 break;
             case Direction.East: //右上
-                transform.Translate(new Vector2(_moveX, _moveY)  * _moveSpeed, Space.World);
+                _isoObject.position += new Vector3(_moveX, _moveY, 0) * _moveSpeed;
                 break;
         }
     }
@@ -131,27 +105,28 @@ public class CatController : MonoBehaviour
     Dictionary<Vector2Int, bool> SearchAroundTiles() //IsoPosをそのままとっても良い
     {
         int directionCount = 4;
+        Vector2Int floorPos = IsoToFloorPosition(_isoObject.position);
         Dictionary<Vector2Int, bool> isCanWalkTilesDict = new Dictionary<Vector2Int, bool>();
         for (int i = 0; i < directionCount; i++)
         {
-            Vector2Int posInt = WorldToTilePosition(transform.position);
+            var updatePos = floorPos;
             switch (i)
             {
                 case 0: //左上
-                    posInt += new Vector2Int(0, 1);
+                    updatePos += new Vector2Int(0, 1);
                     break;
                 case 1: //右下
-                    posInt += new Vector2Int(0, -1);
+                    updatePos += new Vector2Int(0, -1);
                     break;
                 case 2: //左下
-                    posInt += new Vector2Int(-1, 0);
+                    updatePos += new Vector2Int(-1, 0);
                     break;
                 case 3: //右上
-                    posInt += new Vector2Int(1, 0);
+                    updatePos += new Vector2Int(1, 0);
                     break;
             }
-            bool isCanWalk = InGameObjectContainer.Instance.IsCanWalkTilesDict[posInt];
-            isCanWalkTilesDict.Add(posInt, isCanWalk);
+            bool isCanWalk = InGameObjectContainer.Instance.IsCanWalkTilesDict[updatePos];
+            isCanWalkTilesDict.Add(updatePos, isCanWalk);
         }
         return isCanWalkTilesDict;
     }
@@ -161,7 +136,7 @@ public class CatController : MonoBehaviour
     CanMoveDirection UpdateCanMoveDirection(Dictionary<Vector2Int, bool> isCanWalkTilesDict)
     {
         CanMoveDirection canMoveDirection = CanMoveDirection.None;
-        Vector2Int posInt = WorldToTilePosition(transform.position);
+        Vector2Int posInt = IsoToFloorPosition(_isoObject.position);
         int x = posInt.x, y = posInt.y;
         Vector2Int posIntNorth = new (x, y + 1), posIntSouth = new (x, y - 1), posIntWest = new (x - 1, y), posIntEast = new (x + 1, y);
         int directionCount = 4;
@@ -185,15 +160,7 @@ public class CatController : MonoBehaviour
         }
         return canMoveDirection;
     }
-
-    Vector2Int WorldToTilePosition(Vector3 pos)
-    {
-        int x = Mathf.RoundToInt(pos.x / _worldPosXDistance), y = Mathf.RoundToInt(pos.y / _worldPosYDistance);
-        Vector3 fixPos = TileToWorldPosition(FixPosInt(new (x, y)));
-        return InGameObjectContainer.Instance.TilesPositonDict[fixPos];
-    }
-    /// <summary> タイル座標の中心点を取得する </summary> param name="pos"></param> <returns></returns>
-    Vector3 TileToWorldPosition(Vector2Int pos) => new (pos.x * _worldPosXDistance, pos.y * _worldPosYDistance);
+    Vector2Int IsoToFloorPosition(Vector3 isoPos) => new (Mathf.FloorToInt(isoPos.x), Mathf.FloorToInt(isoPos.y));
 }
 public enum CatState
 {
