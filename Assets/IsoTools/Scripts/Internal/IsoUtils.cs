@@ -342,7 +342,10 @@ namespace IsoTools.Internal {
 			v.y = y;
 			return v;
 		}
-		
+		/// <summary> 引数のvalueを引数のvector3.zに代入する </summary>
+		/// <param name="v"></param>
+		/// <param name="z"></param>
+		/// <returns></returns>
 		public static Vector3 Vec3ChangeZ(Vector3 v, float z) {
 			v.z = z;
 			return v;

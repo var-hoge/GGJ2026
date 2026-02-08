@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEditor;
 using System.Linq;
 using System.Collections.Generic;
@@ -17,7 +18,7 @@ namespace IsoTools.Internal {
 		//
 		//
 		// ---------------------------------------------------------------------
-
+		/// <summary> ポジションに変更が加えられると呼び出される </summary>
 		void PrepareTargets() {
 			_isoObjects = targets
 				.OfType<IsoObject>()
@@ -26,8 +27,13 @@ namespace IsoTools.Internal {
 				.ToDictionary(p => p.Key, p => p.ToList());
 			_viewCenters = _isoObjects.ToDictionary(
 				pair => pair.Key,
-				pair => {
-					var iso_world = pair.Key;
+				pair =>{
+					var iso_world = pair.Key; 
+					pair.Value.Aggregate(Vector3.zero, (AccIn, p) => //なぜValue.Countが1なのにAggregateを使っているのか
+					{
+						var result = AccIn + IsoUtils.Vec3FromVec2(iso_world.IsoToScreen(p.position + p.size * 0.5f));
+						return result;
+					});
 					return pair.Value.Aggregate(Vector3.zero, (AccIn, p) => {
 						return AccIn + IsoUtils.Vec3FromVec2(
 							iso_world.IsoToScreen(p.position + p.size * 0.5f));
@@ -98,13 +104,13 @@ namespace IsoTools.Internal {
 
 		void ZMoveSliderTool() {
 			foreach ( var iso_world in _viewCenters.Keys.ToList() ) {
-				EditorGUI.BeginChangeCheck();
-				var old_center = _viewCenters[iso_world];
-				var new_center = IsoEditorUtils.GizmoSlider(
+				EditorGUI.BeginChangeCheck(); //次の条件式にたどり着くまでのコード内に値の変更があった場合、EndChangeCheck()はtrueを返すようになる → はずなのに、trueが返ってこない
+				var old_center = _viewCenters[iso_world]; //isoObject.position の中心座標のようだ → yはtransform.position.yを正しく取得できている気がするが、xはそうでもないようだ
+				var new_center = IsoEditorUtils.GizmoSlider( //※IsoEditorUtils.GizmoSlider関数は、EditorGUI.BeginChangeCheck()の監視対象外らしい（ChatGPT）また同様に、Dictionary _viewCentersも監視対象外
 					Handles.zAxisColor,
 					old_center,
 					IsoUtils.vec3OneY);
-				if ( EditorGUI.EndChangeCheck() ) {
+				if ( EditorGUI.EndChangeCheck() ) { //調査結果：常にfalse
 					var old_delta = new_center - old_center;
 					var new_delta = IsoEditorUtils.ZMoveIsoObjects(
 						true,
@@ -161,17 +167,17 @@ namespace IsoTools.Internal {
 		//
 		//
 		// ---------------------------------------------------------------------
-
+		/// <summary> 呼び出されている </summary>
 		void DirtyTargetPositions() {
 			var iso_object = targets.Length == 1 ? target as IsoObject : null;
 			if ( iso_object && iso_object.IsActive() && !Application.isPlaying ) {
 				var position_prop = serializedObject.FindProperty("_position");
-				if ( position_prop != null && !position_prop.prefabOverride ) {
+				if ( position_prop != null && !position_prop.prefabOverride ) { //position_prop.prefabOverride は インスタンス化しているGameObjectの値が変更された時 true を代入する
 					var last_value = position_prop.vector3Value;
 					position_prop.vector3Value = last_value + Vector3.one;
 					PrefabUtility.RecordPrefabInstancePropertyModifications(target);
 					serializedObject.ApplyModifiedProperties();
-					position_prop.vector3Value = last_value;
+					position_prop.vector3Value = last_value; //position_propというプロパティに値を代入している → IsoObject.positionへ代入されている値と同じ
 					PrefabUtility.RecordPrefabInstancePropertyModifications(target);
 					serializedObject.ApplyModifiedProperties();
 				}
@@ -191,11 +197,11 @@ namespace IsoTools.Internal {
 		void OnDisable() {
 			DisableCustomTools();
 		}
-
+		/// <summary> Iso系コンポーネントを持ったGameObjectを選択した状態で、何かしらのキー入力を行った際に一度だけ呼び出される </summary>
 		void OnSceneGUI() {
 			DrawCustomTools();
 		}
-
+		/// <summary> 呼び出されている/調査結果:Z座標に関係する処理はひとつも無いらしい </summary>
 		public override void OnInspectorGUI() {
 			PrepareTargets();
 			DirtyTargetPositions();

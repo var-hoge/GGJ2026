@@ -83,7 +83,13 @@ namespace IsoTools.Internal {
 		// Editor
 		//
 		// ---------------------------------------------------------------------
-
+		/// <summary> 事実上一度も呼び出されない関数 </summary>
+		/// <param name="move"></param>
+		/// <param name="iso_world"></param>
+		/// <param name="all_iso_objects"></param>
+		/// <param name="all_other_objects"></param>
+		/// <param name="delta"></param>
+		/// <returns></returns>
 		public static float ZMoveIsoObjects(
 			bool                                  move,
 			IsoWorld                              iso_world,
@@ -342,7 +348,7 @@ namespace IsoTools.Internal {
 
 		public static bool SnapProcess(
 			float snap_dist, ref float min_a, float size_a, float min_b, float size_b)
-		{
+		{Debug.Log("");
 			var max_a  = min_a + size_a;
 			var max_b  = min_b + size_b;
 			var result = false;

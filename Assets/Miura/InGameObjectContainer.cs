@@ -32,6 +32,10 @@ public class InGameObjectContainer : MonoBehaviour
         }
         _canNotWalkTileArray = _isoArray.Where(iso => !iso.IsCanWalk)
             .Select(iso => new Vector2Int(Mathf.RoundToInt(iso.position.x), Mathf.RoundToInt(iso.position.y))).ToArray();
+        if (_canNotWalkTileArray.Any(dontWalk => dontWalk == new Vector2Int(4, 3)))
+        {
+            Debug.Log("あるけないことになっている");
+        }
         Array.ForEach(_PlayerFlashLightArray, lightObj => lightObj.SetActive(false));
     }
 }

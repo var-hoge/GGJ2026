@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using Unity.VisualScripting;
 using System.Linq;
+using DG.Tweening;
 using IsoTools;
 using IsoTools.Physics;
 using IsoTools.Examples.Kenney;
@@ -13,19 +14,19 @@ using IsoTools.Examples.Kenney;
 public class PlayerController : MonoBehaviour
 {
     IsoObject _isoObject;
-    IsoRigidbody _isoRigidbody; //あんまり使いたくない
+    IsoRigidbody _isoRigidbody;
     Direction _characterDirection = Direction.None;
     GameObject _activeFlashLight;
     CircleCollider2D _circleCollider2D;
     Vector3 _beforeIsoPos = Vector3.zero;
     // パラメータ関連
     bool _isDiving = false;
-    [SerializeField, Range(0.001f, 0.01f)]
-    float _moveSpeed = 0.01f;
-    [SerializeField, Range(0.1f, 1f)]
-    float _catchDistance = 0.1f;
-    float _catchInterval = 0.5f;
-    float _catchEndTime = 1.2f;
+    [SerializeField, Range(0.001f, 2f)]
+    float _moveSpeed = 2f;
+    [SerializeField, Range(0.5f, 1f)]
+    float _catchDistance = 1f;
+    float _diveInterval = 0.5f;
+    float _diveEndTime = 5f;
     void Awake()
     {
         _isoObject = GetComponent<IsoObject>();
@@ -34,79 +35,104 @@ public class PlayerController : MonoBehaviour
         _beforeIsoPos = _isoObject.position;
         _circleCollider2D.isTrigger = true;
         _circleCollider2D.enabled = false;
-        GameObject nextLight = InGameObjectContainer.Instance.PlayerFlashLightArray.FirstOrDefault(obj =>  Variables.Object(obj).Get<Direction>("Direction") == Direction.East);
-        nextLight.SetActive(true);
-        _activeFlashLight = nextLight;
+        // GameObject nextLight = InGameObjectContainer.Instance.PlayerFlashLightArray.FirstOrDefault(obj =>  Variables.Object(obj).Get<Direction>("Direction") == Direction.East);
+        // nextLight.SetActive(true);
+        // _activeFlashLight = nextLight;
     }
     
     void Update()
     {
         if (!_isDiving)
         {
-            var floorPos = IsoToFloorPosition(_isoObject.position);
-            if (floorPos == new Vector2Int(2, 1)) Debug.Log($"ここだ!!{_isoObject.position}");
-            
-            if (InGameObjectContainer.Instance.CanNotWalkTileArray.Any(dontWalk => dontWalk == floorPos)){
-                _isoObject.position = _beforeIsoPos;
-            }
-            else{
-            　// 移動制御
-                 Move();}
+            // 移動制御
+            Move();
             // キャッチダイブ
             if (Keyboard.current.spaceKey.wasPressedThisFrame)
             {
-                StartCoroutine(CatchDive());
+                // StartCoroutine(CatchDive());
+                CatchDive();
             }
             // 多機能ステートマシン
-            switch (_characterDirection)
-            {
-                case Direction.North:
-                    UpdateFlashLight(Direction.North);
-                    break;
-                case Direction.South:
-                    UpdateFlashLight(Direction.South);
-                    break;
-                case Direction.West:
-                    UpdateFlashLight(Direction.West);
-                    break;
-                case Direction.East:
-                    UpdateFlashLight(Direction.East);
-                    break;
-            }
+            // switch (_characterDirection)
+            // {
+            //     case Direction.North:
+            //         UpdateFlashLight(Direction.North);
+            //         break;
+            //     case Direction.South:
+            //         UpdateFlashLight(Direction.South);
+            //         break;
+            //     case Direction.West:
+            //         UpdateFlashLight(Direction.West);
+            //         break;
+            //     case Direction.East:
+            //         UpdateFlashLight(Direction.East);
+            //         break;
+            // }
         }
+        // デバッグ用
+        var floorPos = IsoToFloorPosition(_isoObject.position);
+        var bFloorPos = IsoToFloorPosition(_beforeIsoPos);
+        // Debug.Log($"world:{_isoObject.position} floor:{floorPos}"); //Y だけは +0.5まで許容して良いのかも
+        // if (floorPos != bFloorPos) Debug.Log($"world:{_isoObject.position} floor:{floorPos}");
         _beforeIsoPos = _isoObject.position;
     }
     void Move()
     {
-        Vector3 moveDirection = Vector2.zero;
-        if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W))
-        {
-            _characterDirection = Direction.North;
-            moveDirection.y++;
+        if ( Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A)) {
+            var velocity = _isoRigidbody.velocity;
+            velocity.x = -_moveSpeed;
+            _isoRigidbody.velocity = velocity;
         }
-        else if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S))
-        {
-            _characterDirection = Direction.South;
-            moveDirection.y--;
+        else if ( Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D)) {
+            var velocity = _isoRigidbody.velocity;
+            velocity.x = _moveSpeed;
+            _isoRigidbody.velocity = velocity;
         }
-        else if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
-        {
-            _characterDirection = Direction.West;
-            moveDirection.x--;
+        else if ( Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S)) {
+            var velocity = _isoRigidbody.velocity;
+            velocity.y = -_moveSpeed;
+            _isoRigidbody.velocity = velocity;
         }
-        else if (Input.GetKey(KeyCode.RightArrow) ||  Input.GetKey(KeyCode.D))
-        {
-            _characterDirection = Direction.East;
-            moveDirection.x++;
+        else if ( Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W)) {
+            var velocity = _isoRigidbody.velocity;
+            velocity.y = _moveSpeed;
+            _isoRigidbody.velocity = velocity;
         }
-        _isoObject.position += moveDirection * _moveSpeed;
+        // Vector3 moveDirection = Vector2.zero;
+        // if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W))
+        // {
+        //     _characterDirection = Direction.North;
+        //     moveDirection.y++;
+        // }
+        // else if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S))
+        // {
+        //     _characterDirection = Direction.South;
+        //     moveDirection.y--;
+        // }
+        // else if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
+        // {
+        //     _characterDirection = Direction.West;
+        //     moveDirection.x--;
+        // }
+        // else if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
+        // {
+        //     _characterDirection = Direction.East;
+        //     moveDirection.x++;
+        // }
+        // Vector3 updatePos = _isoObject.position + moveDirection * _moveSpeed;
+        // if (InGameObjectContainer.Instance.CanNotWalkTileArray.Any(dontWalk => dontWalk == IsoToFloorPosition(updatePos))){
+        // }else //小数点で歩行可否判定するべきかも
+        // {
+        //     _isoObject.position = updatePos;
+        // }
     }
 
-    IEnumerator CatchDive()
+    void CatchDive()
     {
         _isDiving = true;
         _circleCollider2D.enabled = true;
         Vector3 startPos = _isoObject.position, diveEndPos = _isoObject.position;
+        DG.Tweening.Sequence sequence = DOTween.Sequence();
         // 向いている方向にイージングを付けて移動する
         switch (_characterDirection)
         {
@@ -123,18 +149,11 @@ public class PlayerController : MonoBehaviour
                 diveEndPos.x += _catchDistance;
                 break;
         }
-        float time = 0f;
-        while (time < _catchEndTime)
-        {
-            time += Time.deltaTime;
-            float t = Mathf.Clamp01(time / _catchEndTime);
-            _isoObject.position = Vector3.Lerp(startPos, diveEndPos, t);
-            yield return null;
-        }
-        _isoObject.position = diveEndPos;
-        yield return new WaitForSeconds(_catchInterval);
-        _circleCollider2D.enabled = false;
-        _isDiving = false;
+        sequence.Append(DOTween.To(() => _isoObject.position, x =>  _isoObject.position = x, diveEndPos, _diveEndTime).SetEase(Ease.Linear));
+        sequence.AppendInterval(_diveInterval);
+        sequence.AppendCallback(() => _isDiving = false);
+        sequence.AppendCallback(() => GetComponent<CircleCollider2D>().enabled = false);
+        sequence.Play();
     }
     void UpdateFlashLight(Direction direction)
     {
@@ -163,12 +182,8 @@ public class PlayerController : MonoBehaviour
     }
     void OnIsoCollisionEnter(IsoCollision iso_collision) {
         if ( iso_collision.gameObject ) {
-            var alient = iso_collision.gameObject.GetComponent<AlienBallController>();
-            if ( alient ) {
-                Destroy(alient.gameObject);
-            }
+            
         }
-        Debug.Log("Miura");
     }
     Vector2Int IsoToFloorPosition(Vector3 isoPos) => new (Mathf.FloorToInt(isoPos.x), Mathf.FloorToInt(isoPos.y));
 }

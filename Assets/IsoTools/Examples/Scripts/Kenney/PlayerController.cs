@@ -43,6 +43,7 @@ namespace IsoTools.Examples.Kenney {
 			}
 			else if ( Input.GetKey(KeyCode.UpArrow) ) {
 				var velocity = _isoRigidbody.velocity;
+				Debug.Log(velocity);
 				velocity.y = speed;
 				_isoRigidbody.velocity = velocity;
 			}

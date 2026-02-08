@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using IsoTools.Internal;
 using System.Collections.Generic;
@@ -36,7 +37,7 @@ namespace IsoTools {
 
 		public float sizeZ {
 			get { return size.z; }
-			set { size = IsoUtils.Vec3ChangeZ(size, value); }
+			set { size = IsoUtils.Vec3ChangeZ(size, value);}
 		}
 
 		public Vector2 sizeXY {
@@ -209,16 +210,20 @@ namespace IsoTools {
 		// Public
 		//
 		// ---------------------------------------------------------------------
-
+		/// <summary> IsoPosを含めたポジションの変換・更新を行っている。しかし、Inspectorに表示されている値とは合致していない。Zは合致していることが多い </summary>
 		public void FixTransform() {
 			var iso_world = isoWorld; //IsoWorldを代入
 			var cached_transform = FixCachedTransform(); //破壊的操作は行っていない
-			if ( iso_world && cached_transform ) { 
+				// Debug.Log(gameObject.name);
+			if ( iso_world && cached_transform)
+			{
 				cached_transform.position = IsoUtils.Vec3ChangeZ(
-					iso_world.IsoToScreen(position), //
+					iso_world.IsoToScreen(position), //OnValidDataでIsoPosを更新してから代入処理を行っている
 					cached_transform.position.z);
 				FixScreenBounds();
 				MartDirtyIsoWorld();
+				// if (position != new Vector3(2, 1, 0))
+				// Debug.Log($"{transform.position}_{position}");
 			}
 		}
 
@@ -226,9 +231,9 @@ namespace IsoTools {
 			var iso_world = isoWorld;
 			var cached_transform = FixCachedTransform();
 			if ( iso_world && cached_transform ) {
-				position = iso_world.ScreenToIso(
+				position = iso_world.ScreenToIso( 
 					cached_transform.position,
-					positionZ);
+					positionZ);//
 			}
 		}
 
@@ -309,7 +314,7 @@ namespace IsoTools {
 			renderersMode     = RenderersMode.Mode2d;
 			isCachedRenderers = false;
 		}
-
+		/// <summary>  </summary>
 		void OnValidate() {
 			size              = _size;
 			position          = _position;
