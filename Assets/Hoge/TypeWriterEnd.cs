@@ -65,7 +65,7 @@ public class TypeWriterEnd : MonoBehaviour
 
         if (textIndex >= Messages.Length - 1)
         {
-            SceneManager.LoadScene("Title01");
+            SceneManager.LoadScene("Title");
             Debug.Log("文字送り終了");
             return;
         }

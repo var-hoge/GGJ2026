@@ -5,6 +5,6 @@ public class TitleUI : MonoBehaviour
 {
     public void OnStart()
     {
-        SceneManager.LoadScene("StoryBase");
+        SceneManager.LoadScene("IntroStory");
     }
 }
