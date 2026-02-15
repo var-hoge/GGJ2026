@@ -41,7 +41,7 @@ public class TypeWriterEnd : MonoBehaviour
     {
         ShowCurrentText();
         SEManager.Instance.Play(SEPath.AUDIO_ENDING);
-        //BGMManager.Instance.Play(BGMPath.MUSIC_GAME_LOOP);
+        BGMManager.Instance.Play(BGMPath.MUSIC_ENDING_LOOP);
     }
 
     private void Update()
