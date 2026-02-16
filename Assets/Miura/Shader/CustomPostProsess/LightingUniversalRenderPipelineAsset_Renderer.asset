@@ -1,5 +1,24 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-3510012929281925002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f66ec5d5e7ccb344ea120b04f79d0331, type: 3}
+  m_Name: GoldDustFeature
+  m_EditorClassIdentifier: Assembly-CSharp::GoldDustFeature
+  m_Active: 0
+  settings:
+    renderPassEvent: 550
+    shader: {fileID: 4800000, guid: 89fa4d88e102a8e48a7f0907eaf006e7, type: 3}
+    goldDensity: 301.37
+    goldIntensity: 0.76
+    goldBlurSize: 1
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24,8 +43,10 @@ MonoBehaviour:
     probeSamplingDebugMesh: {fileID: 0}
     probeSamplingDebugTexture: {fileID: 0}
     probeVolumeBlendStatesCS: {fileID: 0}
-  m_RendererFeatures: []
-  m_RendererFeatureMap: 
+  m_RendererFeatures:
+  - {fileID: 5764423199048702204}
+  - {fileID: -3510012929281925002}
+  m_RendererFeatureMap: fc9851ba5b58ff4f76601f71d6ed49cf
   m_UseNativeRenderPass: 0
   m_LayerMask:
     serializedVersion: 2
@@ -56,3 +77,31 @@ MonoBehaviour:
   m_PostProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
   m_DefaultMaterialType: 0
   m_DefaultCustomMaterial: {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+--- !u!114 &5764423199048702204
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cf1bbb977023f743a4bdb9a2fd78b43, type: 3}
+  m_Name: RegionalBloomFeature
+  m_EditorClassIdentifier: Assembly-CSharp::RegionalBloomFeature
+  m_Active: 1
+  settings:
+    renderPassEvent: 550
+    shader: {fileID: 4800000, guid: 4a616207f9604a5419ffb6f5a0da3b37, type: 3}
+    regionMin: {x: 0.3, y: 0.3, z: 0, w: 0}
+    regionMax: {x: 0.7, y: 0.7, z: 0, w: 0}
+    threshold: 0.8
+    intensity: 2
+    blurSize: 3
+    flickering: 1.5
+    validPosArray:
+    - {x: 0.17691666, y: 0.37611112, z: 0.229, w: 0.4687037}
+    - {x: 0.18562502, y: 0.7087963, z: 0.23770836, w: 0.80138886}
+    - {x: 0.11145833, y: 0.59574074, z: 0.16354166, w: 0.68833333}
+    - {x: 0.112213545, y: 0.34453702, z: 0.1642969, w: 0.43712962}
+    - {x: 0.07161459, y: 0.41703704, z: 0.08463543, w: 0.48648152}

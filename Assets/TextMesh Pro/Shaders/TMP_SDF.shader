@@ -238,7 +238,6 @@ SubShader {
 			output.underlayColor =	underlayColor;
 			#endif
 			output.textures = float4(faceUV, outlineUV);
-
 			return output;
 		}
 
