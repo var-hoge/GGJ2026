@@ -8,6 +8,7 @@ using DG.Tweening;
 using IsoTools;
 using IsoTools.Physics;
 using IsoTools.Examples.Kenney;
+using UnityEngine.InputSystem.LowLevel;
 
 [RequireComponent(typeof(CircleCollider2D), typeof(Rigidbody2D))]
 [RequireComponent(typeof(IsoObject), typeof(IsoBoxCollider), typeof(IsoRigidbody))]
@@ -29,15 +30,15 @@ public class PlayerController : MonoBehaviour
     float _diveEndTime = 5f;
     void Awake()
     {
-        _isoObject = GetComponent<IsoObject>();
+         _isoObject = GetComponent<IsoObject>();
         _isoRigidbody = GetComponent<IsoRigidbody>();
         _circleCollider2D = GetComponent<CircleCollider2D>();
         _beforeIsoPos = _isoObject.position;
         _circleCollider2D.isTrigger = true;
         _circleCollider2D.enabled = false;
-        // GameObject nextLight = InGameObjectContainer.Instance.PlayerFlashLightArray.FirstOrDefault(obj =>  Variables.Object(obj).Get<Direction>("Direction") == Direction.East);
-        // nextLight.SetActive(true);
-        // _activeFlashLight = nextLight;
+        GameObject nextLight = InGameObjectContainer.Instance.PlayerFlashLightArray.FirstOrDefault(obj =>  Variables.Object(obj).Get<Direction>("Direction") == Direction.East);
+        nextLight.SetActive(true);
+        _activeFlashLight = nextLight;
     }
     
     void Update()
@@ -49,31 +50,30 @@ public class PlayerController : MonoBehaviour
             // キャッチダイブ
             if (Keyboard.current.spaceKey.wasPressedThisFrame)
             {
-                // StartCoroutine(CatchDive());
                 CatchDive();
             }
             // 多機能ステートマシン
-            // switch (_characterDirection)
-            // {
-            //     case Direction.North:
-            //         UpdateFlashLight(Direction.North);
-            //         break;
-            //     case Direction.South:
-            //         UpdateFlashLight(Direction.South);
-            //         break;
-            //     case Direction.West:
-            //         UpdateFlashLight(Direction.West);
-            //         break;
-            //     case Direction.East:
-            //         UpdateFlashLight(Direction.East);
-            //         break;
-            // }
+            switch (_characterDirection)
+            {
+                case Direction.North:
+                    UpdateFlashLight(Direction.North);
+                    break;
+                case Direction.South:
+                    UpdateFlashLight(Direction.South);
+                    break;
+                case Direction.West:
+                    UpdateFlashLight(Direction.West);
+                    break;
+                case Direction.East:
+                    UpdateFlashLight(Direction.East);
+                    break;
+            }
         }
         // デバッグ用
         var floorPos = IsoToFloorPosition(_isoObject.position);
         var bFloorPos = IsoToFloorPosition(_beforeIsoPos);
-        // Debug.Log($"world:{_isoObject.position} floor:{floorPos}"); //Y だけは +0.5まで許容して良いのかも
-        // if (floorPos != bFloorPos) Debug.Log($"world:{_isoObject.position} floor:{floorPos}");
+        Debug.Log($"world:{_isoObject.position} floor:{floorPos}"); //Y だけは +0.5まで許容して良いのかも
+        if (floorPos != bFloorPos) Debug.Log($"world:{_isoObject.position} floor:{floorPos}");
         _beforeIsoPos = _isoObject.position;
     }
     void Move()
@@ -98,33 +98,33 @@ public class PlayerController : MonoBehaviour
             velocity.y = _moveSpeed;
             _isoRigidbody.velocity = velocity;
         }
-        // Vector3 moveDirection = Vector2.zero;
-        // if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W))
-        // {
-        //     _characterDirection = Direction.North;
-        //     moveDirection.y++;
-        // }
-        // else if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S))
-        // {
-        //     _characterDirection = Direction.South;
-        //     moveDirection.y--;
-        // }
-        // else if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
-        // {
-        //     _characterDirection = Direction.West;
-        //     moveDirection.x--;
-        // }
-        // else if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
-        // {
-        //     _characterDirection = Direction.East;
-        //     moveDirection.x++;
-        // }
-        // Vector3 updatePos = _isoObject.position + moveDirection * _moveSpeed;
-        // if (InGameObjectContainer.Instance.CanNotWalkTileArray.Any(dontWalk => dontWalk == IsoToFloorPosition(updatePos))){
-        // }else //小数点で歩行可否判定するべきかも
-        // {
-        //     _isoObject.position = updatePos;
-        // }
+        Vector3 moveDirection = Vector2.zero;
+        if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W))
+        {
+            _characterDirection = Direction.North;
+            moveDirection.y++;
+        }
+        else if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S))
+        {
+            _characterDirection = Direction.South;
+            moveDirection.y--;
+        }
+        else if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
+        {
+            _characterDirection = Direction.West;
+            moveDirection.x--;
+        }
+        else if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
+        {
+            _characterDirection = Direction.East;
+            moveDirection.x++;
+        }
+        Vector3 updatePos = _isoObject.position + moveDirection * _moveSpeed;
+        if (InGameObjectContainer.Instance.CanNotWalkTileArray.Any(dontWalk => dontWalk == IsoToFloorPosition(updatePos))){
+        }else //小数点で歩行可否判定するべきかも
+        {
+            _isoObject.position = updatePos;
+        }
     }
 
     void CatchDive()
