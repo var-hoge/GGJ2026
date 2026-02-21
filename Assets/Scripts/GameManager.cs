@@ -8,6 +8,7 @@ public class GameManager : SingletonBehaviour<GameManager>
 
     void Start()
     {
+        Application.targetFrameRate = 30;
         this.remainSecond = timeLimitSecond;
     }
 

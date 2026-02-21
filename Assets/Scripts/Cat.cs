@@ -40,7 +40,7 @@ namespace IsoTools.Examples.Kenney {
 				var scale = _spriteObj.localScale;
 				_spriteObj.localScale = new Vector3(scale.x * sign, scale.y, scale.z);
 
-				yield return new WaitForSeconds(1);
+				yield return new WaitForSeconds(Random.Range(0.25f, 1f));
 			}
 		}
 	}
