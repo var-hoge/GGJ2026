@@ -17,20 +17,20 @@ namespace IsoTools.Examples.Kenney {
 			{
 				var index = Random.Range(0, dummyCatPrefabs.Length);
 				var prefab = dummyCatPrefabs[index];
-				Spawn(prefab);
+				Spawn(prefab, -5, 5);
 			}
 
 			// ファントムキャットを生成
-			Spawn(phantomCatPrefab);
+			Spawn(phantomCatPrefab, -3, 3);
 		}
 
-		void Spawn(GameObject prefab)
+		void Spawn(GameObject prefab, float minInclude, float maxInclude)
 		{
 
 			var catObj = Instantiate(prefab, iso_world.transform);
 
-			var dx = Random.Range(-5.0f, 5.0f);
-			var dy = Random.Range(-5.0f, 5.0f);
+			var dx = Random.Range(minInclude, maxInclude);
+			var dy = Random.Range(minInclude, maxInclude);
 			var cat_iso_obj = catObj.GetComponent<IsoObject>();
 			cat_iso_obj.position = new Vector3(dx, dy, 0.5f);
 		}

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using IsoTools.Physics;
-using System.Collections;
+using KanKikuchi.AudioManager;
 
 namespace IsoTools.Examples.Kenney {
 	[RequireComponent(typeof(IsoTriggerListener), typeof(IsoCollisionListener))]
@@ -19,6 +19,7 @@ namespace IsoTools.Examples.Kenney {
 				{
 				    GameManager.Instance.MoveToFailScene();
 				}
+				SEManager.Instance.Stop();
 			}
         }
 

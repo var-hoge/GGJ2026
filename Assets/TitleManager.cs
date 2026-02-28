@@ -7,11 +7,12 @@ public class TitleManager : MonoBehaviour
 {
     void Start()
     {
+        Application.targetFrameRate = 30;
         BGMManager.Instance.Play(BGMPath.MUSIC_MENU_LOOP);
 
         var main = GameObject.Find("Logo");
         main.GetComponent<RectTransform>()
-            .DOAnchorPos(new(104, 130), 3f)
+            .DOAnchorPos(new(46.62352f, 54f), 3f)
             .SetEase(Ease.Linear)
             .SetLoops(-1, LoopType.Yoyo);
     }

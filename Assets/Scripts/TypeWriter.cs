@@ -39,6 +39,7 @@ public class TypeWriter : MonoBehaviour
 
     private void Start()
     {
+        videoPlayer.url = System.IO.Path.Combine(Application.streamingAssetsPath, "opening example.mov");
         StartCoroutine(PlayVideoAndWait());
     }
 
