@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: fd1ea153b776bf94395fbbd16ca0ff19
+guid: cc81e4c2f6b2b40f7bd7e02a9d4da8b6
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 3749928575641934404
-    second: enemy_heli_2_0
+      213: 6934086728263231946
+    second: icon_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -126,13 +126,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: enemy_heli_2_0
+      name: icon_0
       rect:
         serializedVersion: 2
-        x: 55
-        y: 54
-        width: 1290
-        height: 461
+        x: 0
+        y: 0
+        width: 2048
+        height: 2048
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 44a593ceb2c6a0430800000000000000
-      internalID: 3749928575641934404
+      spriteID: ac961e71423da3060800000000000000
+      internalID: 6934086728263231946
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      enemy_heli_2_0: 3749928575641934404
+      icon_0: 6934086728263231946
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
