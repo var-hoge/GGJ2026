@@ -11,6 +11,9 @@ namespace IsoTools.Examples.Kenney {
 
 		[SerializeField] private Transform _spriteObj = null;
 		
+		[SerializeField] private bool _isPhantom = false;
+		public bool IsPhantom => _isPhantom;
+		
 		void Start() {
 			_isoObject = GetComponent<IsoObject>();
 			if ( !_isoObject ) {

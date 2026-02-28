@@ -181,8 +181,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _material: {fileID: 0}
   _isTrigger: 0
-  _size: {x: 0.52, y: 0.52, z: 0.52}
-  _offset: {x: 0.25, y: 0.25, z: 0.25}
+  _size: {x: 0.18, y: -0.33, z: 0.36}
+  _offset: {x: 0.12, y: 0.09, z: 0.15}
 --- !u!114 &752951415052738998
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -214,3 +214,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::IsoTools.Examples.Kenney.Cat
   _spriteObj: {fileID: 7388833159091785937}
+  _isPhantom: 1

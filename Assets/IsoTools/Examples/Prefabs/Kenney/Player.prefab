@@ -53,7 +53,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _size: {x: 0.3, y: 0.3, z: 0.6}
-  _position: {x: 0.62638426, y: 3.0810504, z: 0.53}
+  _position: {x: -1.85, y: -1.79, z: 0.53}
   _renderersMode: 0
   _cachedRenderers: 0
   _isCanWalk: 0
@@ -89,7 +89,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _material: {fileID: 0}
   _isTrigger: 0
-  _size: {x: 0.35, y: 0.35, z: 0.6}
+  _size: {x: 0.15, y: 0.5, z: 0.6}
   _offset: {x: 0.15, y: 0.15, z: 0.3}
 --- !u!114 &11484120
 MonoBehaviour:
@@ -182,7 +182,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.297, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalScale: {x: 0.05, y: 0.05, z: 0.05}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 434702}

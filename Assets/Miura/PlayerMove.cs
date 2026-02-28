@@ -2,9 +2,9 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using DG.Tweening;
-using UnityEngine.Rendering.UI;
+using IsoTools.Physics;
 
-[RequireComponent(typeof(CircleCollider2D))]
+[RequireComponent(typeof(CircleCollider2D), typeof(IsoTriggerListener), typeof(IsoCollisionListener))]
 public class PlayerMove : MonoBehaviour
 {
     //まずはプレイヤーのトランスフォームを取得する
@@ -126,26 +126,6 @@ public class PlayerMove : MonoBehaviour
         sequence.AppendCallback(() => _isDiving = false);
         sequence.AppendCallback(() => GetComponent<CircleCollider2D>().enabled = false);
         sequence.Play();
-    }
-
-    void OnTriggerEnter2D(Collider2D other)
-    {
-        CatController catController = other.GetComponent<CatController>();
-        if (catController != null)
-        {
-            if (catController.IsPhantom)
-            {
-                GameManager.Instance.MoveToSuccessScene();
-            }
-            else
-            {
-                GameManager.Instance.MoveToFailScene();
-            }
-        }
-        else
-        {
-            Debug.Log("得体の知れないものを捕まえた");
-        }
     }
 }
 public enum CharacterDirection
