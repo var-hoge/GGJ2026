@@ -9,7 +9,7 @@ using UnityEngine.Video;
 using KanKikuchi.AudioManager;
 using UnityEngine.SceneManagement;
 
-public class TypeWriter : MonoBehaviour
+public class IntroStoryManager : MonoBehaviour
 {
     [Serializable]
     public class SceneMsgs
@@ -65,7 +65,14 @@ public class TypeWriter : MonoBehaviour
 
         ShowCurrentText();
         StartCoroutine(WriteMsgAuto());
-        BGMManager.Instance.Play(BGMPath.AUDIO_CUTSCENE);
+
+        // BGMの再生
+        BGMManager.Instance.Play(
+            BGMPath.AUDIO_CUTSCENE,
+            volumeRate: 1,
+            delay: 0,
+            pitch: 1,
+            isLoop: false);
     }
 
     private IEnumerator WriteMsgAuto()
