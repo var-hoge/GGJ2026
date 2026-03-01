@@ -1,13 +1,12 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.Video;
 using KanKikuchi.AudioManager;
 using UnityEngine.SceneManagement;
+using TMPro;
+using System.Linq;
 
 public class IntroStoryManager : MonoBehaviour
 {
@@ -17,9 +16,8 @@ public class IntroStoryManager : MonoBehaviour
         public String[] msgs;
     }
 
-    [SerializeField] private Text textUI = null;
+    [SerializeField] private TextMeshProUGUI textUI = null;
     [SerializeField] private float charInterval = 0.05f;
-    [SerializeField] private Sprite[] sprites = null;
 
     [SerializeField] private SceneMsgs[] sceneMsgs;
     [SerializeField] private VideoPlayer videoPlayer;
@@ -30,11 +28,13 @@ public class IntroStoryManager : MonoBehaviour
     private bool isTyping;
 
     private WaitForSeconds wait;
+    private WaitForSeconds longWait;
     private string currentMessage;
 
     private void Awake()
     {
-        wait = new WaitForSeconds(charInterval);
+        wait = new(charInterval);
+        longWait = new(charInterval * 4);
     }
 
     private void Start()
@@ -159,11 +159,20 @@ public class IntroStoryManager : MonoBehaviour
         StringBuilder sb = new StringBuilder();
         textUI.text = "";
 
+        var longWaitChars = new[]
+        {
+            '、',
+            '。',
+            '！',
+        };
+
         foreach (char c in message)
         {
             sb.Append(c);
             textUI.text = sb.ToString();
-            yield return wait;
+            yield return longWaitChars.Contains(c)
+                         ? longWait
+                         : wait;
         }
 
         isTyping = false;
