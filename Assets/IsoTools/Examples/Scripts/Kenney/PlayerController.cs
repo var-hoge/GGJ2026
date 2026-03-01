@@ -9,6 +9,8 @@ namespace IsoTools.Examples.Kenney {
 
 		IsoRigidbody _isoRigidbody = null;
 
+		private CatDetector _catDetector = null;
+
 		void OnIsoCollisionEnter(IsoCollision iso_collision) {
 			if ( iso_collision.gameObject ) {
 				var alient = iso_collision.gameObject.GetComponent<AlienBallController>();
@@ -19,6 +21,7 @@ namespace IsoTools.Examples.Kenney {
 		}
 
 		void Start() {
+			_catDetector = GetComponent<CatDetector>();
 			_isoRigidbody = GetComponent<IsoRigidbody>();
 			if ( !_isoRigidbody ) {
 				throw new UnityException("PlayerController. IsoRigidbody component not found!");
@@ -26,6 +29,12 @@ namespace IsoTools.Examples.Kenney {
 		}
 
 		void Update () {
+			if (_catDetector != null
+				&& _catDetector.CatCaught)
+			{
+				return;
+			}
+			
 			if ( Input.GetKey(KeyCode.LeftArrow) ) {
 				var velocity = _isoRigidbody.velocity;
 				velocity.x = -speed;
