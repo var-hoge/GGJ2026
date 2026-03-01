@@ -63,7 +63,6 @@ public class IntroStoryManager : MonoBehaviour
             yield return null;
         }
 
-        ShowCurrentText();
         StartCoroutine(WriteMsgAuto());
 
         // BGMの再生
@@ -78,69 +77,27 @@ public class IntroStoryManager : MonoBehaviour
     private IEnumerator WriteMsgAuto()
     {
         // Scene1
-        yield return new WaitForSeconds(4.09f);
-        OnSpaceKey();
+        ShowCurrentText();
 
         // Scene2
-        yield return new WaitForSeconds(3f);
-        OnSpaceKey();
+        yield return new WaitForSeconds(4.3f);
+        sceneIndex++;
+        ShowCurrentText();
 
         // Scene3
-        yield return new WaitForSeconds(2.9f);
-        OnSpaceKey();
+        yield return new WaitForSeconds(5.9f);
+        sceneIndex++;
+        ShowCurrentText();
 
         // Scene4
         yield return new WaitForSeconds(3.6f);
-        OnSpaceKey();
-
-        // Scene5
-        yield return new WaitForSeconds(3.6f);
-        OnSpaceKey();
+        sceneIndex++;
+        ShowCurrentText();
 
         // Scene遷移
-        yield return new WaitForSeconds(4f);
-        OnSpaceKey();
+        yield return new WaitForSeconds(7f);
+        SceneManager.LoadScene("InGame");
 
-    }
-
-    private void OnSpaceKey()
-    {
-        // 文字送り中ならば全文表示する
-        if (isTyping)
-        {
-            StopCoroutine(typingCoroutine);
-            textUI.text = currentMessage;
-            isTyping = false;
-            return;
-        }
-
-        // 最後のスライドなら次のSceneに遷移する
-        if (sceneIndex >= sceneMsgs.Length - 1)
-        {
-            SceneManager.LoadScene("InGame");
-            return;
-        }
-
-        // スライドの最終テキストでない場合、次のテキストを表示
-        textIndex++;
-        var textArray = sceneMsgs[sceneIndex].msgs;
-        if (textIndex < textArray.Length)
-        {
-            ShowCurrentText();
-            return;
-        }
-
-        // 最終テキストの場合、次のスライドに移動
-        sceneIndex++;
-        textIndex = 0;
-
-        // 最終スライドの場合、テキスト送り終了
-        if (sceneIndex >= sceneMsgs.Length)
-        {
-            return;
-        }
-
-        ShowCurrentText();
     }
 
     private void ShowCurrentText()
