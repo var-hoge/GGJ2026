@@ -22,4 +22,13 @@ public class TitleManager : MonoBehaviour
         SceneManager.LoadScene("IntroStory");
         SEManager.Instance.Play(SEPath.UI_SELECT);
     }
+
+    public void OnQuit()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
+    }
 }
