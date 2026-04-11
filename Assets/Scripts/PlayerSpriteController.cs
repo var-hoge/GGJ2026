@@ -1,3 +1,4 @@
+using System.Collections;
 using IsoTools;
 using UnityEngine;
 
@@ -10,9 +11,35 @@ public class PlayerSpriteController : MonoBehaviour
 
     private float? prevIsoPositionX = null;
 
+    private float _waitTime = 0;
+
+    private static readonly float DEFAULT_WAIT_TIME = 0.5f;
+
     void Start()
     {
-        
+        StartCoroutine(ChangeSprite());
+    }
+
+    void Update()
+    {
+        if (_waitTime > 0)
+        {
+            _waitTime = Mathf.Max(0, _waitTime - Time.deltaTime);
+        }
+    }
+
+    private IEnumerator ChangeSprite()
+    {
+        var isRight = true;
+        while (true)
+        {
+            yield return new WaitForSeconds(0.2f);
+            if (_waitTime <= 0)
+            {
+                spriteRenderer.sprite = isRight ? toRightSprite : toLeftSprite;
+                isRight = !isRight;   
+            }
+        }
     }
 
     void FixedUpdate()
@@ -20,11 +47,17 @@ public class PlayerSpriteController : MonoBehaviour
         Vector3 position = transform.position;
         if (prevIsoPositionX != null)
         {
-            if (position.x - prevIsoPositionX > 0)
+            var diff = position.x - prevIsoPositionX;
+            if (diff > 0)
             {
                 spriteRenderer.sprite = toRightSprite;
-            } else if (position.x - prevIsoPositionX < 0) {
+            } else if (diff < 0) {
                 spriteRenderer.sprite = toLeftSprite;
+            }
+
+            if (diff != 0)
+            {
+                 _waitTime = DEFAULT_WAIT_TIME;   
             }
         }
         prevIsoPositionX = position.x;

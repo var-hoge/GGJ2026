@@ -11,6 +11,11 @@ namespace IsoTools.Examples.Kenney {
 
 		private CatDetector _catDetector = null;
 
+		/// <summary>
+		/// 手持ちのライトオブジェクト
+		/// </summary>
+		[SerializeField] private GameObject _handLight = null;
+
 		void OnIsoCollisionEnter(IsoCollision iso_collision) {
 			if ( iso_collision.gameObject ) {
 				var alient = iso_collision.gameObject.GetComponent<AlienBallController>();
@@ -39,21 +44,25 @@ namespace IsoTools.Examples.Kenney {
 				var velocity = _isoRigidbody.velocity;
 				velocity.x = -speed;
 				_isoRigidbody.velocity = velocity;
+				_handLight.transform.localScale = new(-1, -1, 1);
 			}
 			else if ( Input.GetKey(KeyCode.RightArrow) ) {
 				var velocity = _isoRigidbody.velocity;
 				velocity.x = speed;
 				_isoRigidbody.velocity = velocity;
+				_handLight.transform.localScale = new(1, 1, 1);
 			}
 			else if ( Input.GetKey(KeyCode.DownArrow) ) {
 				var velocity = _isoRigidbody.velocity;
 				velocity.y = -speed;
 				_isoRigidbody.velocity = velocity;
+				_handLight.transform.localScale = new(1, -1, 1);
 			}
 			else if ( Input.GetKey(KeyCode.UpArrow) ) {
 				var velocity = _isoRigidbody.velocity;
 				velocity.y = speed;
 				_isoRigidbody.velocity = velocity;
+				_handLight.transform.localScale = new(-1, 1, 1);
 			}
 		}
 	}
