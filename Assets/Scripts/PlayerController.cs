@@ -40,24 +40,28 @@ namespace IsoTools.Examples.Kenney {
 				return;
 			}
 			
+			// 左下方向に移動
 			if ( Input.GetKey(KeyCode.LeftArrow) ) {
 				var velocity = _isoRigidbody.velocity;
 				velocity.x = -speed;
 				_isoRigidbody.velocity = velocity;
 				_handLight.transform.localScale = new(-1, -1, 1);
 			}
+			// 右上方向に移動
 			else if ( Input.GetKey(KeyCode.RightArrow) ) {
 				var velocity = _isoRigidbody.velocity;
 				velocity.x = speed;
 				_isoRigidbody.velocity = velocity;
 				_handLight.transform.localScale = new(1, 1, 1);
 			}
+			// 右下方向に移動
 			else if ( Input.GetKey(KeyCode.DownArrow) ) {
 				var velocity = _isoRigidbody.velocity;
 				velocity.y = -speed;
 				_isoRigidbody.velocity = velocity;
 				_handLight.transform.localScale = new(1, -1, 1);
 			}
+			// 左上方向に移動
 			else if ( Input.GetKey(KeyCode.UpArrow) ) {
 				var velocity = _isoRigidbody.velocity;
 				velocity.y = speed;

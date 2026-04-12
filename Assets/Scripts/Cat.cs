@@ -12,6 +12,12 @@ namespace IsoTools.Examples.Kenney {
 		[SerializeField] private Transform _spriteObj = null;
 		
 		[SerializeField] private bool _isPhantom = false;
+
+		/// <summary>
+		/// 自動移動
+		/// </summary>
+		public bool _autoMove = true;
+
 		public bool IsPhantom => _isPhantom;
 		
 		void Start() {
@@ -23,7 +29,9 @@ namespace IsoTools.Examples.Kenney {
 			if ( !_isoRigidbody ) {
 				throw new UnityException("AlienBallController. IsoRigidbody component not found!");
 			}
-			StartCoroutine(AddRndForce());
+
+			// 自動移動
+			if (_autoMove) StartCoroutine(AddRndForce());
 		}
 
 		void Update() {
