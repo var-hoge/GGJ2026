@@ -7,20 +7,22 @@ using KanKikuchi.AudioManager;
 using UnityEngine.SceneManagement;
 using TMPro;
 using System.Linq;
+using UnityEngine.UI;
 
 public class IntroStoryManager : MonoBehaviour
 {
     [Serializable]
     public class SceneMsgs
     {
-        public String[] msgs;
+        public Sprite image;
+        public string[] msgs;
     }
 
     [SerializeField] private TextMeshProUGUI textUI = null;
     [SerializeField] private float charInterval = 0.05f;
 
     [SerializeField] private SceneMsgs[] sceneMsgs;
-    [SerializeField] private VideoPlayer videoPlayer;
+    [SerializeField] private RawImage rawImage;
 
     private int sceneIndex = 0;
     private int textIndex = 0;
@@ -39,65 +41,31 @@ public class IntroStoryManager : MonoBehaviour
 
     private void Start()
     {
-        videoPlayer.url = System.IO.Path.Combine(Application.streamingAssetsPath, "opening example.mov");
-        StartCoroutine(PlayVideoAndWait());
-    }
-
-    IEnumerator PlayVideoAndWait()
-    {
-        // 再生準備
-        videoPlayer.Prepare();
-
-        // 準備完了まで待つ
-        while (!videoPlayer.isPrepared)
-        {
-            yield return null;
-        }
-
-        // 再生開始
-        videoPlayer.Play();
-
-        // ★ここで「再生が始まるまで待つ」
-        while (!videoPlayer.isPlaying)
-        {
-            yield return null;
-        }
-
-        StartCoroutine(WriteMsgAuto());
-
         // BGMの再生
-        BGMManager.Instance.Play(
-            BGMPath.AUDIO_CUTSCENE,
-            volumeRate: 1,
-            delay: 0,
-            pitch: 1,
-            isLoop: false);
+        BGMManager.Instance.Play(BGMPath.AUDIO_CUTSCENE);
+        UpdateText();
     }
 
-    private IEnumerator WriteMsgAuto()
+    void Update()
     {
-        // Scene1
-        ShowCurrentText();
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            UpdateText();
+        }
+    }
 
-        // Scene2
-        yield return new WaitForSeconds(4.3f);
+    void UpdateText()
+    {
+        if (sceneIndex > sceneMsgs.Length - 1)
+        {
+            SceneManager.LoadScene("InGame");
+        }
+        else
+        {
+            rawImage.texture = sceneMsgs[sceneIndex].image.texture;
+            ShowCurrentText();
+        }
         sceneIndex++;
-        ShowCurrentText();
-
-        // Scene3
-        yield return new WaitForSeconds(5.9f);
-        sceneIndex++;
-        ShowCurrentText();
-
-        // Scene4
-        yield return new WaitForSeconds(3.6f);
-        sceneIndex++;
-        ShowCurrentText();
-
-        // Scene遷移
-        yield return new WaitForSeconds(7f);
-        SceneManager.LoadScene("InGame");
-
     }
 
     private void ShowCurrentText()
