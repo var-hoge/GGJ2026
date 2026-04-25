@@ -9,12 +9,6 @@ public class TitleManager : MonoBehaviour
     {
         Application.targetFrameRate = 30;
         BGMManager.Instance.Play(BGMPath.MUSIC_MENU_LOOP);
-
-        var main = GameObject.Find("Logo");
-        main.GetComponent<RectTransform>()
-            .DOAnchorPos(new(46.62352f, 54f), 3f)
-            .SetEase(Ease.Linear)
-            .SetLoops(-1, LoopType.Yoyo);
     }
 
     public void OnStart()
