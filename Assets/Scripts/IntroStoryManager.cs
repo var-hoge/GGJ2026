@@ -16,6 +16,7 @@ public class IntroStoryManager : MonoBehaviour
     {
         public Sprite image;
         public string[] msgs;
+        public SESound[] sounds;
     }
 
     [SerializeField] private TextMeshProUGUI textUI = null;
@@ -42,7 +43,7 @@ public class IntroStoryManager : MonoBehaviour
     private void Start()
     {
         // BGMの再生
-        BGMManager.Instance.Play(BGMPath.AUDIO_CUTSCENE);
+        BGMManager.Instance.Play(BGMPath.MUSIC_CUTSCENE_LOOP);
         UpdateText();
     }
 
@@ -62,18 +63,34 @@ public class IntroStoryManager : MonoBehaviour
         }
         else
         {
-            rawImage.texture = sceneMsgs[sceneIndex].image.texture;
-            ShowCurrentText();
+            var current = sceneMsgs[sceneIndex];
+            rawImage.texture = current.image.texture;
+            ShowCurrentText(current);
+            PlaySound(current);
         }
         sceneIndex++;
     }
 
-    private void ShowCurrentText()
+    void PlaySound(SceneMsgs current)
+    {
+        if (current.sounds == null) return;
+
+        SEManager.Instance.Stop();
+
+        foreach (var s in current.sounds)
+        {
+            if (!string.IsNullOrEmpty(s.sound))
+            {
+                SEManager.Instance.Play(s.sound, s.volume);
+            }
+        }
+    }
+    private void ShowCurrentText(SceneMsgs current)
     {
         if (typingCoroutine != null)
             StopCoroutine(typingCoroutine);
 
-        currentMessage = sceneMsgs[sceneIndex].msgs[textIndex].Replace("\\n", "\n");
+        currentMessage = current.msgs[textIndex].Replace("\\n", "\n");
         typingCoroutine = StartCoroutine(TypeText(currentMessage));
     }
 
