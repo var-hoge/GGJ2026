@@ -14,7 +14,7 @@ namespace IsoTools.Examples.Kenney {
 		public bool CatCaught { get; private set; } = false;
 
 		bool WasKeyPressed => Input.GetKeyDown(KeyCode.Space)
-							  || Gamepad.current.rightShoulder.wasPressedThisFrame;
+							  || (Gamepad.current != null && Gamepad.current.rightShoulder.wasPressedThisFrame);
 
         void Update()
         {

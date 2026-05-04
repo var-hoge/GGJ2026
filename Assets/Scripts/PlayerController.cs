@@ -10,9 +10,9 @@ namespace IsoTools.Examples.Kenney {
 		[SerializeField] private GameObject _handLight = null;
 
 		/// <summary> プレイヤー移動速度 </summary>
-		[SerializeField] private float speed = 2.0f;
+		[SerializeField] private float speed = 1f;
 		/// <summary> 手持ちライト回転速度 </summary>
-		[SerializeField] float rotateSpeed = 90f;
+		[SerializeField] float rotateSpeed = 180f;
 
 		// コンポネント
 		private IsoRigidbody _isoRigidbody = null;

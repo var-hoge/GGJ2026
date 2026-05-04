@@ -17,11 +17,11 @@ namespace IsoTools.Examples.Kenney {
 			{
 				var index = Random.Range(0, dummyCatPrefabs.Length);
 				var prefab = dummyCatPrefabs[index];
-				Spawn(prefab, -5, 5);
+				Spawn(prefab, 1, 5);
 			}
 
 			// ファントムキャットを生成
-			Spawn(phantomCatPrefab, -3, 3);
+			Spawn(phantomCatPrefab, 1, 3);
 		}
 
 		void Spawn(GameObject prefab, float minInclude, float maxInclude)
