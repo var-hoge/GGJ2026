@@ -1,21 +1,30 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
 using IsoTools.Physics;
+using System.Linq;
 
 namespace IsoTools.Examples.Kenney {
 	[RequireComponent(typeof(IsoRigidbody))]
 	public class PlayerController : MonoBehaviour {
+		/// <summary> 手持ちのライトオブジェクト </summary>
+		[SerializeField] private GameObject _handLight = null;
 
-		public float speed = 2.0f;
+		/// <summary> プレイヤー移動速度 </summary>
+		[SerializeField] private float speed = 2.0f;
+		/// <summary> 手持ちライト回転速度 </summary>
+		[SerializeField] float rotateSpeed = 90f;
 
-		IsoRigidbody _isoRigidbody = null;
-
+		// コンポネント
+		private IsoRigidbody _isoRigidbody = null;
 		private CatDetector _catDetector = null;
 
-		/// <summary>
-		/// 手持ちのライトオブジェクト
-		/// </summary>
-		[SerializeField] private GameObject _handLight = null;
+		private static readonly (KeyCode keyCode, Vector3 input)[] MoveInputs =
+		{
+			(KeyCode.UpArrow,    Vector3.up),
+			(KeyCode.LeftArrow,  Vector3.left),
+			(KeyCode.DownArrow,  Vector3.down),
+			(KeyCode.RightArrow, Vector3.right),
+		};
 
 		void OnIsoCollisionEnter(IsoCollision iso_collision) {
 			if ( iso_collision.gameObject ) {
@@ -38,48 +47,66 @@ namespace IsoTools.Examples.Kenney {
 			// 猫を捕まえている場合、移動させない
 			if (_catDetector.CatCaught) return;
 
+			if (Gamepad.current != null) HandleGamepadInput();
+			
+			HandleKeyboardInput();
+		}
+
+		void HandleGamepadInput()
+		{
 			// ハンドライトの回転
-			var inputR = Gamepad.current.rightStick.ReadValue();
-			if (!inputR.Equals(Vector2.zero))
+			var lightInput = Gamepad.current.rightStick.ReadValue();
+			if (!lightInput.Equals(Vector2.zero))
 			{
-				var angle = Mathf.Atan2(inputR.x, inputR.y) * Mathf.Rad2Deg;
-				_handLight.transform.rotation = Quaternion.Euler(0, 0, -angle);
+				var angle = Mathf.Atan2(lightInput.x, lightInput.y) * Mathf.Rad2Deg;
+
+				// 目標回転
+				var targetRotation =
+					Quaternion.Euler(0, 0, -angle);
+
+				// 徐々に回転
+				_handLight.transform.rotation =
+					Quaternion.RotateTowards(
+						_handLight.transform.rotation,
+						targetRotation,
+						rotateSpeed * Time.deltaTime
+					);
 			}
 
 			// 移動
-			var inputL = Gamepad.current.leftStick.ReadValue();
-			if (!inputL.Equals(Vector2.zero))
+			var moveInput = Gamepad.current.leftStick.ReadValue();
+			if (!moveInput.Equals(Vector2.zero))
 			{
-				_isoRigidbody.velocity = inputL * speed;
+				_isoRigidbody.velocity = moveInput * speed;
 			}
-			
-			// 左下方向に移動
-			if ( Input.GetKey(KeyCode.LeftArrow) ) {
-				var velocity = _isoRigidbody.velocity;
-				velocity.x = -speed;
-				_isoRigidbody.velocity = velocity;
-				
+		}
+
+		void HandleKeyboardInput()
+		{
+			// Aキー → 反時計回り
+			if (Input.GetKey(KeyCode.A))
+			{
+				_handLight.transform.Rotate(
+					0,
+					0,
+					rotateSpeed * Time.deltaTime
+				);
 			}
-			// 右上方向に移動
-			else if ( Input.GetKey(KeyCode.RightArrow) ) {
-				var velocity = _isoRigidbody.velocity;
-				velocity.x = speed;
-				_isoRigidbody.velocity = velocity;
-				_handLight.transform.localScale = new(1, 1, 1);
+
+			// Dキー → 時計回り
+			if (Input.GetKey(KeyCode.D))
+			{
+				_handLight.transform.Rotate(
+					0,
+					0,
+					-rotateSpeed * Time.deltaTime
+				);
 			}
-			// 右下方向に移動
-			else if ( Input.GetKey(KeyCode.DownArrow) ) {
-				var velocity = _isoRigidbody.velocity;
-				velocity.y = -speed;
-				_isoRigidbody.velocity = velocity;
-				_handLight.transform.localScale = new(1, -1, 1);
-			}
-			// 左上方向に移動
-			else if ( Input.GetKey(KeyCode.UpArrow) ) {
-				var velocity = _isoRigidbody.velocity;
-				velocity.y = speed;
-				_isoRigidbody.velocity = velocity;
-				_handLight.transform.localScale = new(-1, 1, 1);
+
+			var keyInput = MoveInputs.FirstOrDefault(v => Input.GetKey(v.keyCode)).input;
+			if (!keyInput.Equals(Vector3.zero))
+			{
+				_isoRigidbody.velocity = keyInput * speed;
 			}
 		}
 	}
