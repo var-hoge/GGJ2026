@@ -38,6 +38,7 @@ namespace IsoTools.Examples.Kenney {
 			// 猫を捕まえている場合、移動させない
 			if (_catDetector.CatCaught) return;
 
+			// ハンドライトの回転
 			var inputR = Gamepad.current.rightStick.ReadValue();
 			if (!inputR.Equals(Vector2.zero))
 			{
@@ -45,10 +46,11 @@ namespace IsoTools.Examples.Kenney {
 				_handLight.transform.rotation = Quaternion.Euler(0, 0, -angle);
 			}
 
+			// 移動
 			var inputL = Gamepad.current.leftStick.ReadValue();
 			if (!inputL.Equals(Vector2.zero))
 			{
-				_isoRigidbody.velocity = inputL * 2;
+				_isoRigidbody.velocity = inputL * speed;
 			}
 			
 			// 左下方向に移動
