@@ -35,11 +35,8 @@ namespace IsoTools.Examples.Kenney {
 		}
 
 		void Update () {
-			if (_catDetector != null
-				&& _catDetector.CatCaught)
-			{
-				return;
-			}
+			// 猫を捕まえている場合、移動させない
+			if (_catDetector.CatCaught) return;
 
 			var inputR = Gamepad.current.rightStick.ReadValue();
 			if (!inputR.Equals(Vector2.zero))
