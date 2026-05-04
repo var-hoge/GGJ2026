@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.InputSystem;
 using IsoTools.Physics;
 using KanKikuchi.AudioManager;
 using System.Collections;
@@ -12,11 +13,14 @@ namespace IsoTools.Examples.Kenney {
 		private int _wrongCount = 0;
 		public bool CatCaught { get; private set; } = false;
 
+		bool WasKeyPressed => Input.GetKeyDown(KeyCode.Space)
+							  || Gamepad.current.rightShoulder.wasPressedThisFrame;
+
         void Update()
         {
 			if (!CatCaught
 				&& _targetCat != null
-				&& Input.GetKeyDown(KeyCode.Space))
+				&& WasKeyPressed)
 			{
 				var coroutine = _targetCat.IsPhantom ? Correct() : Wrong();
 				StartCoroutine(coroutine);
