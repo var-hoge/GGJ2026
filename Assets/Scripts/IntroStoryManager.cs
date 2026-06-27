@@ -2,12 +2,12 @@ using System;
 using System.Collections;
 using System.Text;
 using UnityEngine;
-using UnityEngine.Video;
 using KanKikuchi.AudioManager;
 using UnityEngine.SceneManagement;
 using TMPro;
 using System.Linq;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 
 public class IntroStoryManager : MonoBehaviour
 {
@@ -49,7 +49,8 @@ public class IntroStoryManager : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space)
+        || (Gamepad.current != null && Gamepad.current.buttonSouth.wasPressedThisFrame))
         {
             UpdateText();
         }
