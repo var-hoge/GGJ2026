@@ -49,6 +49,7 @@ MonoBehaviour:
   _position: {x: 0, y: 0, z: 0}
   _renderersMode: 0
   _cachedRenderers: 0
+  _isCanWalk: 0
 --- !u!1 &125990
 GameObject:
   m_ObjectHideFlags: 0
@@ -130,7 +131,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 0de73dd66faba4274a8735ac5f493025, type: 3}
+  m_Sprite: {fileID: -3656353972898712640, guid: 908fba632cacc40ada51568dcc7f83de, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

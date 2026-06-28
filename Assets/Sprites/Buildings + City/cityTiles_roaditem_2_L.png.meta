@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: cfb89ae246144446294e18bf6dfde335
+guid: 03b7a2a9aa8514e3fb2e9a0fa117c399
 TextureImporter:
   internalIDToNameTable:
   - first:
@@ -129,10 +129,10 @@ TextureImporter:
       name: cityTiles_roaditem_2_L_0
       rect:
         serializedVersion: 2
-        x: 27
-        y: 13
-        width: 29
-        height: 54
+        x: 13
+        y: 6
+        width: 16
+        height: 29
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}

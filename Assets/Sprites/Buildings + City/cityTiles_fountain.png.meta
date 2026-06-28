@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 846eccca031e147a990cafbc655149cb
+guid: a81dad6e976c9455d839fe24304ba113
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1564702710168270900
-    second: cityTiles_wall_7_L_0
+      213: 8541310051497326087
+    second: cityTiles_fountain_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -126,13 +126,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: cityTiles_wall_7_L_0
+      name: cityTiles_fountain_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 1
-        width: 142
-        height: 125
+        y: 0
+        width: 132
+        height: 101
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: cc7445ddc2f094ae0800000000000000
-      internalID: -1564702710168270900
+      spriteID: 706b8ffec34d88670800000000000000
+      internalID: 8541310051497326087
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      cityTiles_wall_7_L_0: -1564702710168270900
+      cityTiles_fountain_0: 8541310051497326087
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
