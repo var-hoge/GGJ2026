@@ -1,15 +1,9 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using KanKikuchi.AudioManager;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using TMPro;
-using UnityEngine.UI;
 
-public class EndingManager : MonoBehaviour
+public class EndingManager : StoryTextManager
 {
     [Serializable]
     public class SceneMsgs
@@ -17,26 +11,12 @@ public class EndingManager : MonoBehaviour
         public String[] msgs;
     }
 
-    [SerializeField] private TextMeshProUGUI textUI = null;
-    [SerializeField] private float charInterval = 0.05f;
     [SerializeField] private SceneMsgs[] sceneMsgs;
 
     private int sceneIndex = 0;
     private int textIndex = 0;
-    private Coroutine typingCoroutine;
-    private bool isTyping;
-
-    private WaitForSeconds wait;
-    private WaitForSeconds longWait;
-    private string currentMessage;
 
     private string[] Messages => sceneMsgs[0].msgs;
-
-    private void Awake()
-    {
-        wait = new(charInterval);
-        longWait = new(charInterval * 4);
-    }
 
     private void Start()
     {
@@ -45,25 +25,8 @@ public class EndingManager : MonoBehaviour
         BGMManager.Instance.Play(BGMPath.MUSIC_ENDING_LOOP);
     }
 
-    private void Update()
+    protected override void Advance()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            OnSpaceKey();
-        }
-    }
-
-    private void OnSpaceKey()
-    {
-        // 文字送り中ならば全文表示する
-        if (isTyping)
-        {
-            StopCoroutine(typingCoroutine);
-            textUI.text = currentMessage;
-            isTyping = false;
-            return;
-        }
-
         if (textIndex >= Messages.Length - 1)
         {
             SceneManager.LoadScene("Title");
@@ -95,36 +58,6 @@ public class EndingManager : MonoBehaviour
 
     private void ShowCurrentText()
     {
-        if (typingCoroutine != null)
-            StopCoroutine(typingCoroutine);
-
-        currentMessage = sceneMsgs[sceneIndex].msgs[textIndex].Replace("\\n", "\n");
-        typingCoroutine = StartCoroutine(TypeText(currentMessage));
-    }
-
-    private IEnumerator TypeText(string message)
-    {
-        isTyping = true;
-
-        StringBuilder sb = new StringBuilder();
-        textUI.text = "";
-
-        var longWaitChars = new[]
-        {
-            '、',
-            '。',
-            '！',
-        };
-
-        foreach (char c in message)
-        {
-            sb.Append(c);
-            textUI.text = sb.ToString();
-            yield return longWaitChars.Contains(c)
-                         ? longWait
-                         : wait;
-        }
-
-        isTyping = false;
+        StartTyping(sceneMsgs[sceneIndex].msgs[textIndex]);
     }
 }
