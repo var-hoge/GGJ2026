@@ -52,8 +52,22 @@ public class IntroStoryManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space)
         || (Gamepad.current != null && Gamepad.current.buttonSouth.wasPressedThisFrame))
         {
-            UpdateText();
+            OnSubmit();
         }
+    }
+
+    void OnSubmit()
+    {
+        // 文字送り中ならば全文表示する
+        if (isTyping)
+        {
+            StopCoroutine(typingCoroutine);
+            textUI.text = currentMessage;
+            isTyping = false;
+            return;
+        }
+
+        UpdateText();
     }
 
     void UpdateText()
