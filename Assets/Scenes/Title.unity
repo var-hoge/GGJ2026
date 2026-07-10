@@ -266,8 +266,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TitleButtonHighlight
   _selectRumbleStrength: 0.15
   _selectRumbleDuration: 0.05
-  _submitRumbleStrength: 0.3
-  _submitRumbleDuration: 0.075
 --- !u!1 &1146787383
 GameObject:
   m_ObjectHideFlags: 0
@@ -814,8 +812,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TitleButtonHighlight
   _selectRumbleStrength: 0.15
   _selectRumbleDuration: 0.05
-  _submitRumbleStrength: 0.3
-  _submitRumbleDuration: 0.075
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
