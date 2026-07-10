@@ -9,6 +9,10 @@ public class TitleManager : MonoBehaviour
 {
     [SerializeField] GameObject _startButton;
 
+    [Header("スタートを決定したときのコントローラーの振動")]
+    [SerializeField, Range(0f, 1f)] float _submitRumbleStrength = 0.3f;
+    [SerializeField] float _submitRumbleDuration = 0.1f;
+
     void Start()
     {
         Application.targetFrameRate = 30;
@@ -41,6 +45,7 @@ public class TitleManager : MonoBehaviour
     {
         SceneManager.LoadScene("IntroStory");
         SEManager.Instance.Play(SEPath.UI_SELECT);
+        GamepadRumble.Play(_submitRumbleStrength, _submitRumbleDuration);
     }
 
     public void OnQuit()

@@ -214,18 +214,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &578533924
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 578533919}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ff7583f16243433fbd64db366adf58ac, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TitleButtonHighlight
 --- !u!114 &578533922
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -264,6 +252,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 578533919}
   m_CullTransparentMesh: 1
+--- !u!114 &578533924
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 578533919}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff7583f16243433fbd64db366adf58ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TitleButtonHighlight
+  _selectRumbleStrength: 0.15
+  _selectRumbleDuration: 0.05
+  _submitRumbleStrength: 0.3
+  _submitRumbleDuration: 0.075
 --- !u!1 &1146787383
 GameObject:
   m_ObjectHideFlags: 0
@@ -758,18 +762,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &1820675494
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1820675489}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ff7583f16243433fbd64db366adf58ac, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TitleButtonHighlight
 --- !u!114 &1820675492
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -808,6 +800,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1820675489}
   m_CullTransparentMesh: 1
+--- !u!114 &1820675494
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1820675489}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff7583f16243433fbd64db366adf58ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TitleButtonHighlight
+  _selectRumbleStrength: 0.15
+  _selectRumbleDuration: 0.05
+  _submitRumbleStrength: 0.3
+  _submitRumbleDuration: 0.075
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

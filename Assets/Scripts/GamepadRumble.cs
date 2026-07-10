@@ -4,31 +4,38 @@ using UnityEngine.InputSystem;
 
 /// <summary>
 /// コントローラーを一定時間だけ振動させる。
-/// シーン遷移などで Play() のコルーチンが打ち切られても振動が鳴り続けないよう、
-/// 呼び出し側は OnDisable() などで Stop() を呼ぶこと。
+/// 停止用のコルーチンはシーンをまたいで生き残る専用オブジェクトで回すため、
+/// 振動中にシーンが切り替わっても指定時間で必ず止まる。
 /// </summary>
 public static class GamepadRumble
 {
+    private static Runner runner;
     private static Gamepad rumblingGamepad;
+    private static Coroutine stopCoroutine;
 
     /// <summary>
     /// strength の強さで duration 秒だけ振動させる。
-    /// 呼び出し側の MonoBehaviour から StartCoroutine() で回す。
     /// コントローラーが繋がっていなければ何もしない。
     /// </summary>
-    public static IEnumerator Play(float strength, float duration)
+    public static void Play(float strength, float duration)
     {
         var gamepad = Gamepad.current;
-        if (gamepad == null) yield break;
+        if (gamepad == null) return;
 
+        if (runner == null)
+        {
+            var go = new GameObject(nameof(GamepadRumble));
+            Object.DontDestroyOnLoad(go);
+            runner = go.AddComponent<Runner>();
+        }
+
+        if (stopCoroutine != null)
+            runner.StopCoroutine(stopCoroutine);
         Stop();
 
         rumblingGamepad = gamepad;
         gamepad.SetMotorSpeeds(strength, strength);
-
-        yield return new WaitForSeconds(duration);
-
-        Stop();
+        stopCoroutine = runner.StartCoroutine(StopAfter(duration));
     }
 
     /// <summary>振動中であれば止める。</summary>
@@ -39,4 +46,12 @@ public static class GamepadRumble
         rumblingGamepad.ResetHaptics();
         rumblingGamepad = null;
     }
+
+    private static IEnumerator StopAfter(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        Stop();
+    }
+
+    private class Runner : MonoBehaviour { }
 }

@@ -10,6 +10,10 @@ public class TitleButtonHighlight : MonoBehaviour, ISelectHandler, IDeselectHand
     const float SelectedScale = 1.15f;
     const float TweenDuration = 0.15f;
 
+    [Header("選択したときのコントローラーの振動")]
+    [SerializeField, Range(0f, 1f)] float _selectRumbleStrength = 0.15f;
+    [SerializeField] float _selectRumbleDuration = 0.05f;
+
     Image _image;
 
     void Awake()
@@ -36,6 +40,7 @@ public class TitleButtonHighlight : MonoBehaviour, ISelectHandler, IDeselectHand
         if (Time.timeSinceLevelLoad > 0.5f)
         {
             SEManager.Instance.Play(SEPath.SYSTEM20);
+            GamepadRumble.Play(_selectRumbleStrength, _selectRumbleDuration);
         }
     }
 

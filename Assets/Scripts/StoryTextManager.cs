@@ -26,7 +26,6 @@ public abstract class StoryTextManager : MonoBehaviour
     [SerializeField] private float rumbleDuration = 0.06f;
 
     private Coroutine typingCoroutine;
-    private Coroutine rumbleCoroutine;
     private WaitForSeconds wait;
     private WaitForSeconds longWait;
     private string currentMessage;
@@ -39,19 +38,13 @@ public abstract class StoryTextManager : MonoBehaviour
         longWait = new(charInterval * 4);
     }
 
-    private void OnDisable()
-    {
-        // シーン遷移などで破棄されても振動が鳴り続けないようにする
-        GamepadRumble.Stop();
-    }
-
     private void Update()
     {
         if (!WasSubmitPressed(out var gamepad)) return;
 
         if (gamepad != null)
         {
-            StartRumble();
+            GamepadRumble.Play(rumbleStrength, rumbleDuration);
         }
 
         // 文字送り中ならば全文表示する
@@ -75,14 +68,6 @@ public abstract class StoryTextManager : MonoBehaviour
 
         gamepad = null;
         return Input.GetKeyDown(KeyCode.Space);
-    }
-
-    private void StartRumble()
-    {
-        if (rumbleCoroutine != null)
-            StopCoroutine(rumbleCoroutine);
-
-        rumbleCoroutine = StartCoroutine(GamepadRumble.Play(rumbleStrength, rumbleDuration));
     }
 
     /// <summary>文字送りが終わった状態で入力されたときに呼ばれる。次のメッセージへ進める。</summary>

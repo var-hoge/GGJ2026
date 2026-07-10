@@ -22,12 +22,6 @@ namespace IsoTools.Examples.Kenney {
 		bool WasKeyPressed => Input.GetKeyDown(KeyCode.Space)
 							  || (Gamepad.current != null && Gamepad.current.rightShoulder.wasPressedThisFrame);
 
-		void OnDisable()
-		{
-			// シーン遷移などで破棄されても振動が鳴り続けないようにする
-			GamepadRumble.Stop();
-		}
-
         void Update()
         {
 			if (!CatCaught
@@ -43,7 +37,7 @@ namespace IsoTools.Examples.Kenney {
 		{
 			CatCaught = true;
 			SEManager.Instance.Play(SEPath.SFX_GAME_CORRECT);
-			StartCoroutine(GamepadRumble.Play(_correctRumbleStrength, _correctRumbleDuration));
+			GamepadRumble.Play(_correctRumbleStrength, _correctRumbleDuration);
 
 			yield return new WaitForSeconds(3f);
 
@@ -63,7 +57,7 @@ namespace IsoTools.Examples.Kenney {
 			};
 			var index = Random.Range(0, sfx.Length);
 			SEManager.Instance.Play(sfx[index]);
-			StartCoroutine(GamepadRumble.Play(_wrongRumbleStrength, _wrongRumbleDuration));
+			GamepadRumble.Play(_wrongRumbleStrength, _wrongRumbleDuration);
 
 			yield return new WaitForSeconds(2f);
 
