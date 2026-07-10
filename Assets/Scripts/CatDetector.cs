@@ -13,8 +13,20 @@ namespace IsoTools.Examples.Kenney {
 		private int _wrongCount = 0;
 		public bool CatCaught { get; private set; } = false;
 
+		[Header("捕獲したときのコントローラーの振動")]
+		[SerializeField, Range(0f, 1f)] private float _correctRumbleStrength = 0.6f;
+		[SerializeField] private float _correctRumbleDuration = 1f;
+		[SerializeField, Range(0f, 1f)] private float _wrongRumbleStrength = 0.25f;
+		[SerializeField] private float _wrongRumbleDuration = 0.5f;
+
 		bool WasKeyPressed => Input.GetKeyDown(KeyCode.Space)
 							  || (Gamepad.current != null && Gamepad.current.rightShoulder.wasPressedThisFrame);
+
+		void OnDisable()
+		{
+			// シーン遷移などで破棄されても振動が鳴り続けないようにする
+			GamepadRumble.Stop();
+		}
 
         void Update()
         {
@@ -31,6 +43,7 @@ namespace IsoTools.Examples.Kenney {
 		{
 			CatCaught = true;
 			SEManager.Instance.Play(SEPath.SFX_GAME_CORRECT);
+			StartCoroutine(GamepadRumble.Play(_correctRumbleStrength, _correctRumbleDuration));
 
 			yield return new WaitForSeconds(3f);
 
@@ -50,6 +63,7 @@ namespace IsoTools.Examples.Kenney {
 			};
 			var index = Random.Range(0, sfx.Length);
 			SEManager.Instance.Play(sfx[index]);
+			StartCoroutine(GamepadRumble.Play(_wrongRumbleStrength, _wrongRumbleDuration));
 
 			yield return new WaitForSeconds(2f);
 

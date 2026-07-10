@@ -21,7 +21,12 @@ public abstract class StoryTextManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI textUI = null;
     [SerializeField] private float charInterval = 0.05f;
 
+    [Header("コントローラーでテキスト送りしたときの振動")]
+    [SerializeField, Range(0f, 1f)] private float rumbleStrength = 0.25f;
+    [SerializeField] private float rumbleDuration = 0.06f;
+
     private Coroutine typingCoroutine;
+    private Coroutine rumbleCoroutine;
     private WaitForSeconds wait;
     private WaitForSeconds longWait;
     private string currentMessage;
@@ -34,9 +39,20 @@ public abstract class StoryTextManager : MonoBehaviour
         longWait = new(charInterval * 4);
     }
 
+    private void OnDisable()
+    {
+        // シーン遷移などで破棄されても振動が鳴り続けないようにする
+        GamepadRumble.Stop();
+    }
+
     private void Update()
     {
-        if (!WasSubmitPressed()) return;
+        if (!WasSubmitPressed(out var gamepad)) return;
+
+        if (gamepad != null)
+        {
+            StartRumble();
+        }
 
         // 文字送り中ならば全文表示する
         if (IsTyping)
@@ -48,11 +64,25 @@ public abstract class StoryTextManager : MonoBehaviour
         Advance();
     }
 
-    /// <summary>キーボードのスペース、またはコントローラーの南ボタン。</summary>
-    private static bool WasSubmitPressed()
+    /// <summary>
+    /// キーボードのスペース、またはコントローラーの南ボタン。
+    /// コントローラーで押された場合のみ gamepad にそのコントローラーが入る。
+    /// </summary>
+    private static bool WasSubmitPressed(out Gamepad gamepad)
     {
-        return Input.GetKeyDown(KeyCode.Space)
-            || (Gamepad.current != null && Gamepad.current.buttonSouth.wasPressedThisFrame);
+        gamepad = Gamepad.current;
+        if (gamepad != null && gamepad.buttonSouth.wasPressedThisFrame) return true;
+
+        gamepad = null;
+        return Input.GetKeyDown(KeyCode.Space);
+    }
+
+    private void StartRumble()
+    {
+        if (rumbleCoroutine != null)
+            StopCoroutine(rumbleCoroutine);
+
+        rumbleCoroutine = StartCoroutine(GamepadRumble.Play(rumbleStrength, rumbleDuration));
     }
 
     /// <summary>文字送りが終わった状態で入力されたときに呼ばれる。次のメッセージへ進める。</summary>
