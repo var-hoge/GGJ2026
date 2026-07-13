@@ -335,7 +335,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TypeWriter
   textUI: {fileID: 1706136104}
-  charInterval: 0.03
   rumbleStrength: 0.25
   rumbleDuration: 0.06
   sceneMsgs:

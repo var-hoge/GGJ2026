@@ -18,8 +18,10 @@ public abstract class StoryTextManager : MonoBehaviour
         '！',
     };
 
+    /// <summary>1文字あたりの表示間隔(秒)。全ストーリー画面で共通。</summary>
+    private const float CharInterval = 0.05f;
+
     [SerializeField] private TextMeshProUGUI textUI = null;
-    [SerializeField] private float charInterval = 0.05f;
 
     [Header("コントローラーでテキスト送りしたときの振動")]
     [SerializeField, Range(0f, 1f)] private float rumbleStrength = 0.25f;
@@ -34,8 +36,8 @@ public abstract class StoryTextManager : MonoBehaviour
 
     protected virtual void Awake()
     {
-        wait = new(charInterval);
-        longWait = new(charInterval * 4);
+        wait = new(CharInterval);
+        longWait = new(CharInterval * 4);
     }
 
     private void Update()
