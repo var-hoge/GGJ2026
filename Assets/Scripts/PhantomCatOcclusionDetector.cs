@@ -1,4 +1,5 @@
 using UnityEngine;
+using KanKikuchi.AudioManager;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -30,8 +31,23 @@ namespace IsoTools.Examples.Kenney {
 			var wait = new WaitForEndOfFrame();
 			while ( true ) {
 				yield return wait;
-				IsHidden = IsFullyHiddenByObstacle();
+				var hidden = IsFullyHiddenByObstacle();
+				if ( hidden && !IsHidden ) {
+					PlayHiddenSe();
+				}
+				IsHidden = hidden;
 			}
+		}
+
+		void PlayHiddenSe() {
+			var sfx = new[]
+			{
+				SEPath.SFX_HELICOPTER_DOG_01_JP,
+				SEPath.SFX_HELICOPTER_DOG_02_JP,
+				SEPath.SFX_HELICOPTER_DOG_03_JP,
+			};
+			var index = Random.Range(0, sfx.Length);
+			SEManager.Instance.Play(sfx[index]);
 		}
 
 		bool IsFullyHiddenByObstacle() {

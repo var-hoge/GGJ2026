@@ -39,7 +39,7 @@ public class TitleButtonHighlight : MonoBehaviour, ISelectHandler, IDeselectHand
         // シーン開始直後の初期選択では鳴らさない
         if (Time.timeSinceLevelLoad > 0.5f)
         {
-            SEManager.Instance.Play(SEPath.SYSTEM20);
+            SEManager.Instance.Play(SEPath.UI_MOVE);
             GamepadRumble.Play(_selectRumbleStrength, _selectRumbleDuration);
         }
     }
