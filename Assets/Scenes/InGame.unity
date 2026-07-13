@@ -13854,6 +13854,7 @@ GameObject:
   - component: {fileID: 954283648}
   - component: {fileID: 954283650}
   - component: {fileID: 954283649}
+  - component: {fileID: 954283651}
   m_Layer: 5
   m_Name: Light
   m_TagString: Untagged
@@ -14295,6 +14296,7 @@ GameObject:
   - component: {fileID: 1974987285}
   - component: {fileID: 1974987287}
   - component: {fileID: 1974987286}
+  - component: {fileID: 1974987288}
   m_Layer: 5
   m_Name: Catch
   m_TagString: Untagged
@@ -14777,9 +14779,49 @@ PrefabInstance:
       value: Move
       objectReference: {fileID: 0}
     - target: {fileID: 4135798642097531864, guid: 2874ba48da9984b4ba9948fd140da159, type: 3}
-      propertyPath: m_Enabled
-      value: 0
+      propertyPath: switchSprites.Array.size
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4135798642097531864, guid: 2874ba48da9984b4ba9948fd140da159, type: 3}
+      propertyPath: switchSprites.Array.data[0]
+      value: 
+      objectReference: {fileID: -3630831094652178898, guid: 605ee142be7a34dfea420a0cb8ff67cc, type: 3}
+    - target: {fileID: 4135798642097531864, guid: 2874ba48da9984b4ba9948fd140da159, type: 3}
+      propertyPath: xboxSprites.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4135798642097531864, guid: 2874ba48da9984b4ba9948fd140da159, type: 3}
+      propertyPath: xboxSprites.Array.data[0]
+      value: 
+      objectReference: {fileID: -926093451288266833, guid: a92fbed8a695447a3a133021f93818bc, type: 3}
+    - target: {fileID: 4135798642097531864, guid: 2874ba48da9984b4ba9948fd140da159, type: 3}
+      propertyPath: ps5Sprites.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4135798642097531864, guid: 2874ba48da9984b4ba9948fd140da159, type: 3}
+      propertyPath: ps5Sprites.Array.data[0]
+      value: 
+      objectReference: {fileID: 21300000, guid: 6ad649c313544487e96be391cb64d360, type: 3}
+    - target: {fileID: 4135798642097531864, guid: 2874ba48da9984b4ba9948fd140da159, type: 3}
+      propertyPath: keyboardSprites.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4135798642097531864, guid: 2874ba48da9984b4ba9948fd140da159, type: 3}
+      propertyPath: keyboardSprites.Array.data[0]
+      value: 
+      objectReference: {fileID: -4490971594560308777, guid: d17c81dc1bb9441a38e130308b10e15a, type: 3}
+    - target: {fileID: 4135798642097531864, guid: 2874ba48da9984b4ba9948fd140da159, type: 3}
+      propertyPath: keyboardSprites.Array.data[1]
+      value: 
+      objectReference: {fileID: 8054507171531512164, guid: 8c1ab2402a0674a62a85a85cbdece7ea, type: 3}
+    - target: {fileID: 4135798642097531864, guid: 2874ba48da9984b4ba9948fd140da159, type: 3}
+      propertyPath: keyboardSprites.Array.data[2]
+      value: 
+      objectReference: {fileID: -696907405431213125, guid: 9ffff479de72a40fbbbc7b9ca1df67a7, type: 3}
+    - target: {fileID: 4135798642097531864, guid: 2874ba48da9984b4ba9948fd140da159, type: 3}
+      propertyPath: keyboardSprites.Array.data[3]
+      value: 
+      objectReference: {fileID: 4555644462385510294, guid: 085f968b7ec43486eb6e98cbb7879101, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -15328,3 +15370,50 @@ SceneRoots:
   - {fileID: 5300547366038000786}
   - {fileID: 1474314590}
   - {fileID: 1507113775}
+--- !u!114 &954283651
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 954283647}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0adcee8abcd54e4d8e3d25030b9e79bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  iconImage: {fileID: 954283649}
+  textRect: {fileID: 2060724769}
+  iconSpacing: 22
+  switchSprites:
+  - {fileID: -3287236076873050803, guid: 855eca739587148d78394489addf6832, type: 3}
+  xboxSprites:
+  - {fileID: -1756151491830324165, guid: 61c7ff3a3c998438fb2ed41afb0d1530, type: 3}
+  ps5Sprites:
+  - {fileID: 21300000, guid: 10bc3dc3376f64662a13ab02a36949da, type: 3}
+  keyboardSprites:
+  - {fileID: -2869840134042345842, guid: cc3717fa7b98c47a4bbce523e0ba4c9c, type: 3}
+  - {fileID: 7226326334084823135, guid: da3c36218e5014d1d90afd263ecd29ce, type: 3}
+--- !u!114 &1974987288
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1974987284}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0adcee8abcd54e4d8e3d25030b9e79bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  iconImage: {fileID: 1974987286}
+  textRect: {fileID: 1819536480}
+  iconSpacing: 22
+  switchSprites:
+  - {fileID: -4567730081068367426, guid: 872cb89b210e6412e85a856e016db4f8, type: 3}
+  xboxSprites:
+  - {fileID: -5817298876420957275, guid: 48e1453249eb04bd291024ca556e0dd3, type: 3}
+  ps5Sprites:
+  - {fileID: 21300000, guid: 312d889131a8a44179daee68071a648e, type: 3}
+  keyboardSprites:
+  - {fileID: -3959940633074747025, guid: cb383fe0b015743d09517174f64f6bc7, type: 3}
