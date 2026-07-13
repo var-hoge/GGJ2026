@@ -11,6 +11,10 @@ namespace IsoTools.Examples.Kenney {
 
 		[SerializeField] private SpriteRenderer _spriteRenderer = null;
 
+		[Header("隠れたときのSEを再生する最短間隔(秒)")]
+		[SerializeField] private float _seMinInterval = 2f;
+		private float _lastSeTime = float.NegativeInfinity;
+
 		private readonly List<SpriteRenderer> _obstacleRenderers = new List<SpriteRenderer>();
 
 		public bool IsHidden { get; private set; } = false;
@@ -40,6 +44,11 @@ namespace IsoTools.Examples.Kenney {
 		}
 
 		void PlayHiddenSe() {
+			if ( Time.time - _lastSeTime < _seMinInterval ) {
+				return;
+			}
+			_lastSeTime = Time.time;
+
 			var sfx = new[]
 			{
 				SEPath.SFX_HELICOPTER_DOG_01_JP,
