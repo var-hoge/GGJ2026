@@ -31,6 +31,8 @@ public class LightObject : MonoBehaviour
     private LightObjectMovePattern currentPattern;
     private int patternIndex = 0;
     private IsoObject currentIsoObject;
+    private Coroutine patrolCoroutine;
+    private Coroutine convergeCoroutine;
 
     public void Init(HeliTypes heliType)
     {
@@ -50,7 +52,68 @@ public class LightObject : MonoBehaviour
         this.currentPattern = movePatternList[patternIndex];
         this.currentIsoObject.positionX = currentPattern.startPosition.x;
         this.currentIsoObject.positionY = currentPattern.startPosition.y;
-        StartCoroutine(this.LoopingAnimationCoroutine());
+        this.patrolCoroutine = StartCoroutine(this.LoopingAnimationCoroutine());
+    }
+
+    /// <summary>
+    /// 巡回を中断し、子のSpotLight2Dがターゲット位置に重なるようにdurationかけて移動する。
+    /// 到達後はEndConvergeが呼ばれるまでターゲットに追従し続ける。
+    /// </summary>
+    public void BeginConverge(Transform target, float duration)
+    {
+        if (convergeCoroutine != null) return;
+        if (patrolCoroutine != null)
+        {
+            StopCoroutine(patrolCoroutine);
+            patrolCoroutine = null;
+        }
+        convergeCoroutine = StartCoroutine(ConvergeCoroutine(target, duration));
+    }
+
+    /// <summary>
+    /// 収束を中断して巡回に戻る
+    /// </summary>
+    public void EndConverge()
+    {
+        if (convergeCoroutine != null)
+        {
+            StopCoroutine(convergeCoroutine);
+            convergeCoroutine = null;
+        }
+        ResumePatrol();
+    }
+
+    private void ResumePatrol()
+    {
+        if (patrolCoroutine == null && isActiveAndEnabled)
+        {
+            patrolCoroutine = StartCoroutine(this.LoopingAnimationCoroutine());
+        }
+    }
+
+    private IEnumerator ConvergeCoroutine(Transform target, float duration)
+    {
+        float frameTime = 0f;
+        Vector2 startIsoPosition = new Vector2(this.currentIsoObject.positionX, this.currentIsoObject.positionY);
+        while (target != null)
+        {
+            frameTime += Time.deltaTime;
+            float ratio = duration > 0f ? Mathf.Clamp01(frameTime / duration) : 1f;
+
+            // SpotLight2Dがターゲットに重なるためのルートのワールド目標位置を求め、アイソメトリック座標に変換する
+            Vector2 spotLightOffset = lightObjectSetting.transform.position - transform.position;
+            Vector2 targetScreenPosition = (Vector2)target.position - spotLightOffset;
+            Vector3 targetIsoPosition = this.currentIsoObject.isoWorld.ScreenToIso(
+                targetScreenPosition, this.currentIsoObject.positionZ);
+
+            Vector2 isoPosition = Vector2.Lerp(startIsoPosition, targetIsoPosition, ratio);
+            this.currentIsoObject.positionX = isoPosition.x;
+            this.currentIsoObject.positionY = isoPosition.y;
+            yield return null;
+        }
+        // ターゲットが消えた場合は巡回に戻る
+        convergeCoroutine = null;
+        ResumePatrol();
     }
 
     private IEnumerator LoopingAnimationCoroutine() {
