@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1800262156902248759}
   - component: {fileID: 5512368938290656278}
   - component: {fileID: 3714527088638725371}
+  - component: {fileID: 4135798642097531864}
   m_Layer: 5
   m_Name: Explanation
   m_TagString: Untagged
@@ -213,3 +214,20 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &4135798642097531864
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2443813285752892365}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0adcee8abcd54e4d8e3d25030b9e79bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  iconImage: {fileID: 3714527088638725371}
+  switchSprite: {fileID: -6391698379592132543, guid: 465e7d15b1d294629952edb669ab641e, type: 3}
+  xboxSprite: {fileID: 4564764429337591670, guid: 84146819da1234255a0c1e6c3a33f94c, type: 3}
+  ps5Sprite: {fileID: 21300000, guid: e44313bd0041340efab8ca0bd69f5cac, type: 3}
+  keyboardSprite: {fileID: -3959940633074747025, guid: cb383fe0b015743d09517174f64f6bc7, type: 3}
