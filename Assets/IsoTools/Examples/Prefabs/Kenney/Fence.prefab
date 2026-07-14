@@ -10,6 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 436798}
   - component: {fileID: 11470110}
+  - component: {fileID: 11470120}
+  - component: {fileID: 11470130}
   m_Layer: 0
   m_Name: Fence
   m_TagString: Untagged
@@ -50,6 +52,40 @@ MonoBehaviour:
   _renderersMode: 0
   _cachedRenderers: 0
   _isCanWalk: 0
+--- !u!114 &11470120
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 129934}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b256250c588ee4e4590a3e58eaa69b1d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  _material: {fileID: 0}
+  _isTrigger: 0
+  _size: {x: 1, y: 0.07, z: 0.43}
+  _offset: {x: 0.5, y: 0.035, z: 0.215}
+--- !u!114 &11470130
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 129934}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4febe544112bb4678bdd59fa963c802d, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  _mass: 1
+  _drag: 0
+  _useGravity: 1
+  _isKinematic: 1
+  _interpolation: 0
+  _collisionDetectionMode: 0
 --- !u!1 &190772
 GameObject:
   m_ObjectHideFlags: 0
