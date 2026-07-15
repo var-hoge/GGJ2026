@@ -4864,4 +4864,4 @@ MonoBehaviour:
   _position: {x: 0, y: 0, z: 0}
   _renderersMode: 1
   _cachedRenderers: 1
-  _isCanWalk: 0
+  _isCanWalk: 1
