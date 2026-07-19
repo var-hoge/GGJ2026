@@ -10,15 +10,15 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "drizzle-orm": "^0.36.4",
+    "drizzle-orm": "^0.45.2",
     "hono": "^4.12.31",
     "partyserver": "^0.5.8"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20260702.1",
-    "@types/node": "^22.20.1",
-    "drizzle-kit": "^0.28.1",
-    "typescript": "^5.9.3",
-    "wrangler": "^3.114.17"
+    "@cloudflare/workers-types": "^5.20260719.1",
+    "@types/node": "^26.1.1",
+    "drizzle-kit": "^0.31.10",
+    "typescript": "^7.0.2",
+    "wrangler": "^4.112.0"
   }
 }
