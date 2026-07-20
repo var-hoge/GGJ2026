@@ -9,16 +9,19 @@ using UnityEngine.UI;
 /// <summary>
 /// 接続中のコントローラーの種類に応じて、操作説明のアイコンを切り替える。
 /// コントローラー未接続時はキーボード用のアイコンを表示する。
-/// 複数スプライトを指定した場合はアイコン列を左方向へ伸ばして横並びに表示する。
-/// 説明テキストの画面上の位置は変わらないため、画面端でも見切れない。
+/// 複数スプライトを指定した場合は1行 maxIconsPerRow 個で折り返し、
+/// 2行目以降は基準位置から上方向へ積むグリッド状に表示する。
+/// (下方向へ伸ばすと後続の操作説明と重なるため上方向へ伸ばす)
+/// 説明テキストの水平位置は変わらないため、画面端でも見切れない。
 /// </summary>
 public class ControllerIconMapper : MonoBehaviour
 {
     [SerializeField] private Image iconImage = null;
     [SerializeField] private RectTransform textRect = null;
     [SerializeField] private float iconSpacing = 22f;
+    [SerializeField] private int maxIconsPerRow = 2;
 
-    [Header("コントローラー種別ごとのアイコン(複数指定で横並び)")]
+    [Header("コントローラー種別ごとのアイコン(複数指定でグリッド表示)")]
     [SerializeField] private Sprite[] switchSprites = null;
     [SerializeField] private Sprite[] xboxSprites = null;
     [SerializeField] private Sprite[] ps5Sprites = null;
@@ -52,7 +55,7 @@ public class ControllerIconMapper : MonoBehaviour
 
         iconImage.sprite = sprites[0];
 
-        // 2枚目以降は動的に生成したアイコンを右に並べる
+        // 2枚目以降は動的に生成したアイコンをグリッド状に並べる
         for (var i = 0; i < sprites.Length - 1; i++)
         {
             if (i >= extraIcons.Count)
@@ -77,9 +80,10 @@ public class ControllerIconMapper : MonoBehaviour
             basePositionsCached = true;
         }
 
-        // アイコンの起点を枚数分だけ左へずらし、列を左方向へ伸ばす。
+        // アイコンの起点を列数分だけ左へずらし、グリッドを左・上方向へ伸ばす。
         // テキストはアイコンの子のため、同量だけ右へ戻して画面上の位置を保つ。
-        var shift = (sprites.Length - 1) * iconSpacing;
+        var columns = Mathf.Min(sprites.Length, Mathf.Max(1, maxIconsPerRow));
+        var shift = (columns - 1) * iconSpacing;
         var iconPos = iconImage.rectTransform.anchoredPosition;
         iconPos.x = baseIconX - shift;
         iconImage.rectTransform.anchoredPosition = iconPos;
@@ -101,7 +105,13 @@ public class ControllerIconMapper : MonoBehaviour
         var rect = (RectTransform)go.transform;
         rect.SetParent(iconImage.rectTransform, false);
         rect.sizeDelta = iconImage.rectTransform.sizeDelta;
-        rect.anchoredPosition = new Vector2((index + 1) * iconSpacing, 0);
+
+        // 基準アイコンを含めた通し番号から列・行を決める(行は上方向へ)
+        var slot = index + 1;
+        var columnsPerRow = Mathf.Max(1, maxIconsPerRow);
+        rect.anchoredPosition = new Vector2(
+            slot % columnsPerRow * iconSpacing,
+            slot / columnsPerRow * iconSpacing);
 
         var image = go.GetComponent<Image>();
         image.preserveAspect = iconImage.preserveAspect;

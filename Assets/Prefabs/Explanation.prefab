@@ -229,6 +229,7 @@ MonoBehaviour:
   iconImage: {fileID: 3714527088638725371}
   textRect: {fileID: 5359951220579206623}
   iconSpacing: 22
+  maxIconsPerRow: 2
   switchSprites:
   - {fileID: -6391698379592132543, guid: 465e7d15b1d294629952edb669ab641e, type: 3}
   xboxSprites:
