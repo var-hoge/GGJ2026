@@ -596,9 +596,13 @@ PrefabInstance:
       propertyPath: m_Name
       value: Explanation
       objectReference: {fileID: 0}
-    - target: {fileID: 3172491722909002059, guid: 2874ba48da9984b4ba9948fd140da159, type: 3}
-      propertyPath: m_text
+    - target: {fileID: 3172491722909002060, guid: 2874ba48da9984b4ba9948fd140da159, type: 3}
+      propertyPath: _englishText
       value: "\uFF1ANext"
+      objectReference: {fileID: 0}
+    - target: {fileID: 3172491722909002060, guid: 2874ba48da9984b4ba9948fd140da159, type: 3}
+      propertyPath: _japaneseText
+      value: "\uFF1A\u6B21\u3078"
       objectReference: {fileID: 0}
     - target: {fileID: 3172491722909002059, guid: 2874ba48da9984b4ba9948fd140da159, type: 3}
       propertyPath: m_fontStyle

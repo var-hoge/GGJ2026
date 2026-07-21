@@ -16,6 +16,12 @@ public class LocalizedImage : MonoBehaviour
 
     void OnEnable()
     {
+        if (!LanguageManager.Exist)
+        {
+            UpdateSprite(Language.Japanese);
+            return;
+        }
+
         LanguageManager.Instance.OnLanguageChanged += UpdateSprite;
         UpdateSprite(LanguageManager.Instance.CurrentLanguage);
     }

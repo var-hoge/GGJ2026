@@ -432,6 +432,7 @@ GameObject:
   - component: {fileID: 2118170217421769424}
   - component: {fileID: 4203579220955820845}
   - component: {fileID: 2134282962635005026}
+  - component: {fileID: 2134282962635005027}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -530,7 +531,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_TextWrappingMode: 1
+  m_TextWrappingMode: 0
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
@@ -558,6 +559,20 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &2134282962635005027
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3121208818264334087}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f865d061298d414a8e063385f1d86778, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedText
+  _englishText: "：Rotate Light"
+  _japaneseText: "：ライト回転"
 --- !u!1 &5647812242780135462
 GameObject:
   m_ObjectHideFlags: 0
@@ -810,6 +825,7 @@ GameObject:
   - component: {fileID: 3942106969683625379}
   - component: {fileID: 485668706292469935}
   - component: {fileID: 7086366182031879435}
+  - component: {fileID: 7086366182031879436}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -936,6 +952,20 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &7086366182031879436
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8209423508642337236}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f865d061298d414a8e063385f1d86778, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedText
+  _englishText: "：Catch!"
+  _japaneseText: "：キャッチ！"
 --- !u!1001 &8230864202363531717
 PrefabInstance:
   m_ObjectHideFlags: 0

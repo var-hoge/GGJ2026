@@ -3058,6 +3058,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: GameCanvas
       objectReference: {fileID: 0}
+    - target: {fileID: 511579935452516163, guid: 174441db4fde9441eb6472558aae7afc, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 180
+      objectReference: {fileID: 0}
+    - target: {fileID: 511579935452516163, guid: 174441db4fde9441eb6472558aae7afc, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 170
+      objectReference: {fileID: 0}
     - target: {fileID: 5006483014216297183, guid: 174441db4fde9441eb6472558aae7afc, type: 3}
       propertyPath: m_Camera
       value: 
