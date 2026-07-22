@@ -6,34 +6,29 @@ namespace PhantomCatWorks.RealtimeP2PKit.Editor
 {
     /// <summary>
     /// "RealtimeP2PKit &gt; Connection Settings" - lets a developer switch between a
-    /// "Local" (e.g. `wrangler dev` on localhost) and "Remote" (deployed) backend, and
-    /// edit each environment's own matchmaking API URL / signaling WebSocket URL / STUN
-    /// server list, all persisted per-machine in PlayerPrefs (see P2PEndpoints).
+    /// "Local" (e.g. `wrangler dev` on localhost) and "Remote" (deployed) backend via a
+    /// dropdown, editing only the URLs for whichever one is currently selected (matchmaking
+    /// API URL / signaling WebSocket URL / STUN server list), all persisted per-machine in
+    /// PlayerPrefs (see P2PEndpoints).
     ///
     /// Everything in this window is Editor-only by construction: it lives under an
     /// Editor/-only asmdef and is never compiled into a Player build. The environment
     /// switch and the "Network Logging" toggle it also exposes both read/write
-    /// PlayerPrefs directly through P2PEndpoints / P2PNetworkLogger, which themselves
+    /// PlayerPrefs directly through P2PEndpoints / P2PNetworkLog, which themselves
     /// only honor PlayerPrefs when UNITY_EDITOR is defined - so even code that isn't in
     /// this window can't accidentally end up reading a stale Editor-only setting at
     /// runtime in a build.
     /// </summary>
     public class P2PConnectionSettingsWindow : EditorWindow
     {
-        private bool _foldoutEnvironment = true;
-        private bool _foldoutLocal = true;
-        private bool _foldoutRemote = true;
-        private bool _foldoutLogging = true;
-
         private P2PEnvironment _environment;
 
-        private string _localMatchmakingApiUrl;
-        private string _localSignalingWebSocketUrl;
-        private List<string> _localStunServerUrls;
-
-        private string _remoteMatchmakingApiUrl;
-        private string _remoteSignalingWebSocketUrl;
-        private List<string> _remoteStunServerUrls;
+        // Working copy of whichever environment is currently selected - reloaded from
+        // PlayerPrefs every time the dropdown switches, so Local and Remote never show
+        // (or get edited) at the same time.
+        private string _matchmakingApiUrl;
+        private string _signalingWebSocketUrl;
+        private List<string> _stunServerUrls;
 
         private bool _networkLoggingEnabled;
 
@@ -47,22 +42,25 @@ namespace PhantomCatWorks.RealtimeP2PKit.Editor
 
         private void OnEnable()
         {
-            LoadFromPlayerPrefs();
+            _environment = P2PEndpoints.GetCurrentEnvironment();
+            LoadFieldsForCurrentEnvironment();
+            _networkLoggingEnabled = P2PNetworkLog.IsEnabled;
         }
 
-        private void LoadFromPlayerPrefs()
+        private void LoadFieldsForCurrentEnvironment()
         {
-            _environment = P2PEndpoints.GetCurrentEnvironment();
-
-            _localMatchmakingApiUrl = PlayerPrefs.GetString(P2PEndpoints.PrefKeyLocalMatchmakingApiUrl, P2PEndpoints.DefaultLocalMatchmakingApiUrl);
-            _localSignalingWebSocketUrl = PlayerPrefs.GetString(P2PEndpoints.PrefKeyLocalSignalingWebSocketUrl, P2PEndpoints.DefaultLocalSignalingWebSocketUrl);
-            _localStunServerUrls = P2PEndpoints.LoadStunServerUrls(P2PEndpoints.PrefKeyLocalStunServerUrls);
-
-            _remoteMatchmakingApiUrl = PlayerPrefs.GetString(P2PEndpoints.PrefKeyRemoteMatchmakingApiUrl, P2PEndpoints.DefaultRemoteMatchmakingApiUrl);
-            _remoteSignalingWebSocketUrl = PlayerPrefs.GetString(P2PEndpoints.PrefKeyRemoteSignalingWebSocketUrl, P2PEndpoints.DefaultRemoteSignalingWebSocketUrl);
-            _remoteStunServerUrls = P2PEndpoints.LoadStunServerUrls(P2PEndpoints.PrefKeyRemoteStunServerUrls);
-
-            _networkLoggingEnabled = P2PNetworkLogger.IsEnabled;
+            if (_environment == P2PEnvironment.Local)
+            {
+                _matchmakingApiUrl = PlayerPrefs.GetString(P2PEndpoints.PrefKeyLocalMatchmakingApiUrl, P2PEndpoints.DefaultLocalMatchmakingApiUrl);
+                _signalingWebSocketUrl = PlayerPrefs.GetString(P2PEndpoints.PrefKeyLocalSignalingWebSocketUrl, P2PEndpoints.DefaultLocalSignalingWebSocketUrl);
+                _stunServerUrls = P2PEndpoints.LoadStunServerUrls(P2PEndpoints.PrefKeyLocalStunServerUrls);
+            }
+            else
+            {
+                _matchmakingApiUrl = PlayerPrefs.GetString(P2PEndpoints.PrefKeyRemoteMatchmakingApiUrl, P2PEndpoints.DefaultRemoteMatchmakingApiUrl);
+                _signalingWebSocketUrl = PlayerPrefs.GetString(P2PEndpoints.PrefKeyRemoteSignalingWebSocketUrl, P2PEndpoints.DefaultRemoteSignalingWebSocketUrl);
+                _stunServerUrls = P2PEndpoints.LoadStunServerUrls(P2PEndpoints.PrefKeyRemoteStunServerUrls);
+            }
         }
 
         private void OnGUI()
@@ -75,115 +73,98 @@ namespace PhantomCatWorks.RealtimeP2PKit.Editor
                 MessageType.Info);
             EditorGUILayout.Space();
 
-            WithInFoldoutBlock("Environment", ref _foldoutEnvironment, () =>
+            // --- Environment dropdown: switching this changes which fields are shown below ---
+            EditorGUILayout.LabelField("接続先", EditorStyles.boldLabel);
+            var newEnv = (P2PEnvironment)EditorGUILayout.EnumPopup("Environment", _environment);
+            if (newEnv != _environment)
             {
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("現在の接続先", GUILayout.Width(100));
-                var newEnv = (P2PEnvironment)EditorGUILayout.EnumPopup(_environment);
-                EditorGUILayout.EndHorizontal();
-                if (newEnv != _environment)
-                {
-                    _environment = newEnv;
-                    P2PEndpoints.SetCurrentEnvironment(_environment);
-                }
+                _environment = newEnv;
+                P2PEndpoints.SetCurrentEnvironment(_environment);
+                LoadFieldsForCurrentEnvironment(); // reload so the fields below match the new selection
+                GUI.FocusControl(null);
+            }
 
-                EditorGUILayout.Space();
-                EditorGUILayout.LabelField("実際に参照されるURL", EditorStyles.boldLabel);
-                EditorGUILayout.LabelField("Web API: " + P2PEndpoints.GetMatchmakingApiUrl(), EditorStyles.miniLabel);
-                EditorGUILayout.LabelField("Signaling: " + P2PEndpoints.GetSignalingWebSocketUrl(), EditorStyles.miniLabel);
-            });
+            EditorGUILayout.Space();
+            EditorGUILayout.BeginVertical(GUI.skin.box);
 
-            WithInFoldoutBlock("Local", ref _foldoutLocal, () =>
-            {
-                DrawEndpointFields(ref _localMatchmakingApiUrl, ref _localSignalingWebSocketUrl, _localStunServerUrls);
-                if (GUILayout.Button("Save Local"))
-                {
-                    PlayerPrefs.SetString(P2PEndpoints.PrefKeyLocalMatchmakingApiUrl, _localMatchmakingApiUrl);
-                    PlayerPrefs.SetString(P2PEndpoints.PrefKeyLocalSignalingWebSocketUrl, _localSignalingWebSocketUrl);
-                    P2PEndpoints.SaveStunServerUrls(P2PEndpoints.PrefKeyLocalStunServerUrls, _localStunServerUrls);
-                    PlayerPrefs.Save();
-                }
-            });
-
-            WithInFoldoutBlock("Remote", ref _foldoutRemote, () =>
-            {
-                DrawEndpointFields(ref _remoteMatchmakingApiUrl, ref _remoteSignalingWebSocketUrl, _remoteStunServerUrls);
-                if (GUILayout.Button("Save Remote"))
-                {
-                    PlayerPrefs.SetString(P2PEndpoints.PrefKeyRemoteMatchmakingApiUrl, _remoteMatchmakingApiUrl);
-                    PlayerPrefs.SetString(P2PEndpoints.PrefKeyRemoteSignalingWebSocketUrl, _remoteSignalingWebSocketUrl);
-                    P2PEndpoints.SaveStunServerUrls(P2PEndpoints.PrefKeyRemoteStunServerUrls, _remoteStunServerUrls);
-                    PlayerPrefs.Save();
-                }
-            });
-
-            WithInFoldoutBlock("Network Logging", ref _foldoutLogging, () =>
-            {
-                EditorGUILayout.HelpBox(
-                    "HTTP(マッチングAPI)/WebSocket(シグナリング)/WebRTC DataChannelの送受信内容を" +
-                    "そのままログ出力します。UnityEditor上でのみON/OFFを切り替えられ、この設定自体もビルドには" +
-                    "含まれません(ビルドしたアプリでは常にOFFです)。",
-                    MessageType.None);
-                var newValue = EditorGUILayout.Toggle("Enable Network Logging", _networkLoggingEnabled);
-                if (newValue != _networkLoggingEnabled)
-                {
-                    _networkLoggingEnabled = newValue;
-                    P2PNetworkLogger.IsEnabled = _networkLoggingEnabled;
-                }
-            });
-
-            EditorGUILayout.EndScrollView();
-        }
-
-        private void DrawEndpointFields(ref string matchmakingApiUrl, ref string signalingWebSocketUrl, List<string> stunServerUrls)
-        {
-            matchmakingApiUrl = EditorGUILayout.TextField("Web API URL", matchmakingApiUrl);
-            signalingWebSocketUrl = EditorGUILayout.TextField("Signaling WebSocket URL", signalingWebSocketUrl);
+            // --- Only the SELECTED environment's fields are shown/editable here ---
+            EditorGUILayout.LabelField($"{_environment} の設定", EditorStyles.boldLabel);
+            _matchmakingApiUrl = EditorGUILayout.TextField("Web API URL", _matchmakingApiUrl);
+            _signalingWebSocketUrl = EditorGUILayout.TextField("Signaling WebSocket URL", _signalingWebSocketUrl);
 
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("STUN Server URLs (上から順に使用)", EditorStyles.boldLabel);
-            for (var i = 0; i < stunServerUrls.Count; i++)
+            for (var i = 0; i < _stunServerUrls.Count; i++)
             {
                 EditorGUILayout.BeginHorizontal();
-                stunServerUrls[i] = EditorGUILayout.TextField(stunServerUrls[i]);
+                _stunServerUrls[i] = EditorGUILayout.TextField(_stunServerUrls[i]);
                 GUI.enabled = i > 0;
                 if (GUILayout.Button("↑", GUILayout.Width(24)))
                 {
-                    (stunServerUrls[i - 1], stunServerUrls[i]) = (stunServerUrls[i], stunServerUrls[i - 1]);
+                    (_stunServerUrls[i - 1], _stunServerUrls[i]) = (_stunServerUrls[i], _stunServerUrls[i - 1]);
                 }
-                GUI.enabled = i < stunServerUrls.Count - 1;
+                GUI.enabled = i < _stunServerUrls.Count - 1;
                 if (GUILayout.Button("↓", GUILayout.Width(24)))
                 {
-                    (stunServerUrls[i + 1], stunServerUrls[i]) = (stunServerUrls[i], stunServerUrls[i + 1]);
+                    (_stunServerUrls[i + 1], _stunServerUrls[i]) = (_stunServerUrls[i], _stunServerUrls[i + 1]);
                 }
                 GUI.enabled = true;
                 if (GUILayout.Button("✕", GUILayout.Width(24)))
                 {
-                    stunServerUrls.RemoveAt(i);
+                    _stunServerUrls.RemoveAt(i);
                     break;
                 }
                 EditorGUILayout.EndHorizontal();
             }
             if (GUILayout.Button("+ Add STUN Server"))
             {
-                stunServerUrls.Add("stun:");
+                _stunServerUrls.Add("stun:");
             }
-        }
 
-        private static void WithInFoldoutBlock(string title, ref bool foldout, System.Action callback)
-        {
-            EditorGUI.indentLevel = 0;
-            EditorGUILayout.BeginVertical(GUI.skin.box);
-            foldout = EditorGUILayout.Foldout(foldout, title, true);
-            if (foldout)
+            EditorGUILayout.Space();
+            if (GUILayout.Button($"Save {_environment}"))
             {
-                EditorGUI.indentLevel = 1;
-                EditorGUILayout.Space();
-                callback();
-                EditorGUILayout.Space();
+                SaveCurrentEnvironmentFields();
             }
             EditorGUILayout.EndVertical();
+
             EditorGUILayout.Space();
+            EditorGUILayout.LabelField("実際に参照されるURL(保存済みの値)", EditorStyles.miniBoldLabel);
+            EditorGUILayout.LabelField("Web API: " + P2PEndpoints.GetMatchmakingApiUrl(), EditorStyles.miniLabel);
+            EditorGUILayout.LabelField("Signaling: " + P2PEndpoints.GetSignalingWebSocketUrl(), EditorStyles.miniLabel);
+
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Network Logging", EditorStyles.boldLabel);
+            EditorGUILayout.HelpBox(
+                "HTTP(マッチングAPI)/WebSocket(シグナリング)/WebRTC DataChannelの送受信内容を" +
+                "そのままログ出力します。UnityEditor上でのみON/OFFを切り替えられ、この設定自体もビルドには" +
+                "含まれません(ビルドしたアプリでは常にOFFです)。",
+                MessageType.None);
+            var newLogValue = EditorGUILayout.Toggle("Enable Network Logging", _networkLoggingEnabled);
+            if (newLogValue != _networkLoggingEnabled)
+            {
+                _networkLoggingEnabled = newLogValue;
+                P2PNetworkLog.IsEnabled = _networkLoggingEnabled;
+            }
+
+            EditorGUILayout.EndScrollView();
+        }
+
+        private void SaveCurrentEnvironmentFields()
+        {
+            if (_environment == P2PEnvironment.Local)
+            {
+                PlayerPrefs.SetString(P2PEndpoints.PrefKeyLocalMatchmakingApiUrl, _matchmakingApiUrl);
+                PlayerPrefs.SetString(P2PEndpoints.PrefKeyLocalSignalingWebSocketUrl, _signalingWebSocketUrl);
+                P2PEndpoints.SaveStunServerUrls(P2PEndpoints.PrefKeyLocalStunServerUrls, _stunServerUrls);
+            }
+            else
+            {
+                PlayerPrefs.SetString(P2PEndpoints.PrefKeyRemoteMatchmakingApiUrl, _matchmakingApiUrl);
+                PlayerPrefs.SetString(P2PEndpoints.PrefKeyRemoteSignalingWebSocketUrl, _signalingWebSocketUrl);
+                P2PEndpoints.SaveStunServerUrls(P2PEndpoints.PrefKeyRemoteStunServerUrls, _stunServerUrls);
+            }
+            PlayerPrefs.Save();
         }
     }
 }
