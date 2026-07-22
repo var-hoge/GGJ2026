@@ -10,18 +10,35 @@ public class IntroStoryManager : StoryTextManager
     public class SceneMsgs
     {
         public Sprite image;
-        public string[] msgs;
         public SESound[] sounds;
     }
+
+    [Serializable]
+    class StoryLine
+    {
+        public string japanese;
+        public string english;
+    }
+
+    [Serializable]
+    class StoryScript
+    {
+        public StoryLine[] scenes;
+    }
+
+    private const string StoryTextResourcePath = "StoryText/IntroStory";
 
     [SerializeField] private SceneMsgs[] sceneMsgs;
     [SerializeField] private RawImage rawImage;
 
+    private StoryLine[] storyLines;
     private int sceneIndex = 0;
-    private int textIndex = 0;
 
     private void Start()
     {
+        var json = Resources.Load<TextAsset>(StoryTextResourcePath).text;
+        storyLines = JsonUtility.FromJson<StoryScript>(json).scenes;
+
         // BGMの再生
         BGMManager.Instance.Play(BGMPath.MUSIC_CUTSCENE_LOOP);
         Advance();
@@ -37,10 +54,17 @@ public class IntroStoryManager : StoryTextManager
         {
             var current = sceneMsgs[sceneIndex];
             rawImage.texture = current.image.texture;
-            StartTyping(current.msgs[textIndex]);
+            StartTyping(GetMessage(sceneIndex));
             PlaySound(current);
         }
         sceneIndex++;
+    }
+
+    string GetMessage(int index)
+    {
+        var line = storyLines[index];
+        var isEnglish = LanguageManager.Exist && LanguageManager.Instance.CurrentLanguage == Language.English;
+        return isEnglish ? line.english : line.japanese;
     }
 
     void PlaySound(SceneMsgs current)
