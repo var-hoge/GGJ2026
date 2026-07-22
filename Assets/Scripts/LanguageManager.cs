@@ -5,6 +5,7 @@ public enum Language
 {
     English,
     Japanese,
+    German,
 }
 
 public class LanguageManager : SingletonBehaviour<LanguageManager>

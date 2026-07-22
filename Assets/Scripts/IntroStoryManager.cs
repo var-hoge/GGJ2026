@@ -18,6 +18,7 @@ public class IntroStoryManager : StoryTextManager
     {
         public string japanese;
         public string english;
+        public string german;
     }
 
     [Serializable]
@@ -63,8 +64,17 @@ public class IntroStoryManager : StoryTextManager
     string GetMessage(int index)
     {
         var line = storyLines[index];
-        var isEnglish = LanguageManager.Exist && LanguageManager.Instance.CurrentLanguage == Language.English;
-        return isEnglish ? line.english : line.japanese;
+        if (!LanguageManager.Exist)
+        {
+            return line.japanese;
+        }
+
+        return LanguageManager.Instance.CurrentLanguage switch
+        {
+            Language.English => line.english,
+            Language.German => line.german,
+            _ => line.japanese,
+        };
     }
 
     void PlaySound(SceneMsgs current)
