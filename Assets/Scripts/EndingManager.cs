@@ -6,20 +6,36 @@ using UnityEngine.SceneManagement;
 public class EndingManager : StoryTextManager
 {
     [Serializable]
-    public class SceneMsgs
+    class StoryLine
     {
-        public String[] msgs;
+        public string japanese;
+        public string english;
+        public string german;
     }
 
-    [SerializeField] private SceneMsgs[] sceneMsgs;
+    [Serializable]
+    class StoryScene
+    {
+        public StoryLine[] lines;
+    }
 
+    [Serializable]
+    class StoryScript
+    {
+        public StoryScene[] scenes;
+    }
+
+    [SerializeField] private string storyTextResourcePath;
+
+    private StoryScene[] storyScenes;
     private int sceneIndex = 0;
     private int textIndex = 0;
 
-    private string[] Messages => sceneMsgs[0].msgs;
-
     private void Start()
     {
+        var json = Resources.Load<TextAsset>(storyTextResourcePath).text;
+        storyScenes = JsonUtility.FromJson<StoryScript>(json).scenes;
+
         ShowCurrentText();
         SEManager.Instance.Play(SEPath.AUDIO_ENDING);
         BGMManager.Instance.Play(BGMPath.MUSIC_ENDING_LOOP);
@@ -27,7 +43,9 @@ public class EndingManager : StoryTextManager
 
     protected override void Advance()
     {
-        if (textIndex >= Messages.Length - 1)
+        var lines = storyScenes[sceneIndex].lines;
+
+        if (textIndex >= lines.Length - 1)
         {
             SceneManager.LoadScene("Title");
             Debug.Log("文字送り終了");
@@ -36,8 +54,7 @@ public class EndingManager : StoryTextManager
 
         // スライドの最終テキストでない場合、次のテキストを表示
         textIndex++;
-        var textArray = sceneMsgs[sceneIndex].msgs;
-        if (textIndex < textArray.Length)
+        if (textIndex < lines.Length)
         {
             ShowCurrentText();
             return;
@@ -48,7 +65,7 @@ public class EndingManager : StoryTextManager
         textIndex = 0;
 
         // 最終スライドの場合、テキスト送り終了
-        if (sceneIndex >= sceneMsgs.Length)
+        if (sceneIndex >= storyScenes.Length)
         {
             return;
         }
@@ -58,6 +75,21 @@ public class EndingManager : StoryTextManager
 
     private void ShowCurrentText()
     {
-        StartTyping(sceneMsgs[sceneIndex].msgs[textIndex]);
+        StartTyping(GetMessage(storyScenes[sceneIndex].lines[textIndex]));
+    }
+
+    private string GetMessage(StoryLine line)
+    {
+        if (!LanguageManager.Exist)
+        {
+            return line.japanese;
+        }
+
+        return LanguageManager.Instance.CurrentLanguage switch
+        {
+            Language.English => line.english,
+            Language.German => line.german,
+            _ => line.japanese,
+        };
     }
 }

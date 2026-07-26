@@ -11,15 +11,27 @@ using TMPro;
 /// </summary>
 public abstract class StoryTextManager : MonoBehaviour
 {
-    private static readonly char[] LongWaitChars =
+    private static readonly char[] JapaneseLongWaitChars =
     {
         '、',
         '。',
         '！',
     };
 
-    /// <summary>1文字あたりの表示間隔(秒)。全ストーリー画面で共通。</summary>
-    private const float CharInterval = 0.05f;
+    private static readonly char[] LatinLongWaitChars =
+    {
+        ',',
+        '.',
+        '!',
+        '?',
+    };
+
+    /// <summary>日本語1文字あたりの表示間隔(秒)。密度の高い漢字・かな向け。</summary>
+    private const float JapaneseCharInterval = 0.05f;
+
+    /// <summary>英語・ドイツ語1文字あたりの表示間隔(秒)。
+    /// 同じ内容でも文字数が日本語の3〜4倍になるため、日本語より速くして体感の間延びを防ぐ。</summary>
+    private const float LatinCharInterval = 0.02f;
 
     [SerializeField] private TextMeshProUGUI textUI = null;
 
@@ -30,14 +42,19 @@ public abstract class StoryTextManager : MonoBehaviour
     private Coroutine typingCoroutine;
     private WaitForSeconds wait;
     private WaitForSeconds longWait;
+    private char[] longWaitChars;
     private string currentMessage;
 
     protected bool IsTyping { get; private set; }
 
     protected virtual void Awake()
     {
-        wait = new(CharInterval);
-        longWait = new(CharInterval * 4);
+        var isJapanese = !LanguageManager.Exist || LanguageManager.Instance.CurrentLanguage == Language.Japanese;
+        var charInterval = isJapanese ? JapaneseCharInterval : LatinCharInterval;
+        longWaitChars = isJapanese ? JapaneseLongWaitChars : LatinLongWaitChars;
+
+        wait = new(charInterval);
+        longWait = new(charInterval * 4);
     }
 
     private void Update()
@@ -104,7 +121,7 @@ public abstract class StoryTextManager : MonoBehaviour
         {
             sb.Append(c);
             textUI.text = sb.ToString();
-            yield return LongWaitChars.Contains(c)
+            yield return longWaitChars.Contains(c)
                          ? longWait
                          : wait;
         }
