@@ -46,14 +46,25 @@ public class LanguageSelector : MonoBehaviour, IMoveHandler, ISelectHandler, IDe
 
     public void SelectEnglish()
     {
+        Focus();
         SEManager.Instance.Play(SEPath.UI_SELECT);
         SetLanguage(Language.English);
     }
 
     public void SelectJapanese()
     {
+        Focus();
         SEManager.Instance.Play(SEPath.UI_SELECT);
         SetLanguage(Language.Japanese);
+    }
+
+    // マウスでラベルを直接押された場合でも、左右キーの受け口であるこのオブジェクトに選択状態を戻す
+    void Focus()
+    {
+        if (EventSystem.current != null)
+        {
+            EventSystem.current.SetSelectedGameObject(gameObject);
+        }
     }
 
     void SetLanguage(Language language)
