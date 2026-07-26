@@ -1,3 +1,4 @@
+using KanKikuchi.AudioManager;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -45,11 +46,13 @@ public class LanguageSelector : MonoBehaviour, IMoveHandler, ISelectHandler, IDe
 
     public void SelectEnglish()
     {
+        SEManager.Instance.Play(SEPath.UI_SELECT);
         SetLanguage(Language.English);
     }
 
     public void SelectJapanese()
     {
+        SEManager.Instance.Play(SEPath.UI_SELECT);
         SetLanguage(Language.Japanese);
     }
 
