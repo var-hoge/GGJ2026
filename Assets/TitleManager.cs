@@ -43,7 +43,7 @@ public class TitleManager : MonoBehaviour
 
     public void OnStart()
     {
-        SceneManager.LoadScene("IntroStory");
+        SceneManager.LoadScene("GameSettingsScreen");
         SEManager.Instance.Play(SEPath.UI_SELECT);
         GamepadRumble.Play(_submitRumbleStrength, _submitRumbleDuration);
     }
