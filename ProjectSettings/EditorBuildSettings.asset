@@ -12,6 +12,12 @@ EditorBuildSettings:
     path: Assets/Scenes/GameSettingsScreen.unity
     guid: 9305d9f29bf794d54b8d4bcfc2da746c
   - enabled: 1
+    path: Assets/Scenes/LocalMultiplayerScreen.unity
+    guid: 5a60236b13ae343488312cb0a7c94520
+  - enabled: 1
+    path: Assets/Scenes/OnlineScreen.unity
+    guid: bbfed05e942984a6786c07efd9818761
+  - enabled: 1
     path: Assets/Scenes/IntroStory.unity
     guid: b173c120e34e0447ca6b0ea4bbb07082
   - enabled: 1
