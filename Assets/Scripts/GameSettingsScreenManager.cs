@@ -37,6 +37,11 @@ public class GameSettingsScreenManager : MonoBehaviour
         }
     }
 
+    public void OnSolo()
+    {
+        LoadScene("IntroStory");
+    }
+
     public void OnLocalMultiplay()
     {
         LoadScene("LocalMultiplayerScreen");

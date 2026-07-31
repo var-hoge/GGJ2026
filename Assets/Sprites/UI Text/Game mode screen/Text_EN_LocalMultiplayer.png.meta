@@ -5,9 +5,6 @@ TextureImporter:
   - first:
       213: -3700981114082500738
     second: Text_EN_LocalMultiplayer_0
-  - first:
-      213: -1657773427363746103
-    second: Text_EN_LocalMultiplayer_1
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -132,10 +129,10 @@ TextureImporter:
       name: Text_EN_LocalMultiplayer_0
       rect:
         serializedVersion: 2
-        x: 296
-        y: 212
-        width: 587
-        height: 194
+        x: 0
+        y: 0
+        width: 1175
+        height: 406
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -146,28 +143,6 @@ TextureImporter:
       bones: []
       spriteID: e7fdeae094973acc0800000000000000
       internalID: -3700981114082500738
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Text_EN_LocalMultiplayer_1
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 0
-        width: 1175
-        height: 192
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 9cee6efd9d76ef8e0800000000000000
-      internalID: -1657773427363746103
       vertices: []
       indices: 
       edges: []
@@ -187,7 +162,6 @@ TextureImporter:
       entries: []
     nameFileIdTable:
       Text_EN_LocalMultiplayer_0: -3700981114082500738
-      Text_EN_LocalMultiplayer_1: -1657773427363746103
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
