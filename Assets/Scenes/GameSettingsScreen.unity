@@ -222,8 +222,9 @@ GameObject:
   - component: {fileID: 83806381}
   - component: {fileID: 83806383}
   - component: {fileID: 83806382}
+  - component: {fileID: 83806384}
   m_Layer: 5
-  m_Name: LocalMultiPlayertext
+  m_Name: LocalMultiPlayerText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -245,8 +246,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -3.2378, y: -154.03}
-  m_SizeDelta: {x: 183.64, y: 90.06}
+  m_AnchoredPosition: {x: 0, y: -180}
+  m_SizeDelta: {x: 223.25, y: 77.14}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &83806382
 MonoBehaviour:
@@ -286,6 +287,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 83806380}
   m_CullTransparentMesh: 1
+--- !u!114 &83806384
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 83806380}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9e9671fcfff442899aef8c8609a3e84, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedImage
+  _englishSprite: {fileID: -3700981114082500738, guid: 02fb5f8c763a14b3bb9d28f4469205f1, type: 3}
+  _japaneseSprite: {fileID: -6422232070962394082, guid: 2f4e03c538af44f92b8741b7a8eafa94, type: 3}
 --- !u!1 &168496558
 GameObject:
   m_ObjectHideFlags: 0
@@ -649,8 +664,9 @@ GameObject:
   - component: {fileID: 245862166}
   - component: {fileID: 245862168}
   - component: {fileID: 245862167}
+  - component: {fileID: 245862169}
   m_Layer: 5
-  m_Name: Solotext
+  m_Name: SoloText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -672,8 +688,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -249, y: -137.8401}
-  m_SizeDelta: {x: 75.6813, y: 63.68}
+  m_AnchoredPosition: {x: -250, y: -180}
+  m_SizeDelta: {x: 104.69, y: 77.33}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &245862167
 MonoBehaviour:
@@ -695,7 +711,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 2895145835763838901, guid: 28ab1137996864e40905f961c230b330, type: 3}
+  m_Sprite: {fileID: 312085273170416373, guid: 6ee0819252931488dbfb8cfaba0aa019, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -713,6 +729,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 245862165}
   m_CullTransparentMesh: 1
+--- !u!114 &245862169
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 245862165}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9e9671fcfff442899aef8c8609a3e84, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedImage
+  _englishSprite: {fileID: 312085273170416373, guid: 6ee0819252931488dbfb8cfaba0aa019, type: 3}
+  _japaneseSprite: {fileID: -6940801801201406437, guid: 4044c7ed87af745288e6e2a471639db5, type: 3}
 --- !u!1 &472738398
 GameObject:
   m_ObjectHideFlags: 0
@@ -724,8 +754,9 @@ GameObject:
   - component: {fileID: 472738399}
   - component: {fileID: 472738401}
   - component: {fileID: 472738400}
+  - component: {fileID: 472738402}
   m_Layer: 5
-  m_Name: LocalMultiPlayertext (1)
+  m_Name: OnlineMultiPlayText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -747,8 +778,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 253, y: -155}
-  m_SizeDelta: {x: 183.64, y: 66.7971}
+  m_AnchoredPosition: {x: 250, y: -180}
+  m_SizeDelta: {x: 181.83, y: 77.14}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &472738400
 MonoBehaviour:
@@ -788,6 +819,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 472738398}
   m_CullTransparentMesh: 1
+--- !u!114 &472738402
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 472738398}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9e9671fcfff442899aef8c8609a3e84, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedImage
+  _englishSprite: {fileID: -4086451864491754147, guid: 2d8d6f8d9f65541c5bb795b25011ea3b, type: 3}
+  _japaneseSprite: {fileID: -8846681057238767458, guid: 9e795ca68b9d6406fbaad0f3dab0ab69, type: 3}
 --- !u!1 &1294355583
 GameObject:
   m_ObjectHideFlags: 0
@@ -1199,6 +1244,7 @@ GameObject:
   - component: {fileID: 1943747564}
   - component: {fileID: 1943747566}
   - component: {fileID: 1943747565}
+  - component: {fileID: 1943747567}
   m_Layer: 5
   m_Name: ScreenTitle
   m_TagString: Untagged
@@ -1223,7 +1269,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: 0, y: -30}
-  m_SizeDelta: {x: 334.1654, y: 43.5}
+  m_SizeDelta: {x: 329.46, y: 36.67}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1943747565
 MonoBehaviour:
@@ -1263,6 +1309,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1943747563}
   m_CullTransparentMesh: 1
+--- !u!114 &1943747567
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1943747563}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9e9671fcfff442899aef8c8609a3e84, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedImage
+  _englishSprite: {fileID: 8376026525811077270, guid: b9defb90b7e5242479602baa2ec7aafd, type: 3}
+  _japaneseSprite: {fileID: -8416795518836673383, guid: aa7e184cc3d0a457fa9820192e96e39c, type: 3}
 --- !u!1 &1972390735
 GameObject:
   m_ObjectHideFlags: 0

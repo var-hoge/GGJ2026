@@ -5,9 +5,6 @@ TextureImporter:
   - first:
       213: 312085273170416373
     second: Text_EN_Solo_0
-  - first:
-      213: 4439212230397317970
-    second: Text_EN_Solo_1
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -132,10 +129,10 @@ TextureImporter:
       name: Text_EN_Solo_0
       rect:
         serializedVersion: 2
-        x: 15
-        y: 213
-        width: 521
-        height: 194
+        x: 0
+        y: 0
+        width: 551
+        height: 407
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -146,28 +143,6 @@ TextureImporter:
       bones: []
       spriteID: 5f214f607efb45400800000000000000
       internalID: 312085273170416373
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Text_EN_Solo_1
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 0
-        width: 551
-        height: 194
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 253d66be0004b9d30800000000000000
-      internalID: 4439212230397317970
       vertices: []
       indices: 
       edges: []
@@ -187,7 +162,6 @@ TextureImporter:
       entries: []
     nameFileIdTable:
       Text_EN_Solo_0: 312085273170416373
-      Text_EN_Solo_1: 4439212230397317970
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
