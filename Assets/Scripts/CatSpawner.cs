@@ -8,7 +8,13 @@ namespace IsoTools.Examples.Kenney {
 		[SerializeField] private GameObject[] dummyCatPrefabs = null;
 		[SerializeField] private GameObject phantomCatPrefab = null;
 		private IsoWorld iso_world = null;
-		
+
+		/// <summary>生成済みのファントムキャット。生成前は null。</summary>
+		public GameObject PhantomCat { get; private set; }
+
+		/// <summary>ファントムキャットは実行時生成なので、操作権を割り当てる側へ生成を知らせる。</summary>
+		public event System.Action<GameObject> PhantomCatSpawned;
+
 		void Start() {
 			iso_world = IsoWorld.GetWorld(0);
 
@@ -21,10 +27,11 @@ namespace IsoTools.Examples.Kenney {
 			}
 
 			// ファントムキャットを生成
-			Spawn(phantomCatPrefab, 1, 3);
+			PhantomCat = Spawn(phantomCatPrefab, 1, 3);
+			PhantomCatSpawned?.Invoke(PhantomCat);
 		}
 
-		void Spawn(GameObject prefab, float minInclude, float maxInclude)
+		GameObject Spawn(GameObject prefab, float minInclude, float maxInclude)
 		{
 
 			var catObj = Instantiate(prefab, iso_world.transform);
@@ -33,6 +40,8 @@ namespace IsoTools.Examples.Kenney {
 			var dy = Random.Range(minInclude, maxInclude);
 			var cat_iso_obj = catObj.GetComponent<IsoObject>();
 			cat_iso_obj.position = new Vector3(dx, dy, 0.5f);
+
+			return catObj;
 		}
 	}
 }

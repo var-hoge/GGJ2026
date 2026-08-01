@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
 using IsoTools.Physics;
-using System.Linq;
 
 namespace IsoTools.Examples.Kenney {
 	[RequireComponent(typeof(IsoRigidbody))]
@@ -17,14 +16,6 @@ namespace IsoTools.Examples.Kenney {
 		// コンポネント
 		private IsoRigidbody _isoRigidbody = null;
 		private CatDetector _catDetector = null;
-
-		private static readonly (KeyCode keyCode, Vector3 input)[] MoveInputs =
-		{
-			(KeyCode.UpArrow,    Vector3.up),
-			(KeyCode.LeftArrow,  Vector3.left),
-			(KeyCode.DownArrow,  Vector3.down),
-			(KeyCode.RightArrow, Vector3.right),
-		};
 
 		void OnIsoCollisionEnter(IsoCollision iso_collision) {
 			if ( iso_collision.gameObject ) {
@@ -48,8 +39,15 @@ namespace IsoTools.Examples.Kenney {
 			if (_catDetector.CatCaught) return;
 
 			if (Gamepad.current != null) HandleGamepadInput();
-			
+
 			HandleKeyboardInput();
+
+			// 移動は犬猫で共通の入力を使う
+			var moveInput = CharacterMoveInput.Read();
+			if (moveInput != Vector3.zero)
+			{
+				_isoRigidbody.velocity = moveInput * speed;
+			}
 		}
 
 		void HandleGamepadInput()
@@ -71,13 +69,6 @@ namespace IsoTools.Examples.Kenney {
 						targetRotation,
 						rotateSpeed * Time.deltaTime
 					);
-			}
-
-			// 移動
-			var moveInput = Gamepad.current.leftStick.ReadValue();
-			if (!moveInput.Equals(Vector2.zero))
-			{
-				_isoRigidbody.velocity = moveInput * speed;
 			}
 		}
 
@@ -101,12 +92,6 @@ namespace IsoTools.Examples.Kenney {
 					0,
 					-rotateSpeed * Time.deltaTime
 				);
-			}
-
-			var keyInput = MoveInputs.FirstOrDefault(v => Input.GetKey(v.keyCode)).input;
-			if (!keyInput.Equals(Vector3.zero))
-			{
-				_isoRigidbody.velocity = keyInput * speed;
 			}
 		}
 	}

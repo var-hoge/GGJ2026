@@ -34,30 +34,12 @@ namespace IsoTools.Examples.Kenney {
 			{
 				return;
 			}
-			
-			// 左下方向に移動
-			if ( Input.GetKey(KeyCode.A) ) {
-				var velocity = _isoRigidbody.velocity;
-				velocity.x = -speed;
-				_isoRigidbody.velocity = velocity;
-			}
-			// 右上方向に移動
-			else if ( Input.GetKey(KeyCode.D) ) {
-				var velocity = _isoRigidbody.velocity;
-				velocity.x = speed;
-				_isoRigidbody.velocity = velocity;
-			}
-			// 右下方向に移動
-			else if ( Input.GetKey(KeyCode.S) ) {
-				var velocity = _isoRigidbody.velocity;
-				velocity.y = -speed;
-				_isoRigidbody.velocity = velocity;
-			}
-			// 左上方向に移動
-			else if ( Input.GetKey(KeyCode.W) ) {
-				var velocity = _isoRigidbody.velocity;
-				velocity.y = speed;
-				_isoRigidbody.velocity = velocity;
+
+			// 移動は犬猫で共通の入力を使う
+			var moveInput = CharacterMoveInput.Read();
+			if (moveInput != Vector3.zero)
+			{
+				_isoRigidbody.velocity = moveInput * speed;
 			}
 		}
 	}

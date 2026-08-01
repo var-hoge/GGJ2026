@@ -2369,6 +2369,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1787647166}
   - component: {fileID: 1787647167}
+  - component: {fileID: 1787647168}
   m_Layer: 0
   m_Name: Spawner
   m_TagString: Untagged
@@ -3418,6 +3419,32 @@ MonoBehaviour:
   _snappingDistance: 0.2
   _showDepends: 1
   _showQuadTree: 0
+--- !u!114 &1787647168
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1787647165}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e910b24c9a544e8beee6ad6673aa182, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerCharacterBinder
+  _policeDogController: {fileID: 1787647169}
+  _catSpawner: {fileID: 1787647167}
+  _fallbackCharacter: 1
+--- !u!114 &1787647169 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 11484120, guid: b89b96b93724d4f7489cd31f4f2fda48, type: 3}
+  m_PrefabInstance: {fileID: 633717312}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 714557b7bad714f488f0567ad164c128, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
