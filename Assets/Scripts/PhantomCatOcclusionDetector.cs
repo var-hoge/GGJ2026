@@ -6,10 +6,10 @@ using System.Collections.Generic;
 namespace IsoTools.Examples.Kenney {
 	public class PhantomCatOcclusionDetector : MonoBehaviour {
 
-		// IsoWorldプレハブ内の建物コンテナ名
-		private const string ObstacleRootName = "Buildings";
-
 		[SerializeField] private SpriteRenderer _spriteRenderer = null;
+
+		[Header("遮蔽物のコンテナ名 (IsoWorldプレハブ内)")]
+		[SerializeField] private string[] _obstacleRootNames = { "Buildings", "Fences", "Trees" };
 
 		[Header("隠れたときのSEを再生する最短間隔(秒)")]
 		[SerializeField] private float _seMinInterval = 2f;
@@ -24,12 +24,7 @@ namespace IsoTools.Examples.Kenney {
 				_spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 			}
 
-			var obstacle_root = GameObject.Find(ObstacleRootName);
-			if ( obstacle_root ) {
-				obstacle_root.GetComponentsInChildren(_obstacleRenderers);
-			} else {
-				Debug.LogWarning($"PhantomCatOcclusionDetector. {ObstacleRootName} not found!");
-			}
+			CollectObstacleRenderers();
 
 			// IsoWorldがLateUpdateで描画順(z値)を確定させた後に判定する
 			var wait = new WaitForEndOfFrame();
@@ -40,6 +35,24 @@ namespace IsoTools.Examples.Kenney {
 					PlayHiddenSe();
 				}
 				IsHidden = hidden;
+			}
+		}
+
+		/// <summary>建物・フェンス・木など、猫を隠しうるものの SpriteRenderer をまとめて集める。</summary>
+		void CollectObstacleRenderers() {
+			_obstacleRenderers.Clear();
+
+			var buffer = new List<SpriteRenderer>();
+			for ( int i = 0, e = _obstacleRootNames.Length; i < e; ++i ) {
+				var root_name = _obstacleRootNames[i];
+				var obstacle_root = GameObject.Find(root_name);
+				if ( !obstacle_root ) {
+					Debug.LogWarning($"PhantomCatOcclusionDetector. {root_name} not found!");
+					continue;
+				}
+				// GetComponentsInChildrenは渡したリストを毎回クリアするので、別のリストで受けて足していく
+				obstacle_root.GetComponentsInChildren(buffer);
+				_obstacleRenderers.AddRange(buffer);
 			}
 		}
 

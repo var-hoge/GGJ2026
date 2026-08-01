@@ -282,6 +282,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _spriteRenderer: {fileID: 3967134705756591929}
+  _obstacleRootNames:
+  - Buildings
+  - Fences
+  - Trees
   _seMinInterval: 2
 --- !u!114 &3691357924681357913
 MonoBehaviour:
