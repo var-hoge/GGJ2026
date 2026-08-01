@@ -5,9 +5,6 @@ TextureImporter:
   - first:
       213: 9222404741487290907
     second: Text_JP_OnlineTitle_0
-  - first:
-      213: 7132516199895799922
-    second: Text_JP_OnlineTitle_1
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -133,9 +130,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 5
-        width: 1152
-        height: 236
+        y: 0
+        width: 1739
+        height: 241
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -146,28 +143,6 @@ TextureImporter:
       bones: []
       spriteID: b1a6a3fff309cff70800000000000000
       internalID: 9222404741487290907
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Text_JP_OnlineTitle_1
-      rect:
-        serializedVersion: 2
-        x: 1177
-        y: 0
-        width: 562
-        height: 241
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 2781281b1b9cbf260800000000000000
-      internalID: 7132516199895799922
       vertices: []
       indices: 
       edges: []
@@ -187,7 +162,6 @@ TextureImporter:
       entries: []
     nameFileIdTable:
       Text_JP_OnlineTitle_0: 9222404741487290907
-      Text_JP_OnlineTitle_1: 7132516199895799922
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
