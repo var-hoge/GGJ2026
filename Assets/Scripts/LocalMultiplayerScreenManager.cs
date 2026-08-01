@@ -3,7 +3,6 @@ using KanKikuchi.AudioManager;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary>
@@ -124,6 +123,12 @@ public class LocalMultiplayerScreenManager : MonoBehaviour
         }
     }
 
+    /// <summary>ロビーを新規作成した場合も既存のロビーに入った場合も、次はキャラクター選択に進む。</summary>
+    public void OnEnterLobby()
+    {
+        LoadScene("CharacterSelectionScreen");
+    }
+
     public void OnBack()
     {
         LoadScene("GameSettingsScreen");
@@ -131,7 +136,7 @@ public class LocalMultiplayerScreenManager : MonoBehaviour
 
     void LoadScene(string sceneName)
     {
-        SceneManager.LoadScene(sceneName);
+        ScreenHistory.LoadScene(sceneName);
         SEManager.Instance.Play(SEPath.UI_SELECT);
         GamepadRumble.Play(_submitRumbleStrength, _submitRumbleDuration);
     }

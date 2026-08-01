@@ -771,7 +771,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 433520627}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 168496563}
+        m_TargetAssemblyTypeName: LocalMultiplayerScreenManager, Assembly-CSharp
+        m_MethodName: OnEnterLobby
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument:
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &433520627
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1460,7 +1472,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1157030296}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 168496563}
+        m_TargetAssemblyTypeName: LocalMultiplayerScreenManager, Assembly-CSharp
+        m_MethodName: OnEnterLobby
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument:
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1157030296
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1748,7 +1772,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1406041082}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 168496563}
+        m_TargetAssemblyTypeName: LocalMultiplayerScreenManager, Assembly-CSharp
+        m_MethodName: OnEnterLobby
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument:
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1406041082
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2139,7 +2175,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1865291685}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 168496563}
+        m_TargetAssemblyTypeName: LocalMultiplayerScreenManager, Assembly-CSharp
+        m_MethodName: OnEnterLobby
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument:
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1865291685
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -423,6 +423,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CharacterSelectionScreenManager
   _defaultSelectedButton: {fileID: 1294355583}
+  _fallbackBackScene: LocalMultiplayerScreen
   _submitRumbleStrength: 0.3
   _submitRumbleDuration: 0.1
 --- !u!1 &217691381
@@ -676,7 +677,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1294355586}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 168496563}
+        m_TargetAssemblyTypeName: CharacterSelectionScreenManager, Assembly-CSharp
+        m_MethodName: OnSelectPhantomCat
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument:
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1294355586
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1156,7 +1169,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1972390738}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 168496563}
+        m_TargetAssemblyTypeName: CharacterSelectionScreenManager, Assembly-CSharp
+        m_MethodName: OnSelectPoliceDog
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument:
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1972390738
 MonoBehaviour:
   m_ObjectHideFlags: 0

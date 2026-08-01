@@ -3,7 +3,6 @@ using KanKikuchi.AudioManager;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary>
@@ -131,7 +130,7 @@ public class OnlineScreenManager : MonoBehaviour
 
     void LoadScene(string sceneName)
     {
-        SceneManager.LoadScene(sceneName);
+        ScreenHistory.LoadScene(sceneName);
         SEManager.Instance.Play(SEPath.UI_SELECT);
         GamepadRumble.Play(_submitRumbleStrength, _submitRumbleDuration);
     }

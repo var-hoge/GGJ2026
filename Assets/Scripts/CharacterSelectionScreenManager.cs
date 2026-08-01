@@ -2,7 +2,6 @@ using KanKikuchi.AudioManager;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 
 /// <summary>
 /// キャラクター選択画面の遷移とキー操作を管理する。
@@ -10,6 +9,10 @@ using UnityEngine.SceneManagement;
 public class CharacterSelectionScreenManager : MonoBehaviour
 {
     [SerializeField] GameObject _defaultSelectedButton;
+
+    [Header("戻る先")]
+    [Tooltip("直前の画面が分からないとき (このシーンを直接再生したときなど) に戻る画面")]
+    [SerializeField] string _fallbackBackScene = "LocalMultiplayerScreen";
 
     [Header("決定したときのコントローラーの振動")]
     [SerializeField, Range(0f, 1f)] float _submitRumbleStrength = 0.3f;
@@ -37,14 +40,35 @@ public class CharacterSelectionScreenManager : MonoBehaviour
         }
     }
 
+    public void OnSelectPhantomCat()
+    {
+        SelectCharacter(PlayableCharacter.PhantomCat);
+    }
+
+    public void OnSelectPoliceDog()
+    {
+        SelectCharacter(PlayableCharacter.PoliceDog);
+    }
+
+    /// <summary>選んだキャラクターは後続の画面から参照されるので記録してから次へ進む。</summary>
+    void SelectCharacter(PlayableCharacter character)
+    {
+        CharacterSelection.Select(character);
+        LoadScene("IntroStory");
+    }
+
+    /// <summary>
+    /// この画面はローカル対戦とオンライン対戦の両方から来るので、遷移元の画面に戻る。
+    /// </summary>
     public void OnBack()
     {
-        LoadScene("GameSettingsScreen");
+        var previous = ScreenHistory.PreviousSceneName;
+        LoadScene(string.IsNullOrEmpty(previous) ? _fallbackBackScene : previous);
     }
 
     void LoadScene(string sceneName)
     {
-        SceneManager.LoadScene(sceneName);
+        ScreenHistory.LoadScene(sceneName);
         SEManager.Instance.Play(SEPath.UI_SELECT);
         GamepadRumble.Play(_submitRumbleStrength, _submitRumbleDuration);
     }

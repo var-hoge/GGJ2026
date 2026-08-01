@@ -2,7 +2,6 @@ using KanKikuchi.AudioManager;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 
 /// <summary>
 /// ゲームモード選択画面の遷移とキー操作を管理する。
@@ -59,7 +58,7 @@ public class GameSettingsScreenManager : MonoBehaviour
 
     void LoadScene(string sceneName)
     {
-        SceneManager.LoadScene(sceneName);
+        ScreenHistory.LoadScene(sceneName);
         SEManager.Instance.Play(SEPath.UI_SELECT);
         GamepadRumble.Play(_submitRumbleStrength, _submitRumbleDuration);
     }
