@@ -13,6 +13,22 @@ namespace IsoTools.Internal {
 	public class IsoSortingSolver {
 		List<Renderer> _tmpRenderers = new List<Renderer>();
 
+		/// <summary>配置順を一意に決めるための一時リスト。毎フレーム使い回す。</summary>
+		List<PlaceOrderEntry> _placeOrder = new List<PlaceOrderEntry>();
+
+		struct PlaceOrderEntry {
+			public float     ScreenY;
+			public int       InstanceId;
+			public IsoObject Object;
+		}
+
+		// 画面手前 (ScreenYが小さい) ほど先。同値のときは実体で決めて完全な順序にする
+		static readonly System.Comparison<PlaceOrderEntry> _placeOrderComparison =
+			delegate(PlaceOrderEntry a, PlaceOrderEntry b) {
+				var cmp = a.ScreenY.CompareTo(b.ScreenY);
+				return cmp != 0 ? cmp : a.InstanceId.CompareTo(b.InstanceId);
+			};
+
 		// ---------------------------------------------------------------------
 		//
 		// Callbacks
@@ -163,10 +179,27 @@ namespace IsoTools.Internal {
 			var step_depth   = iso_world.stepDepth;
 			var start_depth  = iso_world.startDepth;
 			var cur_visibles = screen_solver.curVisibles;
+
+			// 可視リストは四分木の巡回順で毎フレーム作り直されるため並びが安定しない。
+			// 依存が循環したとき RecursivePlaceIsoObject は先に到達した方を優先して
+			// 残りの依存を捨てるので、並びが変わると同じ配置でも前後が入れ替わってしまう。
+			// 画面の手前から順に走査することで結果を一意にし、循環時も手前のものが優先されるようにする
+			_placeOrder.Clear();
 			for ( int i = 0, e = cur_visibles.Count; i < e; ++i ) {
-				start_depth = RecursivePlaceIsoObject(
-					cur_visibles[i], step_depth, start_depth);
+				var iso_object = cur_visibles[i];
+				var entry = new PlaceOrderEntry();
+				entry.ScreenY    = iso_world.IsoToScreen(iso_object.position).y;
+				entry.InstanceId = iso_object.GetInstanceID();
+				entry.Object     = iso_object;
+				_placeOrder.Add(entry);
 			}
+			_placeOrder.Sort(_placeOrderComparison);
+
+			for ( int i = 0, e = _placeOrder.Count; i < e; ++i ) {
+				start_depth = RecursivePlaceIsoObject(
+					_placeOrder[i].Object, step_depth, start_depth);
+			}
+			_placeOrder.Clear();
 		}
 
 		float RecursivePlaceIsoObject(IsoObject iso_object, float step_depth, float start_depth) {

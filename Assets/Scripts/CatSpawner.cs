@@ -4,6 +4,12 @@ using System.Collections;
 namespace IsoTools.Examples.Kenney {
 	public class CatSpawner : MonoBehaviour {
 
+		/// <summary>
+		/// 地面の高さ。床タイルは z が 0 から 0.53 までの厚みを持つブロックなので、
+		/// その上に立つものはこの高さに置く。フェンス・木・プレイヤーも同じ値で配置されている。
+		/// </summary>
+		private const float GroundHeight = 0.53f;
+
 		[SerializeField, Range(0, 200)] private int maxCatCount = 50;
 		[SerializeField] private GameObject[] dummyCatPrefabs = null;
 		[SerializeField] private GameObject phantomCatPrefab = null;
@@ -39,7 +45,7 @@ namespace IsoTools.Examples.Kenney {
 			var dx = Random.Range(minInclude, maxInclude);
 			var dy = Random.Range(minInclude, maxInclude);
 			var cat_iso_obj = catObj.GetComponent<IsoObject>();
-			cat_iso_obj.position = new Vector3(dx, dy, 0.5f);
+			cat_iso_obj.position = new Vector3(dx, dy, GroundHeight);
 
 			return catObj;
 		}
