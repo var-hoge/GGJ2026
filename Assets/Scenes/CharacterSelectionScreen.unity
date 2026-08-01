@@ -301,6 +301,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedImage
   _englishSprite: {fileID: 3638680645805931043, guid: c38ad8386e5704e22aac21953d79ae1f, type: 3}
   _japaneseSprite: {fileID: 1327103922158843050, guid: 4d177906726724a7eaac1497ffa762b7, type: 3}
+  _germanSprite: {fileID: -9011715673867178794, guid: afb96378d4f7d4cd7ba3d3c0c6f54a87, type: 3}
 --- !u!1 &168496558
 GameObject:
   m_ObjectHideFlags: 0
@@ -595,6 +596,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedImage
   _englishSprite: {fileID: -75838052390759118, guid: eda82b75556cf4092af62671449d00b1, type: 3}
   _japaneseSprite: {fileID: -5349370997513895018, guid: a63f24d5091e64c00980c9700c5b8086, type: 3}
+  _germanSprite: {fileID: 1676047908412428415, guid: 7502585d557334a8fb148cf8deb59604, type: 3}
 --- !u!1 &1294355583
 GameObject:
   m_ObjectHideFlags: 0
@@ -1087,6 +1089,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedImage
   _englishSprite: {fileID: 5058780711273342345, guid: 1ca8d64b1aa934625838f3647d2b8883, type: 3}
   _japaneseSprite: {fileID: 5898184514563715864, guid: ef120b38fac0e47b7a3a32cbfb16e974, type: 3}
+  _germanSprite: {fileID: -8018434443900779962, guid: 5042a5e8e3e9e45729bafda5a71f67ec, type: 3}
 --- !u!1 &1972390735
 GameObject:
   m_ObjectHideFlags: 0

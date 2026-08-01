@@ -573,6 +573,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedText
   _englishText: "：Rotate Light"
   _japaneseText: "：ライト回転"
+  _germanText: "：Licht drehen"
 --- !u!1 &5647812242780135462
 GameObject:
   m_ObjectHideFlags: 0
@@ -966,6 +967,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedText
   _englishText: "：Catch!"
   _japaneseText: "：キャッチ！"
+  _germanText: "：Fangen!"
 --- !u!1001 &8230864202363531717
 PrefabInstance:
   m_ObjectHideFlags: 0

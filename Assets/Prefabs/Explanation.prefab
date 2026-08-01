@@ -253,3 +253,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedText
   _englishText: "：Move"
   _japaneseText: "：移動"
+  _germanText: "：Bewegen"

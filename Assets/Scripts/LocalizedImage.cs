@@ -10,6 +10,7 @@ public class LocalizedImage : MonoBehaviour
 
     [SerializeField] Sprite _englishSprite;
     [SerializeField] Sprite _japaneseSprite;
+    [SerializeField] Sprite _germanSprite;
 
     Image _image;
     RectTransform _rectTransform;
@@ -42,7 +43,13 @@ public class LocalizedImage : MonoBehaviour
 
     void UpdateSprite(Language language)
     {
-        var sprite = language == Language.English ? _englishSprite : _japaneseSprite;
+        // ドイツ語版が未用意のものは英語を代わりに出す (日本語より読める人が多いため)
+        var sprite = language switch
+        {
+            Language.English => _englishSprite,
+            Language.German => _germanSprite != null ? _germanSprite : _englishSprite,
+            _ => _japaneseSprite,
+        };
         _image.sprite = sprite;
 
         if (sprite != null)

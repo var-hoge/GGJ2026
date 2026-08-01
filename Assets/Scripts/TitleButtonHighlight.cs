@@ -6,7 +6,8 @@ using UnityEngine.UI;
 
 public class TitleButtonHighlight : MonoBehaviour, ISelectHandler, IDeselectHandler, IPointerEnterHandler
 {
-    static readonly Color UnselectedColor = new Color(0.69f, 0.69f, 0.69f, 1f);
+    /// <summary>選択されていないときの色。区切り線など、選択対象でない飾りにも同じ色を使う。</summary>
+    public static readonly Color UnselectedColor = new Color(0.69f, 0.69f, 0.69f, 1f);
     const float SelectedScale = 1.15f;
     const float TweenDuration = 0.15f;
 

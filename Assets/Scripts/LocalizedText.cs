@@ -6,6 +6,7 @@ public class LocalizedText : MonoBehaviour
 {
     [SerializeField] string _englishText;
     [SerializeField] string _japaneseText;
+    [SerializeField] string _germanText;
 
     TextMeshProUGUI _text;
 
@@ -36,6 +37,12 @@ public class LocalizedText : MonoBehaviour
 
     void UpdateText(Language language)
     {
-        _text.text = language == Language.English ? _englishText : _japaneseText;
+        // ドイツ語訳が未入力のものは英語を代わりに出す (日本語より読める人が多いため)
+        _text.text = language switch
+        {
+            Language.English => _englishText,
+            Language.German => !string.IsNullOrEmpty(_germanText) ? _germanText : _englishText,
+            _ => _japaneseText,
+        };
     }
 }

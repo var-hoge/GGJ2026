@@ -560,6 +560,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedImage
   _englishSprite: {fileID: -7358406344588681650, guid: 5efa1bbe611b54859ab509ff5dc9b25a, type: 3}
   _japaneseSprite: {fileID: 7533015959465011520, guid: 30592a3d138444becb73834f46469b8a, type: 3}
+  _germanSprite: {fileID: -9065778803206288500, guid: 18f21b4722a944a2f80b5c80d9694d50, type: 3}
 --- !u!114 &259706304
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -650,6 +651,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedImage
   _englishSprite: {fileID: -1282652631715804347, guid: e50002a53d9264d78be91fff84684061, type: 3}
   _japaneseSprite: {fileID: -6728993661027330244, guid: a1fc67d1b38a04ea49208962ecc22bd9, type: 3}
+  _germanSprite: {fileID: -6329018108635051833, guid: f3a19a5c4ab5b45f588a747f18b96440, type: 3}
 --- !u!114 &335682857
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -838,6 +840,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedImage
   _englishSprite: {fileID: -5971846903237085556, guid: 57a29a591a8fc48529deaf145efe84d0, type: 3}
   _japaneseSprite: {fileID: -6827487430818494532, guid: 8a00bcc4b96eb4c39b2d5a0ca6392666, type: 3}
+  _germanSprite: {fileID: 7281715422724830226, guid: 29439820691854969b2236ea45715c1d, type: 3}
 --- !u!1 &441514819
 GameObject:
   m_ObjectHideFlags: 0
@@ -1664,6 +1667,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedImage
   _englishSprite: {fileID: -7084058925461015081, guid: 0ee04ba7c61604f54a7b671b9195a79f, type: 3}
   _japaneseSprite: {fileID: 6447859113745434632, guid: 35f0c58a353354210bf7ff8de432c89a, type: 3}
+  _germanSprite: {fileID: -9155737397867452411, guid: 25945fa41b57c41eda73715e92bec543, type: 3}
 --- !u!1 &1406041079
 GameObject:
   m_ObjectHideFlags: 0
@@ -2283,6 +2287,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedImage
   _englishSprite: {fileID: -4420109136282132642, guid: c90f365644372480f9bfe6a897f1f9d5, type: 3}
   _japaneseSprite: {fileID: 9222404741487290907, guid: 21ee7a6f3b2c94a2889eb1e3e217b5b0, type: 3}
+  _germanSprite: {fileID: -483303070904744936, guid: 853a3dcc8a66049b48630511a7c21adf, type: 3}
 --- !u!1001 &1948322884
 PrefabInstance:
   m_ObjectHideFlags: 0
