@@ -5,15 +5,6 @@ TextureImporter:
   - first:
       213: 2259999777548873752
     second: chibi_2_0
-  - first:
-      213: 2066710148760970105
-    second: chibi_2_1
-  - first:
-      213: 3105878116495436677
-    second: chibi_2_2
-  - first:
-      213: -5447321093377023354
-    second: chibi_2_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -139,9 +130,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 245
-        width: 32
-        height: 32
+        y: 0
+        width: 340
+        height: 410
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -152,72 +143,6 @@ TextureImporter:
       bones: []
       spriteID: 810334dd2d12d5f10800000000000000
       internalID: 2259999777548873752
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: chibi_2_1
-      rect:
-        serializedVersion: 2
-        x: 5
-        y: 271
-        width: 22
-        height: 23
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 973a79e2eed6eac10800000000000000
-      internalID: 2066710148760970105
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: chibi_2_2
-      rect:
-        serializedVersion: 2
-        x: 13
-        y: 0
-        width: 327
-        height: 410
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 58bae59f0bb4a1b20800000000000000
-      internalID: 3105878116495436677
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: chibi_2_3
-      rect:
-        serializedVersion: 2
-        x: 5
-        y: 223
-        width: 30
-        height: 28
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 68225c3a35a3764b0800000000000000
-      internalID: -5447321093377023354
       vertices: []
       indices: 
       edges: []
@@ -237,9 +162,6 @@ TextureImporter:
       entries: []
     nameFileIdTable:
       chibi_2_0: 2259999777548873752
-      chibi_2_1: 2066710148760970105
-      chibi_2_2: 3105878116495436677
-      chibi_2_3: -5447321093377023354
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

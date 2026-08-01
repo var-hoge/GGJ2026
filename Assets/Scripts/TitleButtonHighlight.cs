@@ -14,20 +14,27 @@ public class TitleButtonHighlight : MonoBehaviour, ISelectHandler, IDeselectHand
     [SerializeField, Range(0f, 1f)] float _selectRumbleStrength = 0.15f;
     [SerializeField] float _selectRumbleDuration = 0.05f;
 
+    [Header("選択中だけ表示するバー (使わないボタンでは未設定でよい)")]
+    [SerializeField] GameObject _selectionBar;
+
     Image _image;
+
+    bool IsSelected =>
+        EventSystem.current != null && EventSystem.current.currentSelectedGameObject == gameObject;
 
     void Awake()
     {
         _image = GetComponent<Image>();
     }
 
-    void Start()
+    // 非表示のオブジェクトには OnDeselect が届かないので、表示に戻った時点の選択状態から見た目を作り直す
+    void OnEnable()
     {
-        if (EventSystem.current == null || EventSystem.current.currentSelectedGameObject != gameObject)
-        {
-            transform.localScale = Vector3.one;
-            _image.color = UnselectedColor;
-        }
+        var selected = IsSelected;
+        transform.DOKill();
+        transform.localScale = selected ? Vector3.one * SelectedScale : Vector3.one;
+        _image.color = selected ? Color.white : UnselectedColor;
+        SetSelectionBarActive(selected);
     }
 
     public void OnSelect(BaseEventData eventData)
@@ -35,6 +42,7 @@ public class TitleButtonHighlight : MonoBehaviour, ISelectHandler, IDeselectHand
         transform.DOKill();
         transform.DOScale(Vector3.one * SelectedScale, TweenDuration).SetEase(Ease.OutBack);
         _image.color = Color.white;
+        SetSelectionBarActive(true);
 
         // シーン開始直後の初期選択では鳴らさない
         if (Time.timeSinceLevelLoad > 0.5f)
@@ -49,6 +57,15 @@ public class TitleButtonHighlight : MonoBehaviour, ISelectHandler, IDeselectHand
         transform.DOKill();
         transform.DOScale(Vector3.one, TweenDuration);
         _image.color = UnselectedColor;
+        SetSelectionBarActive(false);
+    }
+
+    void SetSelectionBarActive(bool active)
+    {
+        if (_selectionBar != null)
+        {
+            _selectionBar.SetActive(active);
+        }
     }
 
     public void OnPointerEnter(PointerEventData eventData)
