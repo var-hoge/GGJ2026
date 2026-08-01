@@ -268,7 +268,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d30e7958159a40258dfe8e1db520027, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::IsoTools.Examples.Kenney.CatController
-  speed: 2
+  speed: 0.8
 --- !u!114 &2469135791357913579
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -282,6 +282,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _spriteRenderer: {fileID: 3967134705756591929}
+  _seMinInterval: 2
 --- !u!114 &3691357924681357913
 MonoBehaviour:
   m_ObjectHideFlags: 0

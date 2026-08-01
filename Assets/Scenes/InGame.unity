@@ -1734,6 +1734,7 @@ GameObject:
   m_Component:
   - component: {fileID: 730535395}
   - component: {fileID: 730535394}
+  - component: {fileID: 730535396}
   m_Layer: 0
   m_Name: GlobalLight2D
   m_TagString: Untagged
@@ -3445,6 +3446,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 714557b7bad714f488f0567ad164c128, type: 3}
   m_Name:
   m_EditorClassIdentifier:
+--- !u!114 &730535396
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 730535393}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cfc2e62914f48aa861177456a6de5de, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::SelectedCharacterGlobalLight
+  _phantomCatColor: {r: 0.3529412, g: 0.3529412, b: 0.3529412, a: 1}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
