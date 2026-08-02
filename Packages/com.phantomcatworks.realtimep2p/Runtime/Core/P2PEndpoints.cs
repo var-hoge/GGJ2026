@@ -32,8 +32,8 @@ namespace PhantomCatWorks.RealtimeP2PKit
         public const string DefaultLocalSignalingWebSocketUrl = "ws://localhost:8787";
 
         // TODO: replace with your actual deployed endpoint (see /server, `pnpm deploy`).
-        public const string DefaultRemoteMatchmakingApiUrl = "https://realtime-p2p-server.example.workers.dev";
-        public const string DefaultRemoteSignalingWebSocketUrl = "wss://realtime-p2p-server.example.workers.dev";
+        public const string DefaultRemoteMatchmakingApiUrl = "https://phantomcat-game-server.phantomcat.workers.dev";
+        public const string DefaultRemoteSignalingWebSocketUrl = "wss://phantomcat-game-server.phantomcat.workers.dev";
 
         /// <summary>
         /// Public STUN servers, tried in order (Unity.WebRTC gathers ICE candidates from

@@ -143,8 +143,8 @@ Editor拡張ウィンドウで、以下を設定できます:
   **切り替えると、その下に表示される入力欄が選択中の環境のものだけに差し替わります**
   (LocalとRemoteが同時に並んで表示されることはありません)。
 - 選択中の環境について
-  - Web API URL(マッチング、例: `http://localhost:8787` / `https://realtime-p2p-server.<account>.workers.dev`)
-  - Signaling WebSocket URL(例: `ws://localhost:8787` / `wss://realtime-p2p-server.<account>.workers.dev`)
+  - Web API URL(マッチング、例: `http://localhost:8787` / `https://phantomcat-game-server.phantomcat.workers.dev`)
+  - Signaling WebSocket URL(例: `ws://localhost:8787` / `wss://phantomcat-game-server.phantomcat.workers.dev`)
   - STUN Server URLs(**上から順に使用される複数エントリのリスト**。↑↓ボタンで並び替え、＋で追加、✕で削除)
 
   を入力し、**Save Local** / **Save Remote**(選択中の環境名がボタンに表示されます)ボタンで
@@ -161,8 +161,8 @@ Editor拡張ウィンドウで、以下を設定できます:
 
 | | Local(既定値) | Remote(既定値) |
 |---|---|---|
-| Web API URL | `http://localhost:8787` | `https://realtime-p2p-server.example.workers.dev`(要変更) |
-| Signaling WebSocket URL | `ws://localhost:8787` | `wss://realtime-p2p-server.example.workers.dev`(要変更) |
+| Web API URL | `http://localhost:8787` | `https://phantomcat-game-server.phantomcat.workers.dev`(要変更) |
+| Signaling WebSocket URL | `ws://localhost:8787` | `wss://phantomcat-game-server.phantomcat.workers.dev`(要変更) |
 | STUN Server URLs | Google / Mozilla の公開STUN(下記) | 同左 |
 
 ```
