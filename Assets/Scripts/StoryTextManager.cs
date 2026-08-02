@@ -2,7 +2,6 @@ using System.Collections;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using TMPro;
 
 /// <summary>
@@ -59,7 +58,7 @@ public abstract class StoryTextManager : MonoBehaviour
 
     private void Update()
     {
-        if (!WasSubmitPressed(out var gamepad)) return;
+        if (!SubmitInput.WasPressed(out var gamepad)) return;
 
         if (gamepad != null)
         {
@@ -74,19 +73,6 @@ public abstract class StoryTextManager : MonoBehaviour
         }
 
         Advance();
-    }
-
-    /// <summary>
-    /// キーボードのスペース、またはコントローラーの南ボタン。
-    /// コントローラーで押された場合のみ gamepad にそのコントローラーが入る。
-    /// </summary>
-    private static bool WasSubmitPressed(out Gamepad gamepad)
-    {
-        gamepad = Gamepad.current;
-        if (gamepad != null && gamepad.buttonSouth.wasPressedThisFrame) return true;
-
-        gamepad = null;
-        return Input.GetKeyDown(KeyCode.Space);
     }
 
     /// <summary>文字送りが終わった状態で入力されたときに呼ばれる。次のメッセージへ進める。</summary>
