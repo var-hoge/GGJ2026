@@ -22,7 +22,7 @@ namespace PhantomCatWorks.RealtimeP2PKit
         private string _url;
         private WebSocket _ws;
 
-        /// <param name="baseWsUrl">e.g. "ws://localhost:8787" or "wss://realtime-p2p-server.example.workers.dev"
+        /// <param name="baseWsUrl">
         /// (see P2PEndpoints.GetSignalingWebSocketUrl()). "/parties/lobby/{playerId}" is appended.</param>
         public LobbyListener(string baseWsUrl)
         {
