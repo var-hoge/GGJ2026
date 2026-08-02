@@ -23,6 +23,12 @@ public class PlayerCharacterBinder : MonoBehaviour
     [Tooltip("キャラクター選択を経ずにこの画面へ来たとき (ソロ経路や InGame の直接再生) に操作するキャラクター")]
     [SerializeField] PlayableCharacter _fallbackCharacter = PlayableCharacter.PoliceDog;
 
+    /// <summary>
+    /// この端末で操作しているキャラクター。まだ居ない (猫が未生成) なら null。
+    /// 頭上マーカーなど、操作対象に追従したいものが参照する。
+    /// </summary>
+    public Transform ControlledCharacter { get; private set; }
+
     bool _appliedToPhantomCat;
 
     void Awake()
@@ -61,6 +67,10 @@ public class PlayerCharacterBinder : MonoBehaviour
         _appliedToPhantomCat = true;
 
         var controlledHere = IsControlledHere(PlayableCharacter.PhantomCat);
+        if (controlledHere)
+        {
+            ControlledCharacter = phantomCat.transform;
+        }
 
         var controller = phantomCat.GetComponent<KenneyCatController>();
         if (controller != null)
@@ -80,9 +90,16 @@ public class PlayerCharacterBinder : MonoBehaviour
 
     void ApplyToPoliceDog()
     {
-        if (_policeDogController != null)
+        if (_policeDogController == null)
         {
-            _policeDogController.enabled = IsControlledHere(PlayableCharacter.PoliceDog);
+            return;
+        }
+
+        var controlledHere = IsControlledHere(PlayableCharacter.PoliceDog);
+        _policeDogController.enabled = controlledHere;
+        if (controlledHere)
+        {
+            ControlledCharacter = _policeDogController.transform;
         }
     }
 
