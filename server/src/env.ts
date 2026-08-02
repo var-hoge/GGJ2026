@@ -5,7 +5,7 @@
  * Room  -> Durable Object namespace, one instance per matched roomId (see party/room.ts).
  */
 export type Env = {
-  DB: D1Database;
+  phantomcat_game_db: D1Database;
   Lobby: DurableObjectNamespace;
   Room: DurableObjectNamespace;
 };

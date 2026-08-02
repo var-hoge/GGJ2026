@@ -57,7 +57,7 @@ cd server
 pnpm install   # または npm install
 
 # D1データベースを作成
-npx wrangler d1 create realtime-p2p-db
+npx wrangler d1 create phantomcat_game_db
 # 出力された database_id を wrangler.jsonc の d1_databases[0].database_id に反映
 
 pnpm db:migrate:remote     # 本番D1にマイグレーション適用

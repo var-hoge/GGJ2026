@@ -27,7 +27,7 @@ matchmaking.post("/join", async (c) => {
   const { playerId } = await c.req.json<{ playerId: string }>();
   if (!playerId) return c.json({ error: "playerId is required" }, 400);
 
-  const db = createDb(c.env.DB);
+  const db = createDb(c.env.phantomcat_game_db);
 
   const existing = await db
     .select()
@@ -104,7 +104,7 @@ matchmaking.post("/join", async (c) => {
 matchmaking.post("/leave", async (c) => {
   const { playerId } = await c.req.json<{ playerId: string }>();
   if (!playerId) return c.json({ error: "playerId is required" }, 400);
-  const db = createDb(c.env.DB);
+  const db = createDb(c.env.phantomcat_game_db);
   await db.delete(queuePlayers).where(eq(queuePlayers.id, playerId));
   return c.json({ status: "ok" });
 });
@@ -112,7 +112,7 @@ matchmaking.post("/leave", async (c) => {
 /** Polling fallback in case the lobby websocket push is missed. */
 matchmaking.get("/status/:playerId", async (c) => {
   const playerId = c.req.param("playerId");
-  const db = createDb(c.env.DB);
+  const db = createDb(c.env.phantomcat_game_db);
   const row = await db.select().from(queuePlayers).where(eq(queuePlayers.id, playerId)).get();
   if (!row) return c.json({ status: "unknown" });
   return c.json({
@@ -120,6 +120,12 @@ matchmaking.get("/status/:playerId", async (c) => {
     roomId: row.roomId ?? null,
     opponentId: row.opponentId ?? null,
   });
+});
+
+matchmaking.get("/rooms", async (c) => {
+  const db = createDb(c.env.phantomcat_game_db);
+  const rows = await db.select().from(queuePlayers);
+  return c.json(rows);
 });
 
 export default matchmaking;
