@@ -48,6 +48,13 @@ public class TitleManager : MonoBehaviour
         GamepadRumble.Play(_submitRumbleStrength, _submitRumbleDuration);
     }
 
+    public void OnCredits()
+    {
+        SceneManager.LoadScene("CreditsScene");
+        SEManager.Instance.Play(SEPath.UI_SELECT);
+        GamepadRumble.Play(_submitRumbleStrength, _submitRumbleDuration);
+    }
+
     public void OnQuit()
     {
 #if UNITY_EDITOR

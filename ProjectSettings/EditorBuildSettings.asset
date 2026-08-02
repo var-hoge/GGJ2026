@@ -38,6 +38,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/VeryHappyEnd.unity
     guid: b2f46c779527b487892ad0c9f92fa886
+  - enabled: 1
+    path: Assets/Scenes/CreditsScene.unity
+    guid: 43c8d8bb2297447128053ef359299001
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 2dada9c8156338644b09f3298faee978, type: 2}
   m_UseUCBPForAssetBundles: 0
