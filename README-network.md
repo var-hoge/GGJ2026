@@ -62,8 +62,12 @@ npx wrangler d1 create phantomcat_game_db
 
 pnpm db:migrate:remote     # 本番D1にマイグレーション適用
 pnpm deploy                # 1コマンドで matching-api + signaling を同時デプロイ
-# => https://realtime-p2p-server.<your-account>.workers.dev が発行される
 ```
+
+※ デプロイが完了しました。以下がremoteの接続先のURLです
+
+https://phantomcat-game-server.phantomcat.workers.dev/
+
 
 ローカル開発:
 
