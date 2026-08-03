@@ -41,7 +41,7 @@ namespace PhantomCatWorks.RealtimeP2PKit.Demo.Editor
             var localGo = GameObject.CreatePrimitive(PrimitiveType.Cube);
             localGo.name = "LocalPlayer";
             ApplyColor(localGo, Color.cyan);
-            localGo.AddComponent<DemoPlayerController>();
+            //localGo.AddComponent<DemoPlayerController>();
             var localPrefab = SaveAsPrefab(localGo, "LocalPlayer");
             Object.DestroyImmediate(localGo);
 
@@ -54,6 +54,7 @@ namespace PhantomCatWorks.RealtimeP2PKit.Demo.Editor
             var config = LoadOrCreateConfig();
 
             // Bootstrap object wiring everything together
+            /*
             var bootstrapGo = new GameObject("DemoBootstrap");
             var bootstrap = bootstrapGo.AddComponent<DemoBootstrap>();
             var so = new SerializedObject(bootstrap);
@@ -61,6 +62,7 @@ namespace PhantomCatWorks.RealtimeP2PKit.Demo.Editor
             so.FindProperty("_localPlayerPrefab").objectReferenceValue = localPrefab;
             so.FindProperty("_remotePlayerPrefab").objectReferenceValue = remotePrefab;
             so.ApplyModifiedPropertiesWithoutUndo();
+            */
 
             EnsureFolder("Assets/Scenes");
             EditorSceneManager.SaveScene(scene, "Assets/Scenes/P2PDemo.unity");
