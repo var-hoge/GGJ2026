@@ -53,7 +53,7 @@ namespace PhantomCatWorks.RealtimeP2PKit
         public P2PSessionInfo Session { get; private set; } = new() { State = P2PSessionState.Idle };
 
         private P2PConfig _config;
-        private IMatchmakingClient _matchmakingClient;
+        private HttpMatchmakingClient _matchmakingClient;
         private LobbyListener _lobbyListener;
         private PartyKitSignalingClient _signalingClient;
         private WebRtcPeerConnection _peerConnection;

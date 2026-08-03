@@ -14,7 +14,7 @@ namespace PhantomCatWorks.RealtimeP2PKit
     ///   POST {baseUrl}/api/matchmaking/join  { playerId } -> MatchmakingResult
     ///   POST {baseUrl}/api/matchmaking/leave { playerId }
     /// </summary>
-    public class HttpMatchmakingClient : IMatchmakingClient
+    public class HttpMatchmakingClient
     {
         private readonly string _baseUrl;
 
@@ -29,7 +29,7 @@ namespace PhantomCatWorks.RealtimeP2PKit
             var body = JsonConvert.SerializeObject(new MatchmakingJoinRequest { playerId = playerId });
             if (P2PLog.ShouldLog(P2PLogLevel.Info)) Debug.Log($"[RealtimeP2PKit][Matchmaking] POST {url}");
 
-            var responseText = await PostJsonAsync("POST", url, body);
+            var responseText = await HttpRequestAsync("POST", url, body);
 
             var result = JsonConvert.DeserializeObject<MatchmakingResult>(responseText);
             if (P2PLog.ShouldLog(P2PLogLevel.Info))
@@ -47,7 +47,7 @@ namespace PhantomCatWorks.RealtimeP2PKit
             if (P2PLog.ShouldLog(P2PLogLevel.Info)) Debug.Log($"[RealtimeP2PKit][Matchmaking] POST {url} (leave)");
             try
             {
-                await PostJsonAsync("POST", url, body);
+                await HttpRequestAsync("POST", url, body);
                 if (P2PLog.ShouldLog(P2PLogLevel.Info)) Debug.Log("[RealtimeP2PKit][Matchmaking] left queue");
             }
             catch (Exception ex)
@@ -56,14 +56,20 @@ namespace PhantomCatWorks.RealtimeP2PKit
             }
         }
 
-        private static async Task<string> PostJsonAsync(string method, string url, string jsonBody)
+        public static async Task<string> HttpRequestAsync(string method, string url, string jsonBody = null)
         {
-            if (P2PNetworkLog.IsEnabled) Debug.Log(P2PNetworkLogFormat.HttpRequest(method, url, jsonBody));
+            if (P2PNetworkLog.IsEnabled)
+            {
+                Debug.Log(P2PNetworkLogFormat.HttpRequest(method, url, jsonBody));
+            }
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 
             using var req = new UnityWebRequest(url, method);
-            var bodyRaw = Encoding.UTF8.GetBytes(jsonBody);
-            req.uploadHandler = new UploadHandlerRaw(bodyRaw);
+            if (!string.IsNullOrEmpty(jsonBody))
+            {
+                var bodyRaw = Encoding.UTF8.GetBytes(jsonBody);
+                req.uploadHandler = new UploadHandlerRaw(bodyRaw);
+            }
             req.downloadHandler = new DownloadHandlerBuffer();
             req.SetRequestHeader("Content-Type", "application/json");
 
