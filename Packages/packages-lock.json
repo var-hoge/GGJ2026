@@ -7,15 +7,6 @@
       "dependencies": {},
       "hash": "c7a7bbf74e102495c2afeb03e4b25ffb802611b7"
     },
-    "com.phantomcatworks.realtimep2p": {
-      "version": "file:com.phantomcatworks.realtimep2p",
-      "depth": 0,
-      "source": "embedded",
-      "dependencies": {
-        "com.unity.webrtc": "3.0.0",
-        "com.unity.nuget.newtonsoft-json": "3.2.2"
-      }
-    },
     "com.unity.2d.animation": {
       "version": "13.0.2",
       "depth": 0,
@@ -156,7 +147,7 @@
     },
     "com.unity.editorcoroutines": {
       "version": "1.0.1",
-      "depth": 2,
+      "depth": 1,
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.com"
@@ -218,7 +209,7 @@
     },
     "com.unity.nuget.newtonsoft-json": {
       "version": "3.2.2",
-      "depth": 1,
+      "depth": 0,
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.com"
@@ -360,7 +351,7 @@
     },
     "com.unity.webrtc": {
       "version": "3.0.0",
-      "depth": 1,
+      "depth": 0,
       "source": "registry",
       "dependencies": {
         "com.unity.modules.audio": "1.0.0",
