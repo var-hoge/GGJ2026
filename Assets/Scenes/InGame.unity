@@ -2548,6 +2548,9 @@ MonoBehaviour:
   _policeDogController: {fileID: 1787647169}
   _catSpawner: {fileID: 1787647167}
   _fallbackCharacter: 1
+  _policeDogOnlyObjects:
+  - {fileID: 1787647171}
+  - {fileID: 1787647170}
 --- !u!114 &1787647169 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 11484120, guid: b89b96b93724d4f7489cd31f4f2fda48, type: 3}
@@ -2559,6 +2562,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 714557b7bad714f488f0567ad164c128, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1787647170 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7220284504451046576, guid: 174441db4fde9441eb6472558aae7afc,
+    type: 3}
+  m_PrefabInstance: {fileID: 5300547366038000786}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1787647171 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5647812242780135462, guid: 174441db4fde9441eb6472558aae7afc,
+    type: 3}
+  m_PrefabInstance: {fileID: 5300547366038000786}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1895964169 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 436798, guid: 30ac80500c27a49038533050879758fd, type: 3}
