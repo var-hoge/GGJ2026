@@ -18,6 +18,12 @@ public class TitleButtonHighlight : MonoBehaviour, ISelectHandler, IDeselectHand
     [Header("選択中だけ表示するバー (使わないボタンでは未設定でよい)")]
     [SerializeField] GameObject _selectionBar;
 
+    [Header("選択状態の見せ方 (別の方法で選択を示す画面ではオフにする)")]
+    [Tooltip("選択中のボタンを拡大する")]
+    [SerializeField] bool _scaleUpWhenSelected = true;
+    [Tooltip("選択していないボタンをグレーアウトする")]
+    [SerializeField] bool _grayOutWhenUnselected = true;
+
     Image _image;
 
     bool IsSelected =>
@@ -32,17 +38,13 @@ public class TitleButtonHighlight : MonoBehaviour, ISelectHandler, IDeselectHand
     void OnEnable()
     {
         var selected = IsSelected;
-        transform.DOKill();
-        transform.localScale = selected ? Vector3.one * SelectedScale : Vector3.one;
-        _image.color = selected ? Color.white : UnselectedColor;
+        ApplyAppearance(selected, animate: false);
         SetSelectionBarActive(selected);
     }
 
     public void OnSelect(BaseEventData eventData)
     {
-        transform.DOKill();
-        transform.DOScale(Vector3.one * SelectedScale, TweenDuration).SetEase(Ease.OutBack);
-        _image.color = Color.white;
+        ApplyAppearance(true, animate: true);
         SetSelectionBarActive(true);
 
         // シーン開始直後の初期選択では鳴らさない
@@ -55,10 +57,35 @@ public class TitleButtonHighlight : MonoBehaviour, ISelectHandler, IDeselectHand
 
     public void OnDeselect(BaseEventData eventData)
     {
-        transform.DOKill();
-        transform.DOScale(Vector3.one, TweenDuration);
-        _image.color = UnselectedColor;
+        ApplyAppearance(false, animate: true);
         SetSelectionBarActive(false);
+    }
+
+    /// <summary>選択状態に合わせて見た目を作る。オフにしている演出には触れず、シーンで設定した見た目のままにする。</summary>
+    void ApplyAppearance(bool selected, bool animate)
+    {
+        if (_scaleUpWhenSelected)
+        {
+            var scale = Vector3.one * (selected ? SelectedScale : 1f);
+            transform.DOKill();
+            if (animate)
+            {
+                var tween = transform.DOScale(scale, TweenDuration);
+                if (selected)
+                {
+                    tween.SetEase(Ease.OutBack);
+                }
+            }
+            else
+            {
+                transform.localScale = scale;
+            }
+        }
+
+        if (_grayOutWhenUnselected)
+        {
+            _image.color = selected ? Color.white : UnselectedColor;
+        }
     }
 
     void SetSelectionBarActive(bool active)
