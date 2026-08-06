@@ -14,10 +14,9 @@ namespace PhantomCatWorks.RealtimeP2PKit.Demo
         [SerializeField] private GameObject _remotePlayerPrefab;
         private bool _playersSpawned;
 
-        // The room UI starts its own request in Start(), so initialize the P2P
-        // service in Awake() to make its button handlers safe regardless of
-        // Unity's Start ordering between scene objects.
-        private void Awake()
+        // Called by SingletonBehaviour.Awake(). Keeping initialization here
+        // avoids hiding Unity's Awake message in the base class.
+        public override void SingleAwake()
         {
             var localPlayerId = PlayerData.LoadSavedPlayerId;
             Debug.Log($"[Demo] local playerId = {localPlayerId}");
@@ -32,7 +31,26 @@ namespace PhantomCatWorks.RealtimeP2PKit.Demo
 
         private void OnDataChannelReady()
         {
+            SpawnPlayersIfNeeded();
+        }
+
+        private void Update()
+        {
+            // The manager's Connected state is authoritative. This fallback
+            // covers a DataChannelReady event that fired before a listener was
+            // attached, or was not reported by a Unity.WebRTC package version.
+            if (P2PManager.Instance.Session.State == P2PSessionState.Connected)
+                SpawnPlayersIfNeeded();
+        }
+
+        private void SpawnPlayersIfNeeded()
+        {
             if (_playersSpawned) return;
+            if (_localPlayerPrefab == null || _remotePlayerPrefab == null)
+            {
+                Debug.LogError("[Demo] LocalPlayer / RemotePlayer prefab is not assigned on NetworkManager.");
+                return;
+            }
             _playersSpawned = true;
             Debug.Log("[Demo] data channel ready, spawning player objects");
             Instantiate(_localPlayerPrefab, Vector3.zero, Quaternion.identity);
