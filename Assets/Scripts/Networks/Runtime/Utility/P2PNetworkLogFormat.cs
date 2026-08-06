@@ -51,6 +51,12 @@ namespace PhantomCatWorks.RealtimeP2PKit
 
         public static string WebRtcReceive(byte[] payload) => $"{Tag} [DataChannel] <- {P2PHexFormat.Preview(payload)}";
 
+        public static string LanSend(byte[] payload) => $"{Tag} [LAN/TCP] -> {P2PHexFormat.Preview(payload)}";
+
+        public static string LanReceive(byte[] payload) => $"{Tag} [LAN/TCP] <- {P2PHexFormat.Preview(payload)}";
+
+        public static string LanDiscovery(string direction, string message) => $"{Tag} [LAN/Discovery] {direction} {message}";
+
         private static string FormatSize(long bytes)
         {
             string[] units = { "B", "KB", "MB", "GB" };

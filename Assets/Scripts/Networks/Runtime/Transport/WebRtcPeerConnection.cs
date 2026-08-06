@@ -15,13 +15,30 @@ namespace PhantomCatWorks.RealtimeP2PKit
     /// establish a direct connection - that is an accepted limitation of this
     /// proof of concept, not a bug.
     /// </summary>
-    public class WebRtcPeerConnection : IDisposable
+    public class WebRtcPeerConnection : ITransport
     {
         public event Action<RTCIceCandidate> LocalIceCandidateGathered;
         public event Action<RTCPeerConnectionState> ConnectionStateChanged;
         public event Action DataChannelOpened;
         public event Action DataChannelClosed;
         public event Action<byte[]> DataReceived;
+
+        // --- ITransport ---
+        // データチャネルの開閉をトランスポート共通の名前で見せる。WebRTC 固有の
+        // DataChannelOpened / DataChannelClosed は P2PManager が引き続き使うので残してある。
+
+        public event Action Opened;
+        public event Action<string> Closed;
+
+        public bool IsOpen => _dataChannel != null && _dataChannel.ReadyState == RTCDataChannelState.Open;
+
+        /// <summary>
+        /// WebRTC は Unity.WebRTC 側のコルーチン (WebRTC.Update) で回っており、
+        /// コールバックも既にメインスレッドで来るため、ここで流すものは無い。
+        /// </summary>
+        public void Poll()
+        {
+        }
 
         private readonly MonoBehaviour _coroutineRunner;
         private readonly P2PConfig _config;
@@ -102,11 +119,13 @@ namespace PhantomCatWorks.RealtimeP2PKit
             {
                 if (P2PLog.ShouldLog(P2PLogLevel.Info)) Debug.Log($"[RealtimeP2PKit][WebRTC] data channel OPEN label='{channel.Label}'");
                 DataChannelOpened?.Invoke();
+                Opened?.Invoke();
             };
             channel.OnClose = () =>
             {
                 if (P2PLog.ShouldLog(P2PLogLevel.Info)) Debug.Log($"[RealtimeP2PKit][WebRTC] data channel CLOSED label='{channel.Label}'");
                 DataChannelClosed?.Invoke();
+                Closed?.Invoke("data channel closed");
             };
             channel.OnMessage = bytes =>
             {

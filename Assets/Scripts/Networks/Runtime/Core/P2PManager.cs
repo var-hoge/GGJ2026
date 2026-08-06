@@ -169,6 +169,11 @@ namespace PhantomCatWorks.RealtimeP2PKit
             await _signalingClient.ConnectAsync(msg.roomId);
         }
 
+        // オンライン対戦を再開するときは、ここで確立した _peerConnection を NetSession へ渡すだけでよい。
+        //     NetSession.Instance.AttachTransport(_peerConnection, Session.IsInitiator ? NetRole.Host : NetRole.Guest);
+        // WebRtcPeerConnection は ITransport を実装済みなので、ゲーム側の同期コード
+        // (Assets/Scripts/Multiplayer) は1行も変えずにそのままオンラインで動く。
+        // ローカル対戦を先に仕上げる方針のため、今はまだ繋いでいない。
         private void OnSignalingConnected()
         {
             SetState(P2PSessionState.Negotiating);

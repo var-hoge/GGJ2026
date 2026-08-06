@@ -22,6 +22,14 @@ namespace IsoTools.Examples.Kenney {
 		public event System.Action<GameObject> PhantomCatSpawned;
 
 		void Start() {
+			// 通信対戦では、猫の配置が両端末で一致していなければゲームが成立しない
+			// (どれが本物かを探す遊びなので、位置がずれると別のゲームになる)。
+			// ホストが決めたシードを使って、同じ乱数列から同じ配置を作る
+			if (NetGameState.HasCatSeed)
+			{
+				Random.InitState(NetGameState.CatSeed);
+			}
+
 			iso_world = IsoWorld.GetWorld(0);
 
 			// ダミーキャットを生成

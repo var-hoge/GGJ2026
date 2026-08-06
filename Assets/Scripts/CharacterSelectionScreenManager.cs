@@ -1,15 +1,18 @@
-using System;
-using System.Collections.Generic;
 using DG.Tweening;
 using KanKikuchi.AudioManager;
+using PhantomCatWorks.RealtimeP2PKit;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.UI;
 
 /// <summary>
 /// キャラクター選択画面の遷移とキー操作を管理する。
 /// 誰がどのキャラクターを選んでいるかは、ボタンの上を移動する「あなた」「相手」のカーソルで示す。
+///
+/// 通信対戦中は、カーソルを動かした時点で相手へ選択が飛び、決定すると
+/// 「両者が決定し、かつ別のキャラクターである」まで待ってから次の画面へ進む。
+/// 同じキャラクターを選んだ場合はホスト側が優先され、参加側の決定は取り消される。
+/// ソロプレイ (未接続) のときは従来どおり、決定した時点で即座に次へ進む。
 /// </summary>
 public class CharacterSelectionScreenManager : MonoBehaviour
 {
@@ -33,6 +36,10 @@ public class CharacterSelectionScreenManager : MonoBehaviour
     [Tooltip("カーソルが動く時間")]
     [SerializeField] float _cursorMoveDuration = 0.2f;
 
+    [Header("相手を待っている間の表示")]
+    [Tooltip("自分だけ決定して相手待ちのときに出す。未設定でも動く")]
+    [SerializeField] GameObject _waitingForOpponentText;
+
     [Header("戻る先")]
     [Tooltip("直前の画面が分からないとき (このシーンを直接再生したときなど) に戻る画面")]
     [SerializeField] string _fallbackBackScene = "LocalMultiplayerScreen";
@@ -41,25 +48,19 @@ public class CharacterSelectionScreenManager : MonoBehaviour
     [SerializeField, Range(0f, 1f)] float _submitRumbleStrength = 0.3f;
     [SerializeField] float _submitRumbleDuration = 0.1f;
 
-    [Header("デバッグ (通信対戦が未実装のための暫定機能)")]
-    [Tooltip("オンにすると A / D キーで相手が選んでいるキャラクターを動かせる。その間 A / D では自分の選択は動かない")]
-    [SerializeField] bool _debugMode;
-
-    /// <summary>相手を動かすデバッグキー。UI の左右移動にも割り当てられている。</summary>
-    static readonly string[] DebugKeyPaths = { "<Keyboard>/a", "<Keyboard>/d" };
-
     /// <summary>自分が選んでいるキャラクター。戻るボタンへ移動しても直前の選択を保つ。</summary>
     PlayableCharacter _youCharacter;
 
     /// <summary>相手が選んでいるキャラクター。まだ選んでいなければ null。</summary>
     PlayableCharacter? _opponentCharacter;
 
-    bool _wasDebugMode;
+    bool _youConfirmed;
+    bool _opponentConfirmed;
 
-    /// <summary>UI の移動操作。デバッグ中だけ A / D の割り当てを外すために持っておく。</summary>
-    InputAction _moveAction;
+    /// <summary>ホストがシードを配り終えた (または自分がホストで配った) か。</summary>
+    bool _startAgreed;
 
-    readonly List<int> _debugKeyBindings = new List<int>();
+    bool IsNetworked => NetSession.IsActive;
 
     void Start()
     {
@@ -68,14 +69,32 @@ public class CharacterSelectionScreenManager : MonoBehaviour
         // 画面が出た時点ではカーソルは動かさず、選ばれているところに置く
         ApplyCursors(instant: true);
 
-        FindDebugKeyBindings();
+        if (_waitingForOpponentText != null) _waitingForOpponentText.SetActive(false);
+
+        // 相手にも自分の初期位置を知らせておく
+        SendMySelection();
+    }
+
+    void OnEnable()
+    {
+        if (!IsNetworked) return;
+
+        var session = NetSession.Instance;
+        session.RegisterPacketHandler<CharacterSelectionPacket>(GameNetPacketId.CharacterSelection, OnOpponentSelection);
+        session.RegisterPacketHandler<GameStartPacket>(GameNetPacketId.GameStart, OnGameStart);
+        session.Disconnected += OnDisconnected;
     }
 
     void OnDisable()
     {
-        // 移動操作の割り当ては画面をまたいで残るので、必ず元に戻してから抜ける
-        SetDebugKeysUsedForNavigation(true);
-        _wasDebugMode = false;
+        // ソロプレイでは OnEnable で何も登録していない。ここで Instance を触ると
+        // 不要な常駐オブジェクトが生まれてしまうので、存在確認してから片付ける
+        if (!NetSession.Exists) return;
+
+        var session = NetSession.Instance;
+        session.UnregisterPacketHandler(GameNetPacketId.CharacterSelection);
+        session.UnregisterPacketHandler(GameNetPacketId.GameStart);
+        session.Disconnected -= OnDisconnected;
     }
 
     void OnDestroy()
@@ -86,12 +105,13 @@ public class CharacterSelectionScreenManager : MonoBehaviour
 
     void Update()
     {
-        UpdateDebugOpponent();
-
         if (EventSystem.current == null)
         {
             return;
         }
+
+        // 自分が決定した後はカーソルを動かさない (相手待ちのため)
+        if (_youConfirmed) return;
 
         // 背景クリック等で選択が外れてもパッド操作が効くように復帰させる
         var selected = EventSystem.current.currentSelectedGameObject;
@@ -114,7 +134,91 @@ public class CharacterSelectionScreenManager : MonoBehaviour
         }
     }
 
-    /// <summary>通信対戦の実装後は、相手から届いた選択でこれを呼ぶ。</summary>
+    // -----------------------------------------------------------------
+    // 通信
+    // -----------------------------------------------------------------
+
+    void SendMySelection()
+    {
+        if (!IsNetworked) return;
+
+        NetSession.Instance.Send(GameNetPacketId.CharacterSelection, new CharacterSelectionPacket
+        {
+            Character = (byte)_youCharacter,
+            Confirmed = _youConfirmed,
+        });
+    }
+
+    void OnOpponentSelection(CharacterSelectionPacket packet)
+    {
+        var character = packet.AsCharacter();
+        _opponentConfirmed = packet.Confirmed;
+        SetOpponentCharacter(character);
+
+        // 同じキャラクターを取り合った場合はホストを優先する。
+        // 参加側は決定を取り消して選び直す
+        if (_youConfirmed && _opponentConfirmed && character == _youCharacter && !NetSession.IsHost)
+        {
+            _youConfirmed = false;
+            if (_waitingForOpponentText != null) _waitingForOpponentText.SetActive(false);
+            SEManager.Instance.Play(SEPath.UI_SELECT);
+            SendMySelection();
+            return;
+        }
+
+        TryStartGame();
+    }
+
+    void OnGameStart(GameStartPacket packet)
+    {
+        // 参加側はホストが決めたシードを使う。これが揃わないと猫の配置が食い違う
+        NetGameState.SetCatSeed(packet.CatSeed);
+        NetGameState.SetOpponentCharacter(_opponentCharacter);
+        ProceedToGame();
+    }
+
+    /// <summary>両者が別々のキャラクターで決定していれば、ホストが開始を宣言する。</summary>
+    void TryStartGame()
+    {
+        if (_startAgreed) return;
+        if (!_youConfirmed || !_opponentConfirmed) return;
+        if (_opponentCharacter == _youCharacter) return;
+
+        if (!NetSession.IsHost)
+        {
+            // 参加側はホストからの GameStart を待つ
+            return;
+        }
+
+        var seed = Random.Range(int.MinValue, int.MaxValue);
+        NetGameState.SetCatSeed(seed);
+        NetGameState.SetOpponentCharacter(_opponentCharacter);
+        NetSession.Instance.Send(GameNetPacketId.GameStart, new GameStartPacket { CatSeed = seed });
+        ProceedToGame();
+    }
+
+    void ProceedToGame()
+    {
+        if (_startAgreed) return;
+        _startAgreed = true;
+
+        CharacterSelection.Select(_youCharacter);
+        LoadScene("IntroStory");
+    }
+
+    void OnDisconnected(string reason)
+    {
+        Debug.LogWarning($"対戦相手との接続が切れました: {reason}");
+        NetSession.Instance.Shutdown();
+        NetGameState.Clear();
+        LoadScene(_fallbackBackScene);
+    }
+
+    // -----------------------------------------------------------------
+    // カーソル表示
+    // -----------------------------------------------------------------
+
+    /// <summary>相手から届いた選択を反映する。</summary>
     public void SetOpponentCharacter(PlayableCharacter? character)
     {
         if (_opponentCharacter == character)
@@ -135,6 +239,9 @@ public class CharacterSelectionScreenManager : MonoBehaviour
 
         _youCharacter = character;
         ApplyCursors(instant: false);
+
+        // カーソルを動かすたびに相手へ知らせるので、相手の画面でもリアルタイムに動く
+        SendMySelection();
     }
 
     /// <summary>
@@ -178,91 +285,6 @@ public class CharacterSelectionScreenManager : MonoBehaviour
         }
     }
 
-    /// <summary>通信対戦が未実装なので、デバッグモードのときだけキー操作で相手の選択を再現する。</summary>
-    void UpdateDebugOpponent()
-    {
-        // インスペクターで切り替えたら再生中でも反映する
-        if (_debugMode != _wasDebugMode)
-        {
-            _wasDebugMode = _debugMode;
-            SetDebugKeysUsedForNavigation(!_debugMode);
-
-            // オフに戻したら、デバッグで選ばせた相手の選択も消す
-            if (!_debugMode)
-            {
-                SetOpponentCharacter(null);
-            }
-        }
-
-        if (!_debugMode || Keyboard.current == null)
-        {
-            return;
-        }
-
-        // ボタンの並びに合わせて、左のキャラクターが A、右のキャラクターが D
-        if (Keyboard.current.aKey.wasPressedThisFrame)
-        {
-            SetOpponentCharacter(PlayableCharacter.PhantomCat);
-        }
-        else if (Keyboard.current.dKey.wasPressedThisFrame)
-        {
-            SetOpponentCharacter(PlayableCharacter.PoliceDog);
-        }
-    }
-
-    void FindDebugKeyBindings()
-    {
-        // EventSystem.currentInputModule は最初の Update まで決まらないので、コンポーネントから直接取る
-        var inputModule = EventSystem.current != null
-            ? EventSystem.current.GetComponent<InputSystemUIInputModule>()
-            : null;
-        _moveAction = inputModule != null && inputModule.move != null ? inputModule.move.action : null;
-        if (_moveAction == null)
-        {
-            return;
-        }
-
-        var bindings = _moveAction.bindings;
-        for (var i = 0; i < bindings.Count; i++)
-        {
-            if (Array.IndexOf(DebugKeyPaths, bindings[i].path) >= 0)
-            {
-                _debugKeyBindings.Add(i);
-            }
-        }
-    }
-
-    /// <summary>
-    /// A / D キーは UI の左右移動にも割り当てられている。
-    /// デバッグ中はその割り当てを外し、相手だけが動いて自分の選択は動かないようにする。
-    /// </summary>
-    void SetDebugKeysUsedForNavigation(bool used)
-    {
-        if (_debugKeyBindings.Count == 0)
-        {
-            // 見つからないまま黙って効かなくなると原因が分かりにくいので知らせる
-            if (!used)
-            {
-                Debug.LogWarning("UI の移動操作に A / D が見つからないので、デバッグ中も自分の選択が動きます", this);
-            }
-
-            return;
-        }
-
-        foreach (var index in _debugKeyBindings)
-        {
-            if (used)
-            {
-                _moveAction.RemoveBindingOverride(index);
-            }
-            else
-            {
-                // 空のパスで上書きすると、その割り当てだけを無効にできる
-                _moveAction.ApplyBindingOverride(index, string.Empty);
-            }
-        }
-    }
-
     /// <summary>そのゲームオブジェクトがキャラクターのボタンなら、対応するキャラクターを返す。</summary>
     PlayableCharacter? CharacterOf(GameObject buttonObject)
     {
@@ -284,8 +306,32 @@ public class CharacterSelectionScreenManager : MonoBehaviour
     /// <summary>選んだキャラクターは後続の画面から参照されるので記録してから次へ進む。</summary>
     void SelectCharacter(PlayableCharacter character)
     {
-        CharacterSelection.Select(character);
-        LoadScene("IntroStory");
+        if (!IsNetworked)
+        {
+            // ソロプレイは従来どおり即座に進む
+            CharacterSelection.Select(character);
+            LoadScene("IntroStory");
+            return;
+        }
+
+        if (_youConfirmed) return;
+
+        // 相手が既に決定しているキャラクターは選べない
+        if (_opponentConfirmed && _opponentCharacter == character)
+        {
+            SEManager.Instance.Play(SEPath.UI_SELECT);
+            return;
+        }
+
+        _youCharacter = character;
+        _youConfirmed = true;
+        if (_waitingForOpponentText != null) _waitingForOpponentText.SetActive(true);
+
+        SEManager.Instance.Play(SEPath.UI_SELECT);
+        GamepadRumble.Play(_submitRumbleStrength, _submitRumbleDuration);
+
+        SendMySelection();
+        TryStartGame();
     }
 
     /// <summary>
@@ -293,6 +339,12 @@ public class CharacterSelectionScreenManager : MonoBehaviour
     /// </summary>
     public void OnBack()
     {
+        if (IsNetworked)
+        {
+            NetSession.Instance.Shutdown();
+            NetGameState.Clear();
+        }
+
         var previous = ScreenHistory.PreviousSceneName;
         LoadScene(string.IsNullOrEmpty(previous) ? _fallbackBackScene : previous);
     }

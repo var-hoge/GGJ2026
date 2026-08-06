@@ -1,3 +1,4 @@
+using PhantomCatWorks.RealtimeP2PKit;
 using UnityEngine;
 
 // CatController は同名のクラスがグローバル名前空間にも存在し (Miura 版)、using で取り込むと
@@ -32,6 +33,15 @@ public class PlayerCharacterBinder : MonoBehaviour
     /// 頭上マーカーなど、操作対象に追従したいものが参照する。
     /// </summary>
     public Transform ControlledCharacter { get; private set; }
+
+    /// <summary>
+    /// 対戦相手が操作する側のキャラクター。まだ居ないなら null。
+    /// 通信対戦では、届いた位置をこのキャラクターへ適用する (InGameNetworkSync)。
+    /// </summary>
+    public Transform RemoteCharacter { get; private set; }
+
+    /// <summary>ポリスドッグ側の操作。手持ちライトの向きを同期するために外から参照する。</summary>
+    public KenneyPlayerController PoliceDog => _policeDogController;
 
     bool _appliedToPhantomCat;
 
@@ -75,6 +85,10 @@ public class PlayerCharacterBinder : MonoBehaviour
         {
             ControlledCharacter = phantomCat.transform;
         }
+        else
+        {
+            RemoteCharacter = phantomCat.transform;
+        }
 
         var controller = phantomCat.GetComponent<KenneyCatController>();
         if (controller != null)
@@ -82,13 +96,16 @@ public class PlayerCharacterBinder : MonoBehaviour
             controller.enabled = controlledHere;
         }
 
-        // 操作しないときは従来どおり NPC として自動で動く。
-        // 操作するときはランダム移動が入力と競合するので止める
+        // ソロプレイで操作しないときは、従来どおり NPC として自動で動く。
+        // 操作するときはランダム移動が入力と競合するので止める。
+        // 通信対戦で「相手が操作している猫」の場合も止める必要がある。
+        // ここを自動移動のままにすると、ネットワークで届く位置と勝手な徘徊が
+        // 引っ張り合って、相手の操作がまったく反映されなくなる
         // (Cat 自体は捕獲判定に使われるため無効化せず、自動移動だけ切る)
         var cat = phantomCat.GetComponent<KenneyCat>();
         if (cat != null)
         {
-            cat._autoMove = !controlledHere;
+            cat._autoMove = !controlledHere && !NetSession.IsActive;
         }
     }
 
@@ -102,6 +119,10 @@ public class PlayerCharacterBinder : MonoBehaviour
             if (controlledHere)
             {
                 ControlledCharacter = _policeDogController.transform;
+            }
+            else
+            {
+                RemoteCharacter = _policeDogController.transform;
             }
 
             // 捕獲はポリスドッグ側のコンポーネントがキーボード/パッドを直接読んでいる。
