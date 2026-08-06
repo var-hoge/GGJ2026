@@ -23,7 +23,13 @@ namespace PhantomCatWorks.RealtimeP2PKit
 
         public void Register<T>(byte packetId, Action<T> handler)
         {
-            _handlers[packetId] = raw => handler(_codec.Deserialize<T>(raw));
+            _handlers[packetId] = raw =>
+            {
+                var value = _codec.Deserialize<T>(raw);
+                if (P2PNetworkLog.IsEnabled)
+                    Debug.Log(P2PNetworkLogFormat.WebRtcReceive(packetId, value, raw.Length + 1));
+                handler(value);
+            };
             if (P2PLog.ShouldLog(P2PLogLevel.Info)) Debug.Log($"[RealtimeP2PKit][PacketRouter] registered handler packetId={packetId} type={typeof(T).Name}");
         }
 

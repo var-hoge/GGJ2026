@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace PhantomCatWorks.RealtimeP2PKit
 {
@@ -47,9 +48,36 @@ namespace PhantomCatWorks.RealtimeP2PKit
 
         public static string WebSocketReceive(string context, string message) => $"{Tag} [{context}] <- ws {message}";
 
-        public static string WebRtcSend(byte[] payload) => $"{Tag} [DataChannel] -> {P2PHexFormat.Preview(payload)}";
+        /// <summary>
+        /// Formats a MessagePack data-channel packet as its original JSON-friendly
+        /// object. The packet id is intentionally included because it is part of
+        /// the wire format but not the MessagePack body.
+        /// </summary>
+        public static string WebRtcSend<T>(byte packetId, T value, int byteLength) =>
+            WebRtcMessage("->", packetId, typeof(T).Name, value, byteLength);
 
-        public static string WebRtcReceive(byte[] payload) => $"{Tag} [DataChannel] <- {P2PHexFormat.Preview(payload)}";
+        public static string WebRtcReceive<T>(byte packetId, T value, int byteLength) =>
+            WebRtcMessage("<-", packetId, typeof(T).Name, value, byteLength);
+
+        // Kept as a safe fallback for packets whose application type is unknown.
+        public static string WebRtcSend(byte[] payload) => $"{Tag} [DataChannel] -> unknown {P2PHexFormat.Preview(payload)}";
+
+        public static string WebRtcReceive(byte[] payload) => $"{Tag} [DataChannel] <- unknown {P2PHexFormat.Preview(payload)}";
+
+        private static string WebRtcMessage(string direction, byte packetId, string typeName, object value, int byteLength)
+        {
+            string json;
+            try
+            {
+                json = JsonConvert.SerializeObject(value, Formatting.Indented);
+            }
+            catch (Exception ex)
+            {
+                json = $"<JSON serialization failed: {ex.Message}>";
+            }
+
+            return $"{Tag} [DataChannel] {direction} packetId={packetId} type={typeName} size={byteLength}B\n{json}";
+        }
 
         private static string FormatSize(long bytes)
         {

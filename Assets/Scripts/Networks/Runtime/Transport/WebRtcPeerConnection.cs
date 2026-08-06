@@ -116,7 +116,6 @@ namespace PhantomCatWorks.RealtimeP2PKit
             };
             channel.OnMessage = bytes =>
             {
-                if (P2PNetworkLog.IsEnabled) Debug.Log(P2PNetworkLogFormat.WebRtcReceive(bytes));
                 DataReceived?.Invoke(bytes);
             };
         }
@@ -209,7 +208,6 @@ namespace PhantomCatWorks.RealtimeP2PKit
                 if (P2PLog.ShouldLog(P2PLogLevel.Warn)) Debug.LogWarning("[RealtimeP2PKit][WebRTC] cannot send, data channel not open");
                 return;
             }
-            if (P2PNetworkLog.IsEnabled) Debug.Log(P2PNetworkLogFormat.WebRtcSend(payload));
             _dataChannel.Send(payload);
         }
 

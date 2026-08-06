@@ -116,6 +116,8 @@ namespace PhantomCatWorks.RealtimeP2PKit
                 return;
             }
             var buffer = _packetRouter.Encode(packetId, value);
+            if (P2PNetworkLog.IsEnabled)
+                Debug.Log(P2PNetworkLogFormat.WebRtcSend(packetId, value, buffer.Length));
             _peerConnection.Send(buffer);
         }
 
