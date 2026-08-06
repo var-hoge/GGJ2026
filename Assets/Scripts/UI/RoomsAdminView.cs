@@ -1,16 +1,30 @@
+using Newtonsoft.Json;
+using PhantomCatWorks.RealtimeP2PKit;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class RoomsAdminView : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [SerializeField] private GridLayoutGroup roomListRoot;
+    [SerializeField] private GameObject roomCell;
+
+    async void Start()
     {
-        
+       var rooms = await LoadRooms();
+       foreach(var room in rooms)
+       {
+            var roomTextField = Util.InstantiateTo<RoomTextField>(roomListRoot.gameObject, roomCell);
+            roomTextField.SetTitleText($"{room.id}");
+       }
     }
 
-    // Update is called once per frame
-    void Update()
+    public async Task<List<MachingRoom>> LoadRooms()
     {
-        
+        var baseUrl = P2PEndpoints.GetMatchmakingApiUrl();
+        var responseJsonString = await HttpMatchmakingClient.HttpRequestAsync("GET", $"{baseUrl}/api/matchmaking/rooms");
+        Debug.Log(responseJsonString);
+        return JsonConvert.DeserializeObject<List<MachingRoom>>(responseJsonString);
     }
 }

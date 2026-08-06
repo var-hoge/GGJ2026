@@ -16,4 +16,13 @@ namespace PhantomCatWorks.RealtimeP2PKit
     {
         public string playerId;
     }
+
+    [Serializable]
+    public class MachingRoom
+    {
+        public string id;
+        public string status; // "waiting" | "matched"
+        public string roomId;
+        public string opponentId;
+    }
 }

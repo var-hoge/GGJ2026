@@ -15,7 +15,7 @@ namespace PhantomCatWorks.RealtimeP2PKit.Demo
 
         private void Start()
         {
-            var localPlayerId = "player-" + System.Guid.NewGuid().ToString("N").Substring(0, 8);
+            var localPlayerId = PlayerData.LoadSavedPlayerId;
             Debug.Log($"[Demo] local playerId = {localPlayerId}");
 
             P2PManager.Instance.Initialize(_config);
@@ -24,7 +24,7 @@ namespace PhantomCatWorks.RealtimeP2PKit.Demo
             P2PManager.Instance.DataChannelReady += OnDataChannelReady;
             P2PManager.Instance.ConnectionClosed += reason => Debug.LogWarning($"[Demo] connection closed: {reason}");
 
-            P2PManager.Instance.StartMatchmaking(localPlayerId);
+            //P2PManager.Instance.StartMatchmaking(localPlayerId);
         }
 
         private void OnDataChannelReady()
