@@ -15,3 +15,12 @@ export const queuePlayers = sqliteTable("queue_players", {
   opponentId: text("opponent_id"),
   createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
 });
+
+/** A public, joinable 1v1 room. Signaling itself remains in the Room DO. */
+export const gameRooms = sqliteTable("game_rooms", {
+  id: text("id").primaryKey(),
+  hostPlayerId: text("host_player_id").notNull(),
+  guestPlayerId: text("guest_player_id"),
+  status: text("status", { enum: ["waiting", "matched"] }).notNull().default("waiting"),
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+});

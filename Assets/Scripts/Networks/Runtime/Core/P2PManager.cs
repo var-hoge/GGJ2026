@@ -59,6 +59,7 @@ namespace PhantomCatWorks.RealtimeP2PKit
         private WebRtcPeerConnection _peerConnection;
         private PacketRouter _packetRouter;
         private bool _webRtcUpdateStarted;
+        private bool _peerConnectionStarted;
 
         private void Awake()
         {
@@ -144,6 +145,46 @@ namespace PhantomCatWorks.RealtimeP2PKit
             }
         }
 
+        /// <summary>Creates a public room and waits there until another player joins it.</summary>
+        public async void CreateRoom(string localPlayerId)
+        {
+            try
+            {
+                PrepareNewSession(localPlayerId);
+                var room = await _matchmakingClient.CreateRoomAsync(localPlayerId);
+                await ConnectToRoomAsync(room.id, null, true);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[RealtimeP2PKit][P2PManager] room creation failed: {ex}");
+                SetState(P2PSessionState.Idle);
+            }
+        }
+
+        /// <summary>Reserves an open room and joins its signaling room as the answerer.</summary>
+        public async void JoinRoom(string localPlayerId, MachingRoom room)
+        {
+            try
+            {
+                PrepareNewSession(localPlayerId);
+                var joined = await _matchmakingClient.JoinRoomAsync(room.id, localPlayerId);
+                await ConnectToRoomAsync(joined.id, joined.hostPlayerId, false);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogWarning($"[RealtimeP2PKit][P2PManager] room join failed: {ex.Message}");
+                SetState(P2PSessionState.Idle);
+            }
+        }
+
+        private void PrepareNewSession(string localPlayerId)
+        {
+            if (_config == null) throw new InvalidOperationException("Initialize must be called before creating or joining a room.");
+            _peerConnectionStarted = false;
+            SetState(P2PSessionState.Matchmaking);
+            Session = new P2PSessionInfo { LocalPlayerId = localPlayerId, State = P2PSessionState.Matchmaking };
+        }
+
         private async void OnLobbyMatched(LobbyMatchedMessage msg)
         {
             if (Session.State is P2PSessionState.Negotiating or P2PSessionState.Connected)
@@ -152,10 +193,15 @@ namespace PhantomCatWorks.RealtimeP2PKit
                 return;
             }
 
-            Session.RoomId = msg.roomId;
-            Session.OpponentId = msg.opponentId;
-            Session.IsInitiator = msg.isInitiator;
-            if (P2PLog.ShouldLog(P2PLogLevel.Info)) Debug.Log($"[RealtimeP2PKit][P2PManager] matched. roomId={msg.roomId} opponentId={msg.opponentId} isInitiator={msg.isInitiator}");
+            await ConnectToRoomAsync(msg.roomId, msg.opponentId, msg.isInitiator);
+        }
+
+        private async System.Threading.Tasks.Task ConnectToRoomAsync(string roomId, string opponentId, bool isInitiator)
+        {
+            Session.RoomId = roomId;
+            Session.OpponentId = opponentId;
+            Session.IsInitiator = isInitiator;
+            if (P2PLog.ShouldLog(P2PLogLevel.Info)) Debug.Log($"[RealtimeP2PKit][P2PManager] joining room. roomId={roomId} opponentId={opponentId} isInitiator={isInitiator}");
             Matched?.Invoke(Session);
 
             SetState(P2PSessionState.SignalingConnecting);
@@ -166,13 +212,20 @@ namespace PhantomCatWorks.RealtimeP2PKit
             {
                 if (P2PLog.ShouldLog(P2PLogLevel.Warn)) Debug.LogWarning($"[RealtimeP2PKit][P2PManager] signaling disconnected: {reason}");
             };
-            await _signalingClient.ConnectAsync(msg.roomId);
+            await _signalingClient.ConnectAsync(roomId);
         }
 
         private void OnSignalingConnected()
         {
+            if (P2PLog.ShouldLog(P2PLogLevel.Info)) Debug.Log("[RealtimeP2PKit][P2PManager] signaling connected; waiting for peer-ready");
+        }
+
+        private void StartWebRtcNegotiation()
+        {
+            if (_peerConnectionStarted) return;
+            _peerConnectionStarted = true;
             SetState(P2PSessionState.Negotiating);
-            if (P2PLog.ShouldLog(P2PLogLevel.Info)) Debug.Log($"[RealtimeP2PKit][P2PManager] signaling connected, starting WebRTC negotiation (isInitiator={Session.IsInitiator})");
+            if (P2PLog.ShouldLog(P2PLogLevel.Info)) Debug.Log($"[RealtimeP2PKit][P2PManager] peer ready, starting WebRTC negotiation (isInitiator={Session.IsInitiator})");
 
             var stunServerUrls = P2PEndpoints.GetStunServerUrls();
             _peerConnection = new WebRtcPeerConnection(this, _config, stunServerUrls);
@@ -218,11 +271,14 @@ namespace PhantomCatWorks.RealtimeP2PKit
         {
             switch (msg.type)
             {
+                case "peer-ready":
+                    StartWebRtcNegotiation();
+                    break;
                 case "offer":
                     if (P2PLog.ShouldLog(P2PLogLevel.Info)) Debug.Log("[RealtimeP2PKit][P2PManager] received offer, setting remote description and creating answer");
-                    _peerConnection.SetRemoteDescription(new RTCSessionDescription { type = RTCSdpType.Offer, sdp = msg.sdp });
-                    _peerConnection.CreateAnswer(answer =>
-                        _signalingClient.Send(new RoomSignalEnvelope { type = "answer", sdp = answer.sdp }));
+                    _peerConnection.SetRemoteDescription(new RTCSessionDescription { type = RTCSdpType.Offer, sdp = msg.sdp }, () =>
+                        _peerConnection.CreateAnswer(answer =>
+                            _signalingClient.Send(new RoomSignalEnvelope { type = "answer", sdp = answer.sdp })));
                     break;
 
                 case "answer":
@@ -237,7 +293,7 @@ namespace PhantomCatWorks.RealtimeP2PKit
                         sdpMid = msg.sdpMid,
                         sdpMLineIndex = msg.sdpMLineIndex,
                     };
-                    _peerConnection.AddRemoteIceCandidate(new RTCIceCandidate(init));
+                    _peerConnection.AddRemoteIceCandidate(init);
                     break;
 
                 case "peer-left":

@@ -22,6 +22,8 @@ export class Room extends Server<Env> {
     }
 
     connection.send(JSON.stringify({ type: "peer-count", count }));
+    // Start WebRTC only once both WebSocket peers can receive signaling.
+    if (count === 2) this.broadcast(JSON.stringify({ type: "peer-ready" }));
   }
 
   onMessage(connection: Connection, message: string) {

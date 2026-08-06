@@ -56,6 +56,26 @@ namespace PhantomCatWorks.RealtimeP2PKit
             }
         }
 
+        public async Task<MachingRoom> CreateRoomAsync(string playerId)
+        {
+            var responseText = await HttpRequestAsync("POST", $"{_baseUrl}/api/matchmaking/rooms",
+                JsonConvert.SerializeObject(new MatchmakingJoinRequest { playerId = playerId }));
+            return JsonConvert.DeserializeObject<MachingRoom>(responseText);
+        }
+
+        public async Task<System.Collections.Generic.List<MachingRoom>> ListRoomsAsync(string playerId)
+        {
+            var responseText = await HttpRequestAsync("GET", $"{_baseUrl}/api/matchmaking/rooms?playerId={UnityWebRequest.EscapeURL(playerId)}");
+            return JsonConvert.DeserializeObject<System.Collections.Generic.List<MachingRoom>>(responseText);
+        }
+
+        public async Task<MachingRoom> JoinRoomAsync(string roomId, string playerId)
+        {
+            var responseText = await HttpRequestAsync("POST", $"{_baseUrl}/api/matchmaking/rooms/{UnityWebRequest.EscapeURL(roomId)}/join",
+                JsonConvert.SerializeObject(new MatchmakingJoinRequest { playerId = playerId }));
+            return JsonConvert.DeserializeObject<MachingRoom>(responseText);
+        }
+
         public static async Task<string> HttpRequestAsync(string method, string url, string jsonBody = null)
         {
             if (P2PNetworkLog.IsEnabled)

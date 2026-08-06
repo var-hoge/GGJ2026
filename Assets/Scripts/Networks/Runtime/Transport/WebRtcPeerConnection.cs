@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Linq;
+using System.Collections.Generic;
 using Unity.WebRTC;
 using UnityEngine;
 
@@ -28,6 +29,8 @@ namespace PhantomCatWorks.RealtimeP2PKit
         private readonly System.Collections.Generic.List<string> _stunServerUrls;
         private RTCPeerConnection _pc;
         private RTCDataChannel _dataChannel;
+        private readonly Queue<RTCIceCandidateInit> _pendingRemoteIceCandidates = new();
+        private bool _remoteDescriptionSet;
 
         public RTCPeerConnectionState State => _pc?.ConnectionState ?? RTCPeerConnectionState.New;
 
@@ -163,10 +166,10 @@ namespace PhantomCatWorks.RealtimeP2PKit
             }
         }
 
-        public void SetRemoteDescription(RTCSessionDescription desc) =>
-            _coroutineRunner.StartCoroutine(SetRemoteDescriptionCoroutine(desc));
+        public void SetRemoteDescription(RTCSessionDescription desc, Action onSuccess = null) =>
+            _coroutineRunner.StartCoroutine(SetRemoteDescriptionCoroutine(desc, onSuccess));
 
-        private IEnumerator SetRemoteDescriptionCoroutine(RTCSessionDescription desc)
+        private IEnumerator SetRemoteDescriptionCoroutine(RTCSessionDescription desc, Action onSuccess)
         {
             if (P2PLog.ShouldLog(P2PLogLevel.Info)) Debug.Log($"[RealtimeP2PKit][WebRTC] setting remote description type={desc.type}");
             var op = _pc.SetRemoteDescription(ref desc);
@@ -177,14 +180,23 @@ namespace PhantomCatWorks.RealtimeP2PKit
             }
             else
             {
+                _remoteDescriptionSet = true;
+                while (_pendingRemoteIceCandidates.Count > 0)
+                    _pc.AddIceCandidate(new RTCIceCandidate(_pendingRemoteIceCandidates.Dequeue()));
                 if (P2PLog.ShouldLog(P2PLogLevel.Info)) Debug.Log("[RealtimeP2PKit][WebRTC] remote description set successfully");
+                onSuccess?.Invoke();
             }
         }
 
-        public void AddRemoteIceCandidate(RTCIceCandidate candidate)
+        public void AddRemoteIceCandidate(RTCIceCandidateInit candidate)
         {
-            if (P2PLog.ShouldLog(P2PLogLevel.Verbose)) Debug.Log($"[RealtimeP2PKit][WebRTC] adding remote ICE candidate: {candidate.Candidate}");
-            _pc.AddIceCandidate(candidate);
+            if (P2PLog.ShouldLog(P2PLogLevel.Verbose)) Debug.Log($"[RealtimeP2PKit][WebRTC] adding remote ICE candidate: {candidate.candidate}");
+            if (!_remoteDescriptionSet)
+            {
+                _pendingRemoteIceCandidates.Enqueue(candidate);
+                return;
+            }
+            _pc.AddIceCandidate(new RTCIceCandidate(candidate));
         }
 
         public void Send(byte[] payload)

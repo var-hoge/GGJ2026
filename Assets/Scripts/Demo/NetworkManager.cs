@@ -13,7 +13,10 @@ namespace PhantomCatWorks.RealtimeP2PKit.Demo
         [SerializeField] private GameObject _localPlayerPrefab;
         [SerializeField] private GameObject _remotePlayerPrefab;
 
-        private void Start()
+        // The room UI starts its own request in Start(), so initialize the P2P
+        // service in Awake() to make its button handlers safe regardless of
+        // Unity's Start ordering between scene objects.
+        private void Awake()
         {
             var localPlayerId = PlayerData.LoadSavedPlayerId;
             Debug.Log($"[Demo] local playerId = {localPlayerId}");
@@ -24,7 +27,6 @@ namespace PhantomCatWorks.RealtimeP2PKit.Demo
             P2PManager.Instance.DataChannelReady += OnDataChannelReady;
             P2PManager.Instance.ConnectionClosed += reason => Debug.LogWarning($"[Demo] connection closed: {reason}");
 
-            //P2PManager.Instance.StartMatchmaking(localPlayerId);
         }
 
         private void OnDataChannelReady()

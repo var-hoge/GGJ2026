@@ -1,5 +1,46 @@
 # realtime-p2p demo (Unity + WebRTC + partyserver/Cloudflare)
 
+## ルーム方式のリモート動作確認（2台のPC）
+
+ルーム一覧は D1、シグナリングは同じ Cloudflare Worker の Durable Object を使います。
+別ネットワークの2台で確認する場合は、`Local` ではなく **Remote 環境へ migration と deploy を
+先に行う必要があります**。`wrangler dev` の Local URL はもう一台のPCから到達できません。
+
+### 1. Worker と D1 を反映する（開発PCで一度だけ）
+
+```powershell
+cd server
+pnpm install
+pnpm run db:migrate:remote
+pnpm run deploy
+```
+
+`0001_game_rooms.sql` が未適用の場合、migration を deploy より先に実行してください。
+deploy 完了時に表示される `https://...workers.dev` の URL を控えます。
+
+### 2. 両方の Unity Editor を Remote に設定する
+
+両PCで `RealtimeP2PKit > Connection Settings` を開き、以下を保存します。
+
+- Environment: `Remote`
+- Matchmaking API URL: deploy 時の `https://...workers.dev`
+- Signaling WebSocket URL: 同じホストの `wss://...workers.dev`
+- STUN servers: デフォルトの Google / Mozilla 設定のままで可
+
+### 3. 接続を確認する
+
+1. PC A で `P2PDemo` を Play し、**New Room** を選ぶ。
+2. PC B で Play し、**Search Room** を選ぶ。A のルームだけが一覧に出る。
+3. B でそのルームを選択する。
+4. 両方の Console で `peer ready`、`creating offer`、`data channel OPEN`、
+   `session state -> Connected` の順に出ることを確認する。
+5. それぞれを動かし、相手のマゼンタ Cube が追従すれば MessagePack の位置同期も成功です。
+
+切り分けには Connection Settings の **Network Logging** を有効にし、
+`POST /rooms`、`GET /rooms`、`POST /rooms/{id}/join` と WebSocket の `peer-ready` を確認します。
+STUN のみの構成では、対称 NAT の組み合わせで P2P 接続に失敗することがあります。その場合は
+TURN サーバーが必要です。
+
 1対1リアルタイム対戦ゲームの実証実験。座標(xyz)をWebRTC DataChannel経由でP2P直接送信し、
 マッチング/シグナリングは **1つのCloudflare Worker** で行う構成です。
 
