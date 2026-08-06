@@ -551,6 +551,8 @@ MonoBehaviour:
   _selectRumbleStrength: 0.15
   _selectRumbleDuration: 0.05
   _selectionBar: {fileID: 0}
+  _scaleUpWhenSelected: 1
+  _grayOutWhenUnselected: 1
 --- !u!114 &578533925
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -620,7 +622,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LocalizedImage
   _englishSprite: {fileID: -3747305345416140179, guid: d3cc3c860a31644ffba03f5e96e37584, type: 3}
   _japaneseSprite: {fileID: -7962716687142221587, guid: 86f29da3dab224f9cb687b7103fe0b4a, type: 3}
-  _germanSprite: {fileID: -6627934486054124540, guid: 57fb09b62f76940e7b22a9c3e4b10b54, type: 3}
+  _germanSprite: {fileID: -3747305345416140179, guid: d3cc3c860a31644ffba03f5e96e37584, type: 3}
 --- !u!114 &598138256
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -636,6 +638,8 @@ MonoBehaviour:
   _selectRumbleStrength: 0.15
   _selectRumbleDuration: 0.05
   _selectionBar: {fileID: 0}
+  _scaleUpWhenSelected: 1
+  _grayOutWhenUnselected: 1
 --- !u!114 &598138257
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -871,6 +875,8 @@ MonoBehaviour:
   _selectRumbleStrength: 0.15
   _selectRumbleDuration: 0.05
   _selectionBar: {fileID: 0}
+  _scaleUpWhenSelected: 1
+  _grayOutWhenUnselected: 1
 --- !u!222 &700000015
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1581,6 +1587,8 @@ MonoBehaviour:
   _selectRumbleStrength: 0.15
   _selectRumbleDuration: 0.05
   _selectionBar: {fileID: 0}
+  _scaleUpWhenSelected: 1
+  _grayOutWhenUnselected: 1
 --- !u!114 &1820675495
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1651,6 +1659,8 @@ MonoBehaviour:
   _selectRumbleStrength: 0.15
   _selectRumbleDuration: 0.05
   _selectionBar: {fileID: 0}
+  _scaleUpWhenSelected: 1
+  _grayOutWhenUnselected: 1
 --- !u!114 &1999070167
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1875,6 +1885,8 @@ MonoBehaviour:
   _selectRumbleStrength: 0.15
   _selectRumbleDuration: 0.05
   _selectionBar: {fileID: 0}
+  _scaleUpWhenSelected: 1
+  _grayOutWhenUnselected: 1
 --- !u!114 &2125961163
 MonoBehaviour:
   m_ObjectHideFlags: 0
