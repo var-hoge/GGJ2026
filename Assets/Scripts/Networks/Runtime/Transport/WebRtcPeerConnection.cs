@@ -33,6 +33,9 @@ namespace PhantomCatWorks.RealtimeP2PKit
         private bool _remoteDescriptionSet;
 
         public RTCPeerConnectionState State => _pc?.ConnectionState ?? RTCPeerConnectionState.New;
+        /// <summary>Used as a fallback because some Unity.WebRTC versions do not
+        /// invoke RTCDataChannel.OnOpen for the locally-created channel.</summary>
+        public bool IsDataChannelOpen => _dataChannel != null && _dataChannel.ReadyState == RTCDataChannelState.Open;
 
         /// <param name="stunServerUrls">See P2PEndpoints.GetStunServerUrls().</param>
         public WebRtcPeerConnection(MonoBehaviour coroutineRunner, P2PConfig config, System.Collections.Generic.List<string> stunServerUrls)

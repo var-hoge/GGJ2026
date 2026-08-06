@@ -12,6 +12,7 @@ namespace PhantomCatWorks.RealtimeP2PKit.Demo
         [SerializeField] private P2PConfig _config;
         [SerializeField] private GameObject _localPlayerPrefab;
         [SerializeField] private GameObject _remotePlayerPrefab;
+        private bool _playersSpawned;
 
         // The room UI starts its own request in Start(), so initialize the P2P
         // service in Awake() to make its button handlers safe regardless of
@@ -31,6 +32,8 @@ namespace PhantomCatWorks.RealtimeP2PKit.Demo
 
         private void OnDataChannelReady()
         {
+            if (_playersSpawned) return;
+            _playersSpawned = true;
             Debug.Log("[Demo] data channel ready, spawning player objects");
             Instantiate(_localPlayerPrefab, Vector3.zero, Quaternion.identity);
             var remote = Instantiate(_remotePlayerPrefab, new Vector3(2, 0, 0), Quaternion.identity);

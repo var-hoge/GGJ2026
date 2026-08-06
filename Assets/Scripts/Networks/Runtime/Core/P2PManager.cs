@@ -60,6 +60,7 @@ namespace PhantomCatWorks.RealtimeP2PKit
         private PacketRouter _packetRouter;
         private bool _webRtcUpdateStarted;
         private bool _peerConnectionStarted;
+        private bool _dataChannelReadyRaised;
 
         private void Awake()
         {
@@ -118,6 +119,8 @@ namespace PhantomCatWorks.RealtimeP2PKit
         /// <summary>Joins the matchmaking queue and drives the connection through to Connected.</summary>
         public async void StartMatchmaking(string localPlayerId)
         {
+            _peerConnectionStarted = false;
+            _dataChannelReadyRaised = false;
             SetState(P2PSessionState.Matchmaking);
             Session = new P2PSessionInfo { LocalPlayerId = localPlayerId, State = P2PSessionState.Matchmaking };
             if (P2PLog.ShouldLog(P2PLogLevel.Info)) Debug.Log($"[RealtimeP2PKit][P2PManager] starting matchmaking as playerId={localPlayerId}");
@@ -181,6 +184,7 @@ namespace PhantomCatWorks.RealtimeP2PKit
         {
             if (_config == null) throw new InvalidOperationException("Initialize must be called before creating or joining a room.");
             _peerConnectionStarted = false;
+            _dataChannelReadyRaised = false;
             SetState(P2PSessionState.Matchmaking);
             Session = new P2PSessionInfo { LocalPlayerId = localPlayerId, State = P2PSessionState.Matchmaking };
         }
@@ -248,11 +252,7 @@ namespace PhantomCatWorks.RealtimeP2PKit
                 }
             };
 
-            _peerConnection.DataChannelOpened += () =>
-            {
-                SetState(P2PSessionState.Connected);
-                DataChannelReady?.Invoke();
-            };
+            _peerConnection.DataChannelOpened += NotifyDataChannelReady;
             _peerConnection.DataChannelClosed += () =>
             {
                 SetState(P2PSessionState.Disconnected);
@@ -312,6 +312,20 @@ namespace PhantomCatWorks.RealtimeP2PKit
         {
             _signalingClient?.DispatchMessageQueue();
             _lobbyListener?.DispatchMessageQueue();
+
+            // Unity.WebRTC can expose an open locally-created data channel
+            // without invoking its OnOpen callback. Polling the state makes
+            // the game-start signal reliable on both host and guest.
+            if (!_dataChannelReadyRaised && _peerConnection?.IsDataChannelOpen == true)
+                NotifyDataChannelReady();
+        }
+
+        private void NotifyDataChannelReady()
+        {
+            if (_dataChannelReadyRaised) return;
+            _dataChannelReadyRaised = true;
+            SetState(P2PSessionState.Connected);
+            DataChannelReady?.Invoke();
         }
 
         private void SetState(P2PSessionState state)
