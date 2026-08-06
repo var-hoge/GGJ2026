@@ -49,6 +49,8 @@ namespace PhantomCatWorks.RealtimeP2PKit
         public event Action<P2PSessionInfo> Matched;
         public event Action DataChannelReady;
         public event Action<string> ConnectionClosed;
+        /// <summary>Raised once when the other peer leaves the signaling room.</summary>
+        public event Action OpponentLeft;
 
         public P2PSessionInfo Session { get; private set; } = new() { State = P2PSessionState.Idle };
 
@@ -61,6 +63,7 @@ namespace PhantomCatWorks.RealtimeP2PKit
         private bool _webRtcUpdateStarted;
         private bool _peerConnectionStarted;
         private bool _dataChannelReadyRaised;
+        private bool _opponentLeftRaised;
 
         private void Awake()
         {
@@ -121,6 +124,7 @@ namespace PhantomCatWorks.RealtimeP2PKit
         {
             _peerConnectionStarted = false;
             _dataChannelReadyRaised = false;
+            _opponentLeftRaised = false;
             SetState(P2PSessionState.Matchmaking);
             Session = new P2PSessionInfo { LocalPlayerId = localPlayerId, State = P2PSessionState.Matchmaking };
             if (P2PLog.ShouldLog(P2PLogLevel.Info)) Debug.Log($"[RealtimeP2PKit][P2PManager] starting matchmaking as playerId={localPlayerId}");
@@ -185,6 +189,7 @@ namespace PhantomCatWorks.RealtimeP2PKit
             if (_config == null) throw new InvalidOperationException("Initialize must be called before creating or joining a room.");
             _peerConnectionStarted = false;
             _dataChannelReadyRaised = false;
+            _opponentLeftRaised = false;
             SetState(P2PSessionState.Matchmaking);
             Session = new P2PSessionInfo { LocalPlayerId = localPlayerId, State = P2PSessionState.Matchmaking };
         }
@@ -221,7 +226,8 @@ namespace PhantomCatWorks.RealtimeP2PKit
 
         private void OnSignalingConnected()
         {
-            if (P2PLog.ShouldLog(P2PLogLevel.Info)) Debug.Log("[RealtimeP2PKit][P2PManager] signaling connected; waiting for peer-ready");
+            if (P2PLog.ShouldLog(P2PLogLevel.Info)) Debug.Log("[RealtimeP2PKit][P2PManager] signaling connected; sending client-ready");
+            _signalingClient.Send(new RoomSignalEnvelope { type = "client-ready" });
         }
 
         private void StartWebRtcNegotiation()
@@ -297,9 +303,7 @@ namespace PhantomCatWorks.RealtimeP2PKit
                     break;
 
                 case "peer-left":
-                    if (P2PLog.ShouldLog(P2PLogLevel.Warn)) Debug.LogWarning("[RealtimeP2PKit][P2PManager] opponent left the room");
-                    SetState(P2PSessionState.Disconnected);
-                    ConnectionClosed?.Invoke("peer-left");
+                    NotifyOpponentLeft();
                     break;
 
                 default:
@@ -326,6 +330,16 @@ namespace PhantomCatWorks.RealtimeP2PKit
             _dataChannelReadyRaised = true;
             SetState(P2PSessionState.Connected);
             DataChannelReady?.Invoke();
+        }
+
+        private void NotifyOpponentLeft()
+        {
+            if (_opponentLeftRaised) return;
+            _opponentLeftRaised = true;
+            if (P2PLog.ShouldLog(P2PLogLevel.Warn)) Debug.LogWarning("[RealtimeP2PKit][P2PManager] opponent left the room");
+            OpponentLeft?.Invoke();
+            SetState(P2PSessionState.Disconnected);
+            ConnectionClosed?.Invoke("peer-left");
         }
 
         private void SetState(P2PSessionState state)

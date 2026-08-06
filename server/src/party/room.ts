@@ -11,6 +11,8 @@ import type { Env } from "../env";
  * done here on purpose - SDP/ICE payload shape is owned by the Unity client.
  */
 export class Room extends Server<Env> {
+  private readonly readyConnectionIds = new Set<string>();
+
   onConnect(connection: Connection) {
     const count = [...this.getConnections()].length;
     console.log(`[room:${this.name}] connected ${connection.id} (peers=${count})`);
@@ -22,11 +24,24 @@ export class Room extends Server<Env> {
     }
 
     connection.send(JSON.stringify({ type: "peer-count", count }));
-    // Start WebRTC only once both WebSocket peers can receive signaling.
-    if (count === 2) this.broadcast(JSON.stringify({ type: "peer-ready" }));
   }
 
   onMessage(connection: Connection, message: string) {
+    // A WebSocket being connected does not guarantee the Unity client has
+    // finished installing its receive handlers. Wait for an explicit client
+    // acknowledgement from BOTH sides before any SDP/ICE is allowed to flow.
+    try {
+      const envelope = JSON.parse(message) as { type?: string };
+      if (envelope.type === "client-ready") {
+        this.readyConnectionIds.add(connection.id);
+        if (this.readyConnectionIds.size === 2 && [...this.getConnections()].length === 2) {
+          this.broadcast(JSON.stringify({ type: "peer-ready" }));
+        }
+        return;
+      }
+    } catch {
+      // Signaling payloads are validated by the Unity peer; relay them below.
+    }
     console.log(`[room:${this.name}] relay from ${connection.id}: ${message}`);
     for (const conn of this.getConnections()) {
       if (conn.id !== connection.id) {
@@ -37,6 +52,7 @@ export class Room extends Server<Env> {
 
   onClose(connection: Connection) {
     console.log(`[room:${this.name}] disconnected ${connection.id}`);
+    this.readyConnectionIds.delete(connection.id);
     for (const conn of this.getConnections()) {
       conn.send(JSON.stringify({ type: "peer-left" }));
     }

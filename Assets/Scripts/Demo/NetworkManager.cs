@@ -26,6 +26,7 @@ namespace PhantomCatWorks.RealtimeP2PKit.Demo
             P2PManager.Instance.Matched += info => Debug.Log($"[Demo] matched with {info.OpponentId} in room {info.RoomId}");
             P2PManager.Instance.DataChannelReady += OnDataChannelReady;
             P2PManager.Instance.ConnectionClosed += reason => Debug.LogWarning($"[Demo] connection closed: {reason}");
+            P2PManager.Instance.OpponentLeft += () => Debug.LogWarning("[Demo] opponent left the room");
 
         }
 
