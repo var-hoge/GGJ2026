@@ -1,5 +1,6 @@
 using Newtonsoft.Json;
 using PhantomCatWorks.RealtimeP2PKit;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -10,15 +11,22 @@ public class RoomsAdminView : MonoBehaviour
     [SerializeField] private GridLayoutGroup roomListRoot;
     [SerializeField] private GameObject roomCell;
     [SerializeField] private Transform waitingView;
+
+    public Action OnStartEnterLobby = null;
+
     async void Start()
     {
        await RefreshRooms();
     }
 
-    public void StartGame(MachingRoom room)
+    public async void StartGame(MachingRoom room)
     {
-        P2PManager.Instance.JoinRoom(PlayerData.LoadSavedPlayerId, room);
-        this.gameObject.SetActive(false);
+        await P2PManager.Instance.JoinRoom(PlayerData.LoadSavedPlayerId, room);
+        if (OnStartEnterLobby != null)
+        {
+            OnStartEnterLobby();
+        }
+//        this.gameObject.SetActive(false);
     }
 
     public async Task<List<MachingRoom>> LoadRooms()
@@ -45,11 +53,15 @@ public class RoomsAdminView : MonoBehaviour
         }
     }
 
-    public void OnClickNewRoomButton ()
+    public async void OnClickNewRoomButton ()
     {
-        P2PManager.Instance.CreateRoom(PlayerData.LoadSavedPlayerId);
-        roomCell.gameObject.SetActive(false);
-        this.waitingView.gameObject.SetActive(true);
+        await P2PManager.Instance.CreateRoom(PlayerData.LoadSavedPlayerId);
+        if (OnStartEnterLobby != null)
+        {
+            OnStartEnterLobby();
+        }
+//        roomCell.gameObject.SetActive(false);
+//        this.waitingView.gameObject.SetActive(true);
     }
 
     public void OnClickSearchRoomButton()

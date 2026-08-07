@@ -13,6 +13,7 @@ public class OnlineScreenManager : MonoBehaviour
 {
     const int MaxLobbyCount = 3;
 
+    [SerializeField] private RoomsAdminView roomsAdminView;
     [SerializeField] GameObject _defaultSelectedButton;
 
     [Header("ロビー")]
@@ -46,6 +47,7 @@ public class OnlineScreenManager : MonoBehaviour
         {
             _firstUpNeighbour = _verticalNavigationOrder[0].navigation.selectOnUp;
         }
+        roomsAdminView.OnStartEnterLobby = OnEnterLobby;
     }
 
     void Start()
@@ -121,6 +123,12 @@ public class OnlineScreenManager : MonoBehaviour
             navigation.selectOnDown = i < _navigableBuffer.Count - 1 ? _navigableBuffer[i + 1] : null;
             _navigableBuffer[i].navigation = navigation;
         }
+    }
+
+    /// <summary>ロビーを新規作成した場合も既存のロビーに入った場合も、次はキャラクター選択に進む。</summary>
+    public void OnEnterLobby()
+    {
+        LoadScene("CharacterSelectionScreen");
     }
 
     public void OnBack()

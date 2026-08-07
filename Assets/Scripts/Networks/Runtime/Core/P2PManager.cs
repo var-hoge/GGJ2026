@@ -1,6 +1,7 @@
 using System;
 using Unity.WebRTC;
 using UnityEngine;
+using System.Threading.Tasks;
 
 namespace PhantomCatWorks.RealtimeP2PKit
 {
@@ -176,7 +177,7 @@ namespace PhantomCatWorks.RealtimeP2PKit
         }
 
         /// <summary>Creates a public room and waits there until another player joins it.</summary>
-        public async void CreateRoom(string localPlayerId)
+        public async Task CreateRoom(string localPlayerId)
         {
             try
             {
@@ -192,7 +193,7 @@ namespace PhantomCatWorks.RealtimeP2PKit
         }
 
         /// <summary>Reserves an open room and joins its signaling room as the answerer.</summary>
-        public async void JoinRoom(string localPlayerId, MachingRoom room)
+        public async Task JoinRoom(string localPlayerId, MachingRoom room)
         {
             try
             {

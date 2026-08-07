@@ -409,6 +409,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 136c50f09e824ce9af0af87cb296b9ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OnlineScreenManager
+  roomsAdminView: {fileID: 1986045717}
   _defaultSelectedButton: {fileID: 433520624}
   _lobbyButtons:
   - {fileID: 0}
@@ -1128,6 +1129,17 @@ MonoBehaviour:
   _englishSprite: {fileID: -4420109136282132642, guid: c90f365644372480f9bfe6a897f1f9d5, type: 3}
   _japaneseSprite: {fileID: 9222404741487290907, guid: 21ee7a6f3b2c94a2889eb1e3e217b5b0, type: 3}
   _germanSprite: {fileID: -483303070904744936, guid: 853a3dcc8a66049b48630511a7c21adf, type: 3}
+--- !u!114 &1986045717 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3933995877052570497, guid: dafee581784d20645ba6e82dd6345f54, type: 3}
+  m_PrefabInstance: {fileID: 3086971941013891601}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c311cbcedaac2404ea8059bdb3704ec5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RoomsAdminView
 --- !u!1 &2086506425
 GameObject:
   m_ObjectHideFlags: 0
@@ -1218,6 +1230,38 @@ PrefabInstance:
     - target: {fileID: 2790913407138515371, guid: dafee581784d20645ba6e82dd6345f54, type: 3}
       propertyPath: m_Name
       value: MultiPlayRoomRoot
+      objectReference: {fileID: 0}
+    - target: {fileID: 2953345125247951382, guid: dafee581784d20645ba6e82dd6345f54, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2953345125247951382, guid: dafee581784d20645ba6e82dd6345f54, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3896303837583869740, guid: dafee581784d20645ba6e82dd6345f54, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3896303837583869740, guid: dafee581784d20645ba6e82dd6345f54, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3896303837583869740, guid: dafee581784d20645ba6e82dd6345f54, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3896303837583869740, guid: dafee581784d20645ba6e82dd6345f54, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4279078069721623035, guid: dafee581784d20645ba6e82dd6345f54, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4279078069721623035, guid: dafee581784d20645ba6e82dd6345f54, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4298278871314295872, guid: dafee581784d20645ba6e82dd6345f54, type: 3}
       propertyPath: m_AnchorMax.x
