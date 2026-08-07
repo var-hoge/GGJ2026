@@ -1,5 +1,8 @@
 ﻿<Solution>
   <Project Path="Assembly-CSharp.csproj" />
+  <Project Path="PhantomCatWorks.RealtimeP2PKit.csproj" />
   <Project Path="Assembly-CSharp-firstpass.csproj" />
+  <Project Path="PhantomCatWorks.RealtimeP2PKit.Demo.Editor.csproj" />
   <Project Path="Assembly-CSharp-Editor.csproj" />
+  <Project Path="PhantomCatWorks.RealtimeP2PKit.Editor.csproj" />
 </Solution>

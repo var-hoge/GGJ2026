@@ -59,6 +59,12 @@ public class GameManager : SingletonBehaviour<GameManager>
         gameEnded = true;
         GameEnded?.Invoke(success);
 
+        // 隠れたときのヘリコプター音 (PhantomCatOcclusionDetector) のような長い SE は、
+        // 止めずにシーンを切り替えると結果画面まで鳴り続ける。
+        // 決着の経路は「自分で判定」「相手から通知」「時間切れ」の3つあるが
+        // すべてここを通るので、ここで止めれば取りこぼしがない
+        KanKikuchi.AudioManager.SEManager.Instance.Stop();
+
         // Give the final result packet one frame to enter WebRTC's send queue,
         // then clear all online-session state before the ending scene loads.
         if (P2PManager.TryGetExistingInstance(out var p2pManager)

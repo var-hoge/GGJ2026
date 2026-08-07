@@ -8,6 +8,13 @@ namespace IsoTools.Examples.Kenney {
 		/// <summary> 手持ちのライトオブジェクト </summary>
 		[SerializeField] private GameObject _handLight = null;
 
+		/// <summary>
+		/// 手持ちライト。通信対戦で向きを送受信するために外から参照する。
+		/// 猫側の端末ではこのコンポーネント自体が無効化されていてライトが回らないため、
+		/// 相手から届いた角度をここへ適用しないと固定方向を向いたままになる。
+		/// </summary>
+		public Transform HandLight => _handLight != null ? _handLight.transform : null;
+
 		/// <summary> プレイヤー移動速度 </summary>
 		[SerializeField] private float speed = 1f;
 		/// <summary> 手持ちライト回転速度 </summary>

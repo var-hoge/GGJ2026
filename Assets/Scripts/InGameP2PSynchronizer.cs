@@ -35,6 +35,15 @@ public sealed class InGameP2PSynchronizer : MonoBehaviour
         // previous InGame protocol when the outcome field was introduced.
         [Key(4)] public bool PhantomCatCaught;
         [Key(5)] public MatchOutcome Outcome;
+
+        /// <summary>
+        /// 手持ちライトのZ回転(度)。ポリスドッグのみ意味を持つ。
+        /// 猫側の端末では犬の PlayerController が無効化されていてライトが回らないため、
+        /// これを送らないと猫プレイヤーからは犬のライトが固定方向に見えてしまう。
+        /// 古いクライアントはこのキーを知らないが、MessagePack は未知のキーを
+        /// 無視し、欠けているキーは既定値になるので互換性は保たれる。
+        /// </summary>
+        [Key(6)] public float LightAngle;
     }
 
     private Transform policeDog;
@@ -47,6 +56,8 @@ public sealed class InGameP2PSynchronizer : MonoBehaviour
     private float nextPositionSendTime;
     private bool hasRemotePosition;
     private Vector3 remoteIsoPosition;
+    private bool hasRemoteLightAngle;
+    private float remoteLightAngle;
 
     public void Initialize(Transform policeDogTransform, CatSpawner spawner, PlayableCharacter selectedCharacter)
     {
@@ -121,8 +132,24 @@ public sealed class InGameP2PSynchronizer : MonoBehaviour
             IsoY = position.y,
             IsoZ = position.z,
             Outcome = MatchOutcome.None,
+            LightAngle = GetLocalLightAngle(),
         });
     }
+
+    /// <summary>自分がポリスドッグなら手持ちライトのZ回転を返す。猫なら 0。</summary>
+    private float GetLocalLightAngle()
+    {
+        if (localCharacter != PlayableCharacter.PoliceDog) return 0f;
+
+        var light = PoliceDogHandLight;
+        return light != null ? light.rotation.eulerAngles.z : 0f;
+    }
+
+    /// <summary>手持ちライトはポリスドッグにしか無い。無効化されていても参照はできる。</summary>
+    private Transform PoliceDogHandLight =>
+        policeDog != null && policeDog.TryGetComponent<PlayerController>(out var controller)
+            ? controller.HandLight
+            : null;
 
     private void OnRemoteStateReceived(InGameStatePacket packet)
     {
@@ -137,6 +164,13 @@ public sealed class InGameP2PSynchronizer : MonoBehaviour
         {
             remoteIsoPosition = new Vector3(packet.IsoX, packet.IsoY, packet.IsoZ);
             hasRemotePosition = true;
+
+            // 相手がポリスドッグなら、手持ちライトの向きも反映する
+            if (RemoteCharacter == PlayableCharacter.PoliceDog)
+            {
+                remoteLightAngle = packet.LightAngle;
+                hasRemoteLightAngle = true;
+            }
         }
 
         // Key 4 was a bool in the first version of this packet. Treat a true
@@ -154,6 +188,8 @@ public sealed class InGameP2PSynchronizer : MonoBehaviour
 
     private void ApplyRemotePosition()
     {
+        ApplyRemoteLightAngle();
+
         if (!hasRemotePosition)
         {
             return;
@@ -163,6 +199,24 @@ public sealed class InGameP2PSynchronizer : MonoBehaviour
         if (remoteTransform != null && remoteTransform.TryGetComponent<IsoObject>(out var isoObject))
         {
             isoObject.position = remoteIsoPosition;
+        }
+    }
+
+    /// <summary>
+    /// 相手が操作しているポリスドッグの手持ちライトを、届いた角度に向ける。
+    /// こちらの端末では犬の PlayerController が無効なので、これをしないと回らない。
+    /// </summary>
+    private void ApplyRemoteLightAngle()
+    {
+        if (!hasRemoteLightAngle)
+        {
+            return;
+        }
+
+        var light = PoliceDogHandLight;
+        if (light != null)
+        {
+            light.rotation = Quaternion.Euler(0f, 0f, remoteLightAngle);
         }
     }
 
@@ -234,6 +288,11 @@ public sealed class InGameP2PSynchronizer : MonoBehaviour
 
         if (outcome == MatchOutcome.PhantomCatCaptured)
         {
+            // 捕獲判定はポリスドッグ側の端末でしか走らないため、
+            // ここで鳴らさないと猫プレイヤーは無音のまま捕まることになる
+            KanKikuchi.AudioManager.SEManager.Instance.Play(
+                KanKikuchi.AudioManager.SEPath.SFX_GAME_CORRECT);
+
             StartCoroutine(MoveToRemoteEndingAfterDelay(success: true));
         }
         else if (outcome == MatchOutcome.PhantomCatEscaped)
