@@ -423,6 +423,10 @@ namespace PhantomCatWorks.RealtimeP2PKit
 
         private void OnDestroy()
         {
+            if (_instance == this)
+            {
+                _instance = null;
+            }
             _peerConnection?.Dispose();
             _signalingClient?.Dispose();
             _lobbyListener?.Dispose();

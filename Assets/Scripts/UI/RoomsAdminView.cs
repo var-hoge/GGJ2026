@@ -90,6 +90,9 @@ public class RoomsAdminView : MonoBehaviour
 
     private void OnDestroy()
     {
-        P2PManager.Instance.DataChannelReady -= OnDataChannelReady;
+        if (P2PManager.TryGetExistingInstance(out var p2pManager))
+        {
+            p2pManager.DataChannelReady -= OnDataChannelReady;
+        }
     }
 }

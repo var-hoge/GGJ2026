@@ -219,9 +219,9 @@ public sealed class InGameP2PSynchronizer : MonoBehaviour
             policeDogDetector.PhantomCatCaught -= OnLocalPhantomCatCaught;
         }
 
-        if (online)
+        if (online && P2PManager.TryGetExistingInstance(out var p2pManager))
         {
-            P2PManager.Instance.UnregisterPacketHandler(InGameStatePacketId);
+            p2pManager.UnregisterPacketHandler(InGameStatePacketId);
         }
     }
 }

@@ -21,7 +21,10 @@ namespace PhantomCatWorks.RealtimeP2PKit.Demo
 
         private void OnDisable()
         {
-            P2PManager.Instance.UnregisterPacketHandler(DemoPlayerController.PositionPacketId);
+            if (P2PManager.TryGetExistingInstance(out var p2pManager))
+            {
+                p2pManager.UnregisterPacketHandler(DemoPlayerController.PositionPacketId);
+            }
         }
 
         private void OnPositionReceived(PositionPacket packet)

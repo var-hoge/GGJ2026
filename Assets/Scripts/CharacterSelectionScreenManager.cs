@@ -98,8 +98,8 @@ public class CharacterSelectionScreenManager : MonoBehaviour
 
     void OnDestroy()
     {
-        if (_networkSyncEnabled)
-            P2PManager.Instance.UnregisterPacketHandler(CharacterSelectionPacketId);
+        if (_networkSyncEnabled && P2PManager.TryGetExistingInstance(out var p2pManager))
+            p2pManager.UnregisterPacketHandler(CharacterSelectionPacketId);
         _youCursor.DOKill();
         _opponentCursor.DOKill();
     }

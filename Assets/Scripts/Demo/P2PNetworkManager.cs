@@ -61,7 +61,10 @@ namespace PhantomCatWorks.RealtimeP2PKit.Demo
 
         private void OnDestroy()
         {
-            P2PManager.Instance.Disconnect();
+            if (P2PManager.TryGetExistingInstance(out var p2pManager))
+            {
+                p2pManager.Disconnect();
+            }
         }
     }
 }

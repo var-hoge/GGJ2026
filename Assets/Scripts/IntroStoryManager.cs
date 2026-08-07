@@ -165,9 +165,9 @@ public class IntroStoryManager : StoryTextManager
 
     private void OnDestroy()
     {
-        if (onlineReadySyncEnabled)
+        if (onlineReadySyncEnabled && P2PManager.TryGetExistingInstance(out var p2pManager))
         {
-            P2PManager.Instance.UnregisterPacketHandler(IntroStoryReadyPacketId);
+            p2pManager.UnregisterPacketHandler(IntroStoryReadyPacketId);
         }
     }
 
