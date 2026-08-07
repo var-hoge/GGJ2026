@@ -31,7 +31,10 @@ public sealed class InGameP2PSynchronizer : MonoBehaviour
         [Key(1)] public float IsoX;
         [Key(2)] public float IsoY;
         [Key(3)] public float IsoZ;
-        [Key(4)] public MatchOutcome Outcome;
+        // Kept as bool for compatibility with clients that were running the
+        // previous InGame protocol when the outcome field was introduced.
+        [Key(4)] public bool PhantomCatCaught;
+        [Key(5)] public MatchOutcome Outcome;
     }
 
     private Transform policeDog;
@@ -130,15 +133,22 @@ public sealed class InGameP2PSynchronizer : MonoBehaviour
 
         // Outcome packets intentionally omit coordinates, so do not
         // overwrite the last valid IsoWorld position with their default zeros.
-        if (packet.Outcome == MatchOutcome.None)
+        if (packet.Outcome == MatchOutcome.None && !packet.PhantomCatCaught)
         {
             remoteIsoPosition = new Vector3(packet.IsoX, packet.IsoY, packet.IsoZ);
             hasRemotePosition = true;
         }
 
-        if (packet.Outcome != MatchOutcome.None)
+        // Key 4 was a bool in the first version of this packet. Treat a true
+        // legacy value as the same capture-success result.
+        var outcome = packet.Outcome != MatchOutcome.None
+            ? packet.Outcome
+            : packet.PhantomCatCaught
+                ? MatchOutcome.PhantomCatCaptured
+                : MatchOutcome.None;
+        if (outcome != MatchOutcome.None)
         {
-            OnRemoteOutcomeReceived(packet.Outcome);
+            OnRemoteOutcomeReceived(outcome);
         }
     }
 
@@ -201,6 +211,7 @@ public sealed class InGameP2PSynchronizer : MonoBehaviour
         P2PManager.Instance.Send(InGameStatePacketId, new InGameStatePacket
         {
             Character = (int)localCharacter,
+            PhantomCatCaught = outcome == MatchOutcome.PhantomCatCaptured,
             Outcome = outcome,
         });
     }
