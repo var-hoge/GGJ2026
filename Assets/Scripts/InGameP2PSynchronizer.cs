@@ -3,6 +3,7 @@ using MessagePack;
 using PhantomCatWorks.RealtimeP2PKit;
 using IsoTools.Examples.Kenney;
 using UnityEngine;
+using IsoTools;
 
 /// <summary>
 /// Online room matches only: synchronizes each player's character using
