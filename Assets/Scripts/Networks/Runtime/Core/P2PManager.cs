@@ -77,9 +77,20 @@ namespace PhantomCatWorks.RealtimeP2PKit
             DontDestroyOnLoad(gameObject);
         }
 
-        /// <summary>Must be called once, before any other method on this class.</summary>
+        /// <summary>
+        /// Optionally supplies data-channel settings. Calling this is not required
+        /// for matchmaking/room HTTP APIs; those APIs lazily use P2PConfig's
+        /// built-in defaults when no explicit config has been supplied.
+        /// </summary>
         public void Initialize(P2PConfig config)
         {
+            if (config == null)
+            {
+                config = ScriptableObject.CreateInstance<P2PConfig>();
+                if (P2PLog.ShouldLog(P2PLogLevel.Warn))
+                    Debug.LogWarning("[RealtimeP2PKit][P2PManager] no P2PConfig supplied; using built-in defaults");
+            }
+
             _config = config;
             P2PLog.Level = config.LogLevel;
             var matchmakingBaseUrl = P2PEndpoints.GetMatchmakingApiUrl();
@@ -91,7 +102,9 @@ namespace PhantomCatWorks.RealtimeP2PKit
             }
 
             _matchmakingClient = new HttpMatchmakingClient(matchmakingBaseUrl);
-            _packetRouter = new PacketRouter(new MessagePackPayloadCodec());
+            // Do not discard registered gameplay packet handlers when a scene
+            // provides its config after the manager was lazily initialized.
+            _packetRouter ??= new PacketRouter(new MessagePackPayloadCodec());
 
             if (!_webRtcUpdateStarted)
             {
@@ -102,10 +115,17 @@ namespace PhantomCatWorks.RealtimeP2PKit
         }
 
         /// <summary>Register a typed handler for an application-defined packet id (see PacketRouter).</summary>
-        public void RegisterPacketHandler<T>(byte packetId, Action<T> handler) =>
+        public void RegisterPacketHandler<T>(byte packetId, Action<T> handler)
+        {
+            EnsureInitialized();
             _packetRouter.Register(packetId, handler);
+        }
 
-        public void UnregisterPacketHandler(byte packetId) => _packetRouter.Unregister(packetId);
+        public void UnregisterPacketHandler(byte packetId)
+        {
+            EnsureInitialized();
+            _packetRouter.Unregister(packetId);
+        }
 
         /// <summary>Send a MessagePack-encoded packet over the open data channel.</summary>
         public void Send<T>(byte packetId, T value)
@@ -124,6 +144,7 @@ namespace PhantomCatWorks.RealtimeP2PKit
         /// <summary>Joins the matchmaking queue and drives the connection through to Connected.</summary>
         public async void StartMatchmaking(string localPlayerId)
         {
+            EnsureInitialized();
             _peerConnectionStarted = false;
             _dataChannelReadyRaised = false;
             _opponentLeftRaised = false;
@@ -188,12 +209,18 @@ namespace PhantomCatWorks.RealtimeP2PKit
 
         private void PrepareNewSession(string localPlayerId)
         {
-            if (_config == null) throw new InvalidOperationException("Initialize must be called before creating or joining a room.");
+            EnsureInitialized();
             _peerConnectionStarted = false;
             _dataChannelReadyRaised = false;
             _opponentLeftRaised = false;
             SetState(P2PSessionState.Matchmaking);
             Session = new P2PSessionInfo { LocalPlayerId = localPlayerId, State = P2PSessionState.Matchmaking };
+        }
+
+        private void EnsureInitialized()
+        {
+            if (_matchmakingClient != null && _packetRouter != null && _config != null) return;
+            Initialize(null);
         }
 
         private async void OnLobbyMatched(LobbyMatchedMessage msg)
