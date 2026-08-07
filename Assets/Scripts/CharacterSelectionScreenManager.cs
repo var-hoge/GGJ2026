@@ -19,7 +19,7 @@ public class CharacterSelectionScreenManager : MonoBehaviour
     private const byte CharacterSelectionPacketId = 2;
     private const float SelectionResendIntervalSeconds = 0.5f;
 
-    [MessagePackObject]
+    [MessagePackObject(AllowPrivate = true)]
     internal struct CharacterSelectionPacket
     {
         [Key(0)] public int Character;

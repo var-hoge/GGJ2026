@@ -1,4 +1,7 @@
 using System;
+using System.Collections;
+using MessagePack;
+using PhantomCatWorks.RealtimeP2PKit;
 using UnityEngine;
 using KanKikuchi.AudioManager;
 using UnityEngine.SceneManagement;
@@ -6,6 +9,15 @@ using UnityEngine.UI;
 
 public class IntroStoryManager : StoryTextManager
 {
+    private const byte IntroStoryReadyPacketId = 3;
+    private const float ReadyResendIntervalSeconds = 0.5f;
+
+    [MessagePackObject(AllowPrivate = true)]
+    internal struct IntroStoryReadyPacket
+    {
+        [Key(0)] public bool Ready;
+    }
+
     [Serializable]
     public class SceneMsgs
     {
@@ -34,6 +46,10 @@ public class IntroStoryManager : StoryTextManager
 
     private StoryLine[] storyLines;
     private int sceneIndex = 0;
+    private bool onlineReadySyncEnabled;
+    private bool localPlayerReady;
+    private bool opponentReady;
+    private bool loadingInGame;
 
     private void Start()
     {
@@ -42,6 +58,7 @@ public class IntroStoryManager : StoryTextManager
 
         // BGMの再生
         BGMManager.Instance.Play(BGMPath.MUSIC_CUTSCENE_LOOP);
+        StartOnlineReadySync();
         Advance();
     }
 
@@ -49,7 +66,8 @@ public class IntroStoryManager : StoryTextManager
     {
         if (sceneIndex > sceneMsgs.Length - 1)
         {
-            SceneManager.LoadScene("InGame");
+            RequestInGameStart();
+            return;
         }
         else
         {
@@ -59,6 +77,98 @@ public class IntroStoryManager : StoryTextManager
             PlaySound(current);
         }
         sceneIndex++;
+    }
+
+    private void StartOnlineReadySync()
+    {
+        var p2pManager = P2PManager.Instance;
+        onlineReadySyncEnabled = p2pManager.IsOnlineMatch
+            && p2pManager.Session.State == P2PSessionState.Connected;
+
+        if (!onlineReadySyncEnabled)
+        {
+            return;
+        }
+
+        p2pManager.RegisterPacketHandler<IntroStoryReadyPacket>(
+            IntroStoryReadyPacketId,
+            OnOpponentReadyReceived);
+        Debug.Log("[IntroStory] P2P session retained; waiting for both players to finish the story.");
+    }
+
+    private void RequestInGameStart()
+    {
+        if (!onlineReadySyncEnabled)
+        {
+            LoadInGame();
+            return;
+        }
+
+        if (localPlayerReady)
+        {
+            return;
+        }
+
+        localPlayerReady = true;
+        SendReadyPacket();
+        StartCoroutine(ResendReadyUntilGameStarts());
+        Debug.Log("[IntroStory] Local story finished; waiting for opponent.");
+        TryLoadInGame();
+    }
+
+    private void OnOpponentReadyReceived(IntroStoryReadyPacket packet)
+    {
+        if (!packet.Ready)
+        {
+            return;
+        }
+
+        opponentReady = true;
+        Debug.Log("[IntroStory] Opponent is ready to start the game.");
+        TryLoadInGame();
+    }
+
+    private IEnumerator ResendReadyUntilGameStarts()
+    {
+        while (!loadingInGame && !opponentReady)
+        {
+            yield return new WaitForSecondsRealtime(ReadyResendIntervalSeconds);
+            SendReadyPacket();
+        }
+    }
+
+    private void SendReadyPacket()
+    {
+        P2PManager.Instance.Send(IntroStoryReadyPacketId, new IntroStoryReadyPacket { Ready = true });
+    }
+
+    private void TryLoadInGame()
+    {
+        if (!localPlayerReady || !opponentReady)
+        {
+            return;
+        }
+
+        LoadInGame();
+    }
+
+    private void LoadInGame()
+    {
+        if (loadingInGame)
+        {
+            return;
+        }
+
+        loadingInGame = true;
+        SceneManager.LoadScene("InGame");
+    }
+
+    private void OnDestroy()
+    {
+        if (onlineReadySyncEnabled)
+        {
+            P2PManager.Instance.UnregisterPacketHandler(IntroStoryReadyPacketId);
+        }
     }
 
     string GetMessage(int index)
