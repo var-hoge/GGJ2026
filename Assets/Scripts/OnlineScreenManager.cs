@@ -50,13 +50,13 @@ public class OnlineScreenManager : MonoBehaviour
 
     void Start()
     {
-        SetFoundLobbyCount(_debugFoundLobbyCount);
+        //SetFoundLobbyCount(_debugFoundLobbyCount);
     }
 
     void Update()
     {
         // インスペクターでデバッグ用の数を変えたら再生中でも反映する
-        SetFoundLobbyCount(_debugFoundLobbyCount);
+        //SetFoundLobbyCount(_debugFoundLobbyCount);
 
         if (EventSystem.current == null)
         {

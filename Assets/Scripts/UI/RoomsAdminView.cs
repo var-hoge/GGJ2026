@@ -9,7 +9,7 @@ public class RoomsAdminView : MonoBehaviour
 {
     [SerializeField] private GridLayoutGroup roomListRoot;
     [SerializeField] private GameObject roomCell;
-
+    [SerializeField] private Transform waitingView;
     async void Start()
     {
        await RefreshRooms();
@@ -17,7 +17,6 @@ public class RoomsAdminView : MonoBehaviour
 
     public void StartGame(MachingRoom room)
     {
-        Debug.Log($"selectRoomId:{room.id}");
         P2PManager.Instance.JoinRoom(PlayerData.LoadSavedPlayerId, room);
         this.gameObject.SetActive(false);
     }
@@ -32,10 +31,12 @@ public class RoomsAdminView : MonoBehaviour
 
     public async Task RefreshRooms()
     {
+        roomCell.gameObject.SetActive(true);
         foreach (Transform child in roomListRoot.transform)
             if (child.gameObject != roomCell) Destroy(child.gameObject);
 
         var rooms = await LoadRooms();
+        this.waitingView.gameObject.SetActive(rooms.Count <= 0);
         foreach (var room in rooms)
         {
             var roomTextField = Util.InstantiateTo<RoomTextField>(roomListRoot.gameObject, roomCell);
@@ -46,14 +47,13 @@ public class RoomsAdminView : MonoBehaviour
 
     public void OnClickNewRoomButton ()
     {
-        Debug.Log("onClickNewRoomButton");
         P2PManager.Instance.CreateRoom(PlayerData.LoadSavedPlayerId);
-        this.gameObject.SetActive(false);
+        roomCell.gameObject.SetActive(false);
+        this.waitingView.gameObject.SetActive(true);
     }
 
     public void OnClickSearchRoomButton()
     {
-        Debug.Log("onClickSearchRoomButton");
         _ = RefreshRooms();
     }
 }
