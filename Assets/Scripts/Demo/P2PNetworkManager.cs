@@ -7,7 +7,7 @@ namespace PhantomCatWorks.RealtimeP2PKit.Demo
     /// matchmaking on Start. This is the "integration point" between the reusable
     /// RealtimeP2PKit library and this specific demo game.
     /// </summary>
-    public class NetworkManager : SingletonBehaviour<NetworkManager>
+    public class P2PNetworkManager : SingletonBehaviour<P2PNetworkManager>
     {
         [SerializeField] private P2PConfig _config;
         [SerializeField] private GameObject _localPlayerPrefab;
