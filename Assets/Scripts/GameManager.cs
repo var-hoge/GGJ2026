@@ -5,6 +5,11 @@ public class GameManager : SingletonBehaviour<GameManager>
 {
     [SerializeField] private float timeLimitSecond;
     private float remainSecond;
+    private bool gameEnded;
+    private bool waitForNetworkAuthority;
+
+    /// <summary>Raised immediately before moving to an ending scene.</summary>
+    public event System.Action<bool> GameEnded;
 
     void Start()
     {
@@ -16,7 +21,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     void Update()
     {
         remainSecond = Mathf.Max(remainSecond - Time.deltaTime, 0);
-        if (remainSecond <= 0f)
+        if (!gameEnded && !waitForNetworkAuthority && remainSecond <= 0f)
         {
             this.MoveToFailScene();
         }
@@ -24,12 +29,33 @@ public class GameManager : SingletonBehaviour<GameManager>
 
     public void MoveToFailScene()
     {
-        SceneManager.LoadScene("HappyEnd");
+        MoveToEnding(success: false);
     }
 
     public void MoveToSuccessScene()
     {
-        SceneManager.LoadScene("VeryHappyEnd");
+        MoveToEnding(success: true);
+    }
+
+    /// <summary>
+    /// In an online match, PhantomCat waits for PoliceDog's authoritative
+    /// result. Standalone and local play continue using their normal timer.
+    /// </summary>
+    public void WaitForNetworkAuthority()
+    {
+        waitForNetworkAuthority = true;
+    }
+
+    private void MoveToEnding(bool success)
+    {
+        if (gameEnded)
+        {
+            return;
+        }
+
+        gameEnded = true;
+        GameEnded?.Invoke(success);
+        SceneManager.LoadScene(success ? "VeryHappyEnd" : "HappyEnd");
     }
 
     public float RemainTimeSecond {

@@ -17,6 +17,13 @@ public sealed class InGameP2PSynchronizer : MonoBehaviour
     private const int CaptureResendCount = 10;
     private const float CaptureEndingDelaySeconds = 3f;
 
+    internal enum MatchOutcome
+    {
+        None = 0,
+        PhantomCatCaptured = 1,
+        PhantomCatEscaped = 2,
+    }
+
     [MessagePackObject(AllowPrivate = true)]
     internal struct InGameStatePacket
     {
@@ -24,13 +31,14 @@ public sealed class InGameP2PSynchronizer : MonoBehaviour
         [Key(1)] public float IsoX;
         [Key(2)] public float IsoY;
         [Key(3)] public float IsoZ;
-        [Key(4)] public bool PhantomCatCaught;
+        [Key(4)] public MatchOutcome Outcome;
     }
 
     private Transform policeDog;
     private CatSpawner catSpawner;
     private PlayableCharacter localCharacter;
     private CatDetector policeDogDetector;
+    private GameManager gameManager;
     private bool online;
     private bool matchFinished;
     private float nextPositionSendTime;
@@ -56,6 +64,16 @@ public sealed class InGameP2PSynchronizer : MonoBehaviour
         }
 
         p2pManager.RegisterPacketHandler<InGameStatePacket>(InGameStatePacketId, OnRemoteStateReceived);
+
+        gameManager = GameManager.Instance;
+        if (gameManager != null)
+        {
+            gameManager.GameEnded += OnLocalGameEnded;
+            if (localCharacter == PlayableCharacter.PhantomCat)
+            {
+                gameManager.WaitForNetworkAuthority();
+            }
+        }
 
         // Only the locally controlled dog has an enabled detector, but subscribe
         // defensively so a successful capture is propagated immediately.
@@ -99,7 +117,7 @@ public sealed class InGameP2PSynchronizer : MonoBehaviour
             IsoX = position.x,
             IsoY = position.y,
             IsoZ = position.z,
-            PhantomCatCaught = false,
+            Outcome = MatchOutcome.None,
         });
     }
 
@@ -110,17 +128,17 @@ public sealed class InGameP2PSynchronizer : MonoBehaviour
             return;
         }
 
-        // Capture-result packets intentionally omit coordinates, so do not
+        // Outcome packets intentionally omit coordinates, so do not
         // overwrite the last valid IsoWorld position with their default zeros.
-        if (!packet.PhantomCatCaught)
+        if (packet.Outcome == MatchOutcome.None)
         {
             remoteIsoPosition = new Vector3(packet.IsoX, packet.IsoY, packet.IsoZ);
             hasRemotePosition = true;
         }
 
-        if (packet.PhantomCatCaught)
+        if (packet.Outcome != MatchOutcome.None)
         {
-            OnRemotePhantomCatCaught();
+            OnRemoteOutcomeReceived(packet.Outcome);
         }
     }
 
@@ -146,52 +164,96 @@ public sealed class InGameP2PSynchronizer : MonoBehaviour
         }
 
         matchFinished = true;
-        StartCoroutine(ResendCaptureResult());
+        BroadcastOutcome(MatchOutcome.PhantomCatCaptured);
     }
 
-    private IEnumerator ResendCaptureResult()
+    private void OnLocalGameEnded(bool success)
+    {
+        // PoliceDog is authoritative for all match outcomes. A capture result
+        // has already been sent when CatDetector fired; this handles timeout
+        // and too-many-wrong-catches.
+        if (!online || localCharacter != PlayableCharacter.PoliceDog || matchFinished)
+        {
+            return;
+        }
+
+        matchFinished = true;
+        BroadcastOutcome(success ? MatchOutcome.PhantomCatCaptured : MatchOutcome.PhantomCatEscaped);
+    }
+
+    private void BroadcastOutcome(MatchOutcome outcome)
+    {
+        SendOutcome(outcome);
+        StartCoroutine(ResendOutcome(outcome));
+    }
+
+    private IEnumerator ResendOutcome(MatchOutcome outcome)
     {
         for (var i = 0; i < CaptureResendCount; i++)
         {
-            P2PManager.Instance.Send(InGameStatePacketId, new InGameStatePacket
-            {
-                Character = (int)localCharacter,
-                PhantomCatCaught = true,
-            });
+            SendOutcome(outcome);
             yield return new WaitForSecondsRealtime(CaptureResendIntervalSeconds);
         }
     }
 
-    private void OnRemotePhantomCatCaught()
+    private void SendOutcome(MatchOutcome outcome)
     {
-        if (matchFinished)
+        P2PManager.Instance.Send(InGameStatePacketId, new InGameStatePacket
+        {
+            Character = (int)localCharacter,
+            Outcome = outcome,
+        });
+    }
+
+    private void OnRemoteOutcomeReceived(MatchOutcome outcome)
+    {
+        // Only PoliceDog may authoritatively report an ending result.
+        if (localCharacter != PlayableCharacter.PhantomCat || matchFinished)
         {
             return;
         }
 
         matchFinished = true;
 
-        // The peer that received this result controls PhantomCat. Stop only its
-        // local input, then use the existing failure ending after the same delay
-        // as the dog side's successful-capture sequence.
-        if (localCharacter == PlayableCharacter.PhantomCat)
+        var localCat = catSpawner.PhantomCat;
+        if (localCat != null && localCat.TryGetComponent<CatController>(out var catController))
         {
-            var localCat = catSpawner.PhantomCat;
-            if (localCat != null && localCat.TryGetComponent<CatController>(out var catController))
-            {
-                catController.enabled = false;
-            }
+            catController.enabled = false;
+        }
 
-            StartCoroutine(MoveCapturedPlayerToEnding());
+        if (outcome == MatchOutcome.PhantomCatCaptured)
+        {
+            StartCoroutine(MoveToRemoteEndingAfterDelay(success: true));
+        }
+        else if (outcome == MatchOutcome.PhantomCatEscaped)
+        {
+            MoveToRemoteEnding(success: false);
         }
     }
 
-    private IEnumerator MoveCapturedPlayerToEnding()
+    private IEnumerator MoveToRemoteEndingAfterDelay(bool success)
     {
         yield return new WaitForSeconds(CaptureEndingDelaySeconds);
-        if (GameManager.Instance != null)
+        MoveToRemoteEnding(success);
+    }
+
+    private void MoveToRemoteEnding(bool success)
+    {
+        if (gameManager == null)
         {
-            GameManager.Instance.MoveToFailScene();
+            gameManager = GameManager.Instance;
+        }
+
+        if (gameManager != null)
+        {
+            if (success)
+            {
+                gameManager.MoveToSuccessScene();
+            }
+            else
+            {
+                gameManager.MoveToFailScene();
+            }
         }
     }
 
@@ -217,6 +279,11 @@ public sealed class InGameP2PSynchronizer : MonoBehaviour
         if (policeDogDetector != null)
         {
             policeDogDetector.PhantomCatCaught -= OnLocalPhantomCatCaught;
+        }
+
+        if (gameManager != null)
+        {
+            gameManager.GameEnded -= OnLocalGameEnded;
         }
 
         if (online && P2PManager.TryGetExistingInstance(out var p2pManager))
