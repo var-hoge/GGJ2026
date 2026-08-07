@@ -130,8 +130,8 @@ namespace PhantomCatWorks.RealtimeP2PKit.Editor
 
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("実際に参照されるURL(保存済みの値)", EditorStyles.miniBoldLabel);
-            EditorGUILayout.LabelField("Web API: " + P2PEndpoints.GetMatchmakingApiUrl(), EditorStyles.miniLabel);
-            EditorGUILayout.LabelField("Signaling: " + P2PEndpoints.GetSignalingWebSocketUrl(), EditorStyles.miniLabel);
+            EditorGUILayout.LabelField("Web API: " + P2PEndpoints.GetMatchmakingApiUrl(_environment), EditorStyles.miniLabel);
+            EditorGUILayout.LabelField("Signaling: " + P2PEndpoints.GetSignalingWebSocketUrl(_environment), EditorStyles.miniLabel);
 
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Network Logging", EditorStyles.boldLabel);

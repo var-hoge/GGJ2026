@@ -78,6 +78,7 @@ namespace PhantomCatWorks.RealtimeP2PKit
         private bool _peerConnectionStarted;
         private bool _dataChannelReadyRaised;
         private bool _opponentLeftRaised;
+        private P2PEnvironment _endpointEnvironment;
 
         private void Awake()
         {
@@ -98,6 +99,12 @@ namespace PhantomCatWorks.RealtimeP2PKit
         /// </summary>
         public void Initialize(P2PConfig config)
         {
+            Initialize(config, P2PEndpoints.GetCurrentEnvironment());
+        }
+
+        /// <summary>Initializes this session using explicitly selected endpoints.</summary>
+        public void Initialize(P2PConfig config, P2PEnvironment environment)
+        {
             if (config == null)
             {
                 config = ScriptableObject.CreateInstance<P2PConfig>();
@@ -106,11 +113,12 @@ namespace PhantomCatWorks.RealtimeP2PKit
             }
 
             _config = config;
+            _endpointEnvironment = environment;
             P2PLog.Level = config.LogLevel;
-            var matchmakingBaseUrl = P2PEndpoints.GetMatchmakingApiUrl();
+            var matchmakingBaseUrl = P2PEndpoints.GetMatchmakingApiUrl(_endpointEnvironment);
             if (P2PLog.ShouldLog(P2PLogLevel.Info))
             {
-                Debug.Log($"[RealtimeP2PKit][P2PManager] initializing. environment={P2PEndpoints.GetCurrentEnvironment()} " +
+                Debug.Log($"[RealtimeP2PKit][P2PManager] initializing. environment={_endpointEnvironment} " +
                           $"matchmakingApiUrl={matchmakingBaseUrl} " +
                           $"signalingWebSocketUrl={P2PEndpoints.GetSignalingWebSocketUrl()} logLevel={config.LogLevel}");
             }
@@ -169,7 +177,7 @@ namespace PhantomCatWorks.RealtimeP2PKit
 
             // Listen on our own lobby room first, in case we end up waiting and get
             // matched later by another player's join request.
-            _lobbyListener = new LobbyListener(P2PEndpoints.GetSignalingWebSocketUrl());
+            _lobbyListener = new LobbyListener(P2PEndpoints.GetSignalingWebSocketUrl(_endpointEnvironment));
             _lobbyListener.Matched += OnLobbyMatched;
             await _lobbyListener.ConnectAsync(localPlayerId);
 
@@ -261,7 +269,7 @@ namespace PhantomCatWorks.RealtimeP2PKit
             Matched?.Invoke(Session);
 
             SetState(P2PSessionState.SignalingConnecting);
-            _signalingClient = new PartyKitSignalingClient(P2PEndpoints.GetSignalingWebSocketUrl());
+            _signalingClient = new PartyKitSignalingClient(P2PEndpoints.GetSignalingWebSocketUrl(_endpointEnvironment));
             _signalingClient.MessageReceived += OnSignalMessage;
             _signalingClient.Connected += OnSignalingConnected;
             _signalingClient.Disconnected += reason =>
@@ -284,7 +292,7 @@ namespace PhantomCatWorks.RealtimeP2PKit
             SetState(P2PSessionState.Negotiating);
             if (P2PLog.ShouldLog(P2PLogLevel.Info)) Debug.Log($"[RealtimeP2PKit][P2PManager] peer ready, starting WebRTC negotiation (isInitiator={Session.IsInitiator})");
 
-            var stunServerUrls = P2PEndpoints.GetStunServerUrls();
+            var stunServerUrls = P2PEndpoints.GetStunServerUrls(_endpointEnvironment);
             _peerConnection = new WebRtcPeerConnection(this, _config, stunServerUrls);
             _peerConnection.Initialize(Session.IsInitiator);
 
@@ -436,6 +444,7 @@ namespace PhantomCatWorks.RealtimeP2PKit
             SetState(P2PSessionState.Idle);
             Session = new P2PSessionInfo { State = P2PSessionState.Idle };
         }
+
 
         private async void LeaveMatchmakingAsync(HttpMatchmakingClient matchmakingClient, string playerId)
         {

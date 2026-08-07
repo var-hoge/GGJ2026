@@ -14,6 +14,7 @@ public class RoomsAdminView : MonoBehaviour
     private bool _matchStarted;
 
     public Action OnStartEnterLobby = null;
+    public P2PEnvironment EndpointEnvironment { get; set; }
 
     async void Start()
     {
@@ -38,7 +39,7 @@ public class RoomsAdminView : MonoBehaviour
 
     public async Task<List<MachingRoom>> LoadRooms()
     {
-        var baseUrl = P2PEndpoints.GetMatchmakingApiUrl();
+        var baseUrl = P2PEndpoints.GetMatchmakingApiUrl(EndpointEnvironment);
         var playerId = PlayerData.LoadSavedPlayerId;
         var responseJsonString = await HttpMatchmakingClient.HttpRequestAsync("GET", $"{baseUrl}/api/matchmaking/rooms?playerId={UnityEngine.Networking.UnityWebRequest.EscapeURL(playerId)}");
         return JsonConvert.DeserializeObject<List<MachingRoom>>(responseJsonString);

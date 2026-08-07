@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using PhantomCatWorks.RealtimeP2PKit;
 
 /// <summary>
 /// オンライン対戦画面の遷移とキー操作を管理する。
@@ -43,6 +44,11 @@ public class OnlineScreenManager : MonoBehaviour
 
     void Awake()
     {
+        // The public online room flow always uses the deployed Cloudflare
+        // backend. Local settings remain available for local-server testing.
+        P2PManager.Instance.Initialize(null, P2PEnvironment.Remote);
+        roomsAdminView.EndpointEnvironment = P2PEnvironment.Remote;
+
         if (_verticalNavigationOrder.Length > 0 && _verticalNavigationOrder[0] != null)
         {
             _firstUpNeighbour = _verticalNavigationOrder[0].navigation.selectOnUp;

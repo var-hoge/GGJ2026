@@ -82,9 +82,12 @@ namespace PhantomCatWorks.RealtimeP2PKit
         }
 
         public static string GetMatchmakingApiUrl()
+            => GetMatchmakingApiUrl(GetCurrentEnvironment());
+
+        public static string GetMatchmakingApiUrl(P2PEnvironment environment)
         {
 #if UNITY_EDITOR
-            return GetCurrentEnvironment() == P2PEnvironment.Local
+            return environment == P2PEnvironment.Local
                 ? PlayerPrefs.GetString(PrefKeyLocalMatchmakingApiUrl, DefaultLocalMatchmakingApiUrl)
                 : PlayerPrefs.GetString(PrefKeyRemoteMatchmakingApiUrl, DefaultRemoteMatchmakingApiUrl);
 #else
@@ -93,9 +96,12 @@ namespace PhantomCatWorks.RealtimeP2PKit
         }
 
         public static string GetSignalingWebSocketUrl()
+            => GetSignalingWebSocketUrl(GetCurrentEnvironment());
+
+        public static string GetSignalingWebSocketUrl(P2PEnvironment environment)
         {
 #if UNITY_EDITOR
-            return GetCurrentEnvironment() == P2PEnvironment.Local
+            return environment == P2PEnvironment.Local
                 ? PlayerPrefs.GetString(PrefKeyLocalSignalingWebSocketUrl, DefaultLocalSignalingWebSocketUrl)
                 : PlayerPrefs.GetString(PrefKeyRemoteSignalingWebSocketUrl, DefaultRemoteSignalingWebSocketUrl);
 #else
@@ -105,9 +111,12 @@ namespace PhantomCatWorks.RealtimeP2PKit
 
         /// <summary>Ordered list of STUN server URLs to use for ICE gathering.</summary>
         public static List<string> GetStunServerUrls()
+            => GetStunServerUrls(GetCurrentEnvironment());
+
+        public static List<string> GetStunServerUrls(P2PEnvironment environment)
         {
 #if UNITY_EDITOR
-            var key = GetCurrentEnvironment() == P2PEnvironment.Local ? PrefKeyLocalStunServerUrls : PrefKeyRemoteStunServerUrls;
+            var key = environment == P2PEnvironment.Local ? PrefKeyLocalStunServerUrls : PrefKeyRemoteStunServerUrls;
             return LoadStunServerUrls(key);
 #else
             return DefaultStunServerUrls.ToList();
