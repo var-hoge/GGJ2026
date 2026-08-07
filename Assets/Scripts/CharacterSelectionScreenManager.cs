@@ -167,13 +167,17 @@ public class CharacterSelectionScreenManager : MonoBehaviour
         // Local multiplayer and standalone character selection must remain
         // usable without creating a P2P session.
         if (P2PManager.Instance.Session.State != P2PSessionState.Connected)
+        {
+            Debug.LogWarning($"[CharacterSelection] online sync unavailable: P2P session state={P2PManager.Instance.Session.State}");
             return;
+        }
 
         _networkSyncEnabled = true;
         P2PManager.Instance.RegisterPacketHandler<CharacterSelectionPacket>(
             CharacterSelectionPacketId, OnOpponentCharacterPacket);
         SendLocalCharacter();
         _nextSelectionSyncTime = Time.unscaledTime + SelectionResendIntervalSeconds;
+        Debug.Log("[CharacterSelection] P2P session retained; opponent selection sync enabled");
     }
 
     private void SendLocalCharacter()
@@ -195,6 +199,8 @@ public class CharacterSelectionScreenManager : MonoBehaviour
         }
 
         SetOpponentCharacter((PlayableCharacter)packet.Character);
+        if (P2PLog.ShouldLog(P2PLogLevel.Info))
+            Debug.Log($"[CharacterSelection] opponent selected {(PlayableCharacter)packet.Character}");
     }
 
     /// <summary>

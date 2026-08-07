@@ -283,10 +283,18 @@ namespace PhantomCatWorks.RealtimeP2PKit
 
             _peerConnection.ConnectionStateChanged += state =>
             {
-                if (state is RTCPeerConnectionState.Failed or RTCPeerConnectionState.Disconnected or RTCPeerConnectionState.Closed)
+                // Unity.WebRTC can report Disconnected transiently while a
+                // synchronous scene load is in progress. The data channel is
+                // the gameplay transport, so only mark the session terminal
+                // when it actually closes (handled below), fails, or is closed.
+                if (state is RTCPeerConnectionState.Failed or RTCPeerConnectionState.Closed)
                 {
                     SetState(P2PSessionState.Disconnected);
                     ConnectionClosed?.Invoke(state.ToString());
+                }
+                else if (state == RTCPeerConnectionState.Disconnected && P2PLog.ShouldLog(P2PLogLevel.Warn))
+                {
+                    Debug.LogWarning("[RealtimeP2PKit][P2PManager] peer connection temporarily disconnected; keeping session while data channel remains open");
                 }
             };
 
