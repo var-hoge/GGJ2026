@@ -46,6 +46,17 @@ namespace PhantomCatWorks.RealtimeP2PKit
             }
         }
 
+        /// <summary>
+        /// Returns the persistent manager only when it was already created.
+        /// This lets offline scenes avoid creating a networking object merely to
+        /// determine whether an online match is active.
+        /// </summary>
+        public static bool TryGetExistingInstance(out P2PManager manager)
+        {
+            manager = _instance;
+            return manager != null;
+        }
+
         public event Action<P2PSessionState> StateChanged;
         public event Action<P2PSessionInfo> Matched;
         public event Action DataChannelReady;
