@@ -4,6 +4,7 @@ using PhantomCatWorks.RealtimeP2PKit;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 /// <summary>
 /// キャラクター選択画面の遷移とキー操作を管理する。
@@ -117,7 +118,7 @@ public class CharacterSelectionScreenManager : MonoBehaviour
         var selected = EventSystem.current.currentSelectedGameObject;
         if (selected == null)
         {
-            EventSystem.current.SetSelectedGameObject(_defaultSelectedButton);
+            EventSystem.current.SetSelectedGameObject(DefaultSelectableObject());
             return;
         }
 
@@ -152,8 +153,18 @@ public class CharacterSelectionScreenManager : MonoBehaviour
     void OnOpponentSelection(CharacterSelectionPacket packet)
     {
         var character = packet.AsCharacter();
+
+        // 相手はカーソルを動かすたびに送ってくるので、
+        // 「未決定 → 決定」に変わった瞬間だけ音を鳴らす
+        var justConfirmed = packet.Confirmed && !_opponentConfirmed;
+
         _opponentConfirmed = packet.Confirmed;
         SetOpponentCharacter(character);
+
+        if (justConfirmed)
+        {
+            SEManager.Instance.Play(SEPath.UI_SELECT);
+        }
 
         // 同じキャラクターを取り合った場合はホストを優先する。
         // 参加側は決定を取り消して選び直す
@@ -161,13 +172,62 @@ public class CharacterSelectionScreenManager : MonoBehaviour
         {
             _youConfirmed = false;
             if (_waitingForOpponentText != null) _waitingForOpponentText.SetActive(false);
-            SEManager.Instance.Play(SEPath.UI_SELECT);
             SendMySelection();
-            return;
         }
+
+        // 相手が決定したキャラクターは、以降こちらでは選べなくする
+        ApplyOpponentLock();
 
         TryStartGame();
     }
+
+    /// <summary>
+    /// 相手が決定したキャラクターのボタンを押せなくする。
+    /// 押しても無反応にするのではなくボタン自体を無効化するので、
+    /// カーソルが乗ることもなくなり「選べそうに見える」状態を無くせる。
+    /// </summary>
+    void ApplyOpponentLock()
+    {
+        if (!IsNetworked) return;
+
+        var locked = _opponentConfirmed ? _opponentCharacter : null;
+
+        SetButtonInteractable(PlayableCharacter.PhantomCat, locked != PlayableCharacter.PhantomCat);
+        SetButtonInteractable(PlayableCharacter.PoliceDog, locked != PlayableCharacter.PoliceDog);
+
+        if (!locked.HasValue) return;
+
+        var available = Other(locked.Value);
+
+        // 取られた側にこちらのカーソルが乗ったままだと、
+        // 押せないボタンを選択して操作不能に見えるので空いている方へ移す
+        if (_youCharacter == locked.Value)
+        {
+            SetYouCharacter(available);
+        }
+
+        var target = ButtonOf(available);
+        if (target != null && EventSystem.current != null
+            && EventSystem.current.currentSelectedGameObject != target.gameObject)
+        {
+            EventSystem.current.SetSelectedGameObject(target.gameObject);
+        }
+    }
+
+    void SetButtonInteractable(PlayableCharacter character, bool interactable)
+    {
+        var button = ButtonOf(character);
+        if (button != null) button.interactable = interactable;
+    }
+
+    Selectable ButtonOf(PlayableCharacter character)
+    {
+        var rect = character == PlayableCharacter.PhantomCat ? _phantomCatButton : _policeDogButton;
+        return rect != null ? rect.GetComponent<Selectable>() : null;
+    }
+
+    static PlayableCharacter Other(PlayableCharacter character) =>
+        character == PlayableCharacter.PhantomCat ? PlayableCharacter.PoliceDog : PlayableCharacter.PhantomCat;
 
     void OnGameStart(GameStartPacket packet)
     {
@@ -285,6 +345,23 @@ public class CharacterSelectionScreenManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 選択が外れたときの復帰先。相手に取られたボタンが既定値だった場合は、
+    /// そこへ戻すと押せないボタンを選択してしまうので空いている方を返す。
+    /// </summary>
+    GameObject DefaultSelectableObject()
+    {
+        if (_opponentConfirmed
+            && _opponentCharacter.HasValue
+            && CharacterOf(_defaultSelectedButton) == _opponentCharacter.Value)
+        {
+            var button = ButtonOf(Other(_opponentCharacter.Value));
+            if (button != null) return button.gameObject;
+        }
+
+        return _defaultSelectedButton;
+    }
+
     /// <summary>そのゲームオブジェクトがキャラクターのボタンなら、対応するキャラクターを返す。</summary>
     PlayableCharacter? CharacterOf(GameObject buttonObject)
     {
@@ -316,10 +393,12 @@ public class CharacterSelectionScreenManager : MonoBehaviour
 
         if (_youConfirmed) return;
 
-        // 相手が既に決定しているキャラクターは選べない
+        // 相手が既に決定しているキャラクターは選べない。
+        // 通常はボタンを無効化してあるのでここへは来ないが、
+        // 相手の決定通知と自分の決定が同じフレームで交差した場合の保険として残す。
+        // 決定できていないので、決定音は鳴らさない
         if (_opponentConfirmed && _opponentCharacter == character)
         {
-            SEManager.Instance.Play(SEPath.UI_SELECT);
             return;
         }
 
