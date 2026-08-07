@@ -11,22 +11,29 @@ public class RoomsAdminView : MonoBehaviour
     [SerializeField] private GridLayoutGroup roomListRoot;
     [SerializeField] private GameObject roomCell;
     [SerializeField] private Transform waitingView;
+    private bool _matchStarted;
 
     public Action OnStartEnterLobby = null;
 
     async void Start()
     {
+       P2PManager.Instance.DataChannelReady += OnDataChannelReady;
        await RefreshRooms();
+       if (P2PManager.Instance.Session.State == P2PSessionState.Connected)
+           OnDataChannelReady();
     }
 
     public async void StartGame(MachingRoom room)
     {
-        await P2PManager.Instance.JoinRoom(PlayerData.LoadSavedPlayerId, room);
-        if (OnStartEnterLobby != null)
+        try
         {
-            OnStartEnterLobby();
+            await P2PManager.Instance.JoinRoom(PlayerData.LoadSavedPlayerId, room);
         }
-//        this.gameObject.SetActive(false);
+        catch (Exception ex)
+        {
+            Debug.LogWarning($"[Rooms] failed to join room: {ex.Message}");
+            await RefreshRooms();
+        }
     }
 
     public async Task<List<MachingRoom>> LoadRooms()
@@ -55,17 +62,34 @@ public class RoomsAdminView : MonoBehaviour
 
     public async void OnClickNewRoomButton ()
     {
-        await P2PManager.Instance.CreateRoom(PlayerData.LoadSavedPlayerId);
-        if (OnStartEnterLobby != null)
+        try
         {
-            OnStartEnterLobby();
+            await P2PManager.Instance.CreateRoom(PlayerData.LoadSavedPlayerId);
+            roomCell.SetActive(false);
+            waitingView.gameObject.SetActive(true);
+            Debug.Log("[Rooms] room created; waiting for an opponent");
         }
-//        roomCell.gameObject.SetActive(false);
-//        this.waitingView.gameObject.SetActive(true);
+        catch (Exception ex)
+        {
+            Debug.LogWarning($"[Rooms] failed to create room: {ex.Message}");
+        }
     }
 
     public void OnClickSearchRoomButton()
     {
         _ = RefreshRooms();
+    }
+
+    private void OnDataChannelReady()
+    {
+        if (_matchStarted) return;
+        _matchStarted = true;
+        Debug.Log("[Rooms] P2P connection ready; entering character selection");
+        OnStartEnterLobby?.Invoke();
+    }
+
+    private void OnDestroy()
+    {
+        P2PManager.Instance.DataChannelReady -= OnDataChannelReady;
     }
 }

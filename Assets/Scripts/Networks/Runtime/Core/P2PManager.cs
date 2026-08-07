@@ -189,6 +189,7 @@ namespace PhantomCatWorks.RealtimeP2PKit
             {
                 Debug.LogError($"[RealtimeP2PKit][P2PManager] room creation failed: {ex}");
                 SetState(P2PSessionState.Idle);
+                throw;
             }
         }
 
@@ -205,6 +206,7 @@ namespace PhantomCatWorks.RealtimeP2PKit
             {
                 Debug.LogWarning($"[RealtimeP2PKit][P2PManager] room join failed: {ex.Message}");
                 SetState(P2PSessionState.Idle);
+                throw;
             }
         }
 

@@ -6,6 +6,8 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.UI;
+using MessagePack;
+using PhantomCatWorks.RealtimeP2PKit;
 
 /// <summary>
 /// キャラクター選択画面の遷移とキー操作を管理する。
@@ -13,6 +15,15 @@ using UnityEngine.InputSystem.UI;
 /// </summary>
 public class CharacterSelectionScreenManager : MonoBehaviour
 {
+    // packetId=1 is the P2P demo position packet. Keep game UI packets separate.
+    private const byte CharacterSelectionPacketId = 2;
+    private const float SelectionResendIntervalSeconds = 0.5f;
+
+    [MessagePackObject]
+    internal struct CharacterSelectionPacket
+    {
+        [Key(0)] public int Character;
+    }
     [SerializeField] GameObject _defaultSelectedButton;
 
     [Header("キャラクターのボタン")]
@@ -55,6 +66,8 @@ public class CharacterSelectionScreenManager : MonoBehaviour
     PlayableCharacter? _opponentCharacter;
 
     bool _wasDebugMode;
+    bool _networkSyncEnabled;
+    float _nextSelectionSyncTime;
 
     /// <summary>UI の移動操作。デバッグ中だけ A / D の割り当てを外すために持っておく。</summary>
     InputAction _moveAction;
@@ -69,6 +82,7 @@ public class CharacterSelectionScreenManager : MonoBehaviour
         ApplyCursors(instant: true);
 
         FindDebugKeyBindings();
+        StartOnlineSelectionSync();
     }
 
     void OnDisable()
@@ -80,6 +94,8 @@ public class CharacterSelectionScreenManager : MonoBehaviour
 
     void OnDestroy()
     {
+        if (_networkSyncEnabled)
+            P2PManager.Instance.UnregisterPacketHandler(CharacterSelectionPacketId);
         _youCursor.DOKill();
         _opponentCursor.DOKill();
     }
@@ -87,6 +103,14 @@ public class CharacterSelectionScreenManager : MonoBehaviour
     void Update()
     {
         UpdateDebugOpponent();
+
+        // The channel is usually configured as unreliable for gameplay. Re-send
+        // the current selection so a lost packet is automatically corrected.
+        if (_networkSyncEnabled && Time.unscaledTime >= _nextSelectionSyncTime)
+        {
+            SendLocalCharacter();
+            _nextSelectionSyncTime = Time.unscaledTime + SelectionResendIntervalSeconds;
+        }
 
         if (EventSystem.current == null)
         {
@@ -135,6 +159,42 @@ public class CharacterSelectionScreenManager : MonoBehaviour
 
         _youCharacter = character;
         ApplyCursors(instant: false);
+        SendLocalCharacter();
+    }
+
+    private void StartOnlineSelectionSync()
+    {
+        // Local multiplayer and standalone character selection must remain
+        // usable without creating a P2P session.
+        if (P2PManager.Instance.Session.State != P2PSessionState.Connected)
+            return;
+
+        _networkSyncEnabled = true;
+        P2PManager.Instance.RegisterPacketHandler<CharacterSelectionPacket>(
+            CharacterSelectionPacketId, OnOpponentCharacterPacket);
+        SendLocalCharacter();
+        _nextSelectionSyncTime = Time.unscaledTime + SelectionResendIntervalSeconds;
+    }
+
+    private void SendLocalCharacter()
+    {
+        if (!_networkSyncEnabled) return;
+        P2PManager.Instance.Send(CharacterSelectionPacketId, new CharacterSelectionPacket
+        {
+            Character = (int)_youCharacter,
+        });
+    }
+
+    private void OnOpponentCharacterPacket(CharacterSelectionPacket packet)
+    {
+        if (packet.Character < (int)PlayableCharacter.PhantomCat ||
+            packet.Character > (int)PlayableCharacter.PoliceDog)
+        {
+            Debug.LogWarning($"[CharacterSelection] ignored invalid opponent character: {packet.Character}");
+            return;
+        }
+
+        SetOpponentCharacter((PlayableCharacter)packet.Character);
     }
 
     /// <summary>
