@@ -9,7 +9,12 @@ namespace IsoTools.Examples.Kenney {
 
 		IsoRigidbody _isoRigidbody = null;
 
-		private CatDetector _catDetector = null;
+		/// <summary>
+		/// 捕まったかどうかを見るために持つ。
+		/// 以前はここで CatDetector を GetComponent していたが、CatDetector が付いているのは
+		/// ポリスドッグ (Player.prefab) だけで猫には無いため、常に null で判定が効いていなかった。
+		/// </summary>
+		private Cat _cat = null;
 
 		void OnIsoCollisionEnter(IsoCollision iso_collision) {
 			if ( iso_collision.gameObject ) {
@@ -21,7 +26,7 @@ namespace IsoTools.Examples.Kenney {
 		}
 
 		void Start() {
-			_catDetector = GetComponent<CatDetector>();
+			_cat = GetComponent<Cat>();
 			_isoRigidbody = GetComponent<IsoRigidbody>();
 			if ( !_isoRigidbody ) {
 				throw new UnityException("PlayerController. IsoRigidbody component not found!");
@@ -29,8 +34,9 @@ namespace IsoTools.Examples.Kenney {
 		}
 
 		void Update () {
-			if (_catDetector != null
-				&& _catDetector.CatCaught)
+			// 捕まったら操作を受け付けない。
+			// 慣性の打ち消しは Cat 側で毎フレーム行っている
+			if (_cat != null && _cat.IsCaught)
 			{
 				return;
 			}

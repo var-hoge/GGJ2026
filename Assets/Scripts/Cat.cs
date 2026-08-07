@@ -19,7 +19,36 @@ namespace IsoTools.Examples.Kenney {
 		public bool _autoMove = true;
 
 		public bool IsPhantom => _isPhantom;
-		
+
+		/// <summary>
+		/// ポリスドッグに捕まったか。捕まった後は自動移動も操作も受け付けない。
+		/// 通信対戦では、捕獲判定が走らない側の端末でも
+		/// CatchAttempt の通知を受けて同じ状態になる。
+		/// </summary>
+		public bool IsCaught { get; private set; }
+
+		/// <summary>自動移動のコルーチン。捕まったときに止める。</summary>
+		Coroutine _autoMoveCoroutine = null;
+
+		/// <summary>捕まった状態にする。何度呼んでも一度しか効かない。</summary>
+		public void MarkCaught() {
+			if ( IsCaught ) {
+				return;
+			}
+			IsCaught = true;
+
+			// NPCとして徘徊している場合は、その場で止める
+			_autoMove = false;
+			if ( _autoMoveCoroutine != null ) {
+				StopCoroutine(_autoMoveCoroutine);
+				_autoMoveCoroutine = null;
+			}
+
+			if ( _isoRigidbody ) {
+				_isoRigidbody.velocity = Vector3.zero;
+			}
+		}
+
 		void Start() {
 			_isoObject = GetComponent<IsoObject>();
 			if ( !_isoObject ) {
@@ -31,12 +60,20 @@ namespace IsoTools.Examples.Kenney {
 			}
 
 			// 自動移動
-			if (_autoMove) StartCoroutine(AddRndForce());
+			if (_autoMove) _autoMoveCoroutine = StartCoroutine(AddRndForce());
 		}
 
 		void Update() {
 			if ( _isoObject.positionZ < 0.0f ) {
 				Destroy(gameObject);
+				return;
+			}
+
+			// 捕まったら動かない。AddForce で与えた勢いが残っていると
+			// コルーチンを止めただけでは滑り続けるので、毎フレーム打ち消す。
+			// 操作中・NPC・通信相手のどれであってもここを通る
+			if ( IsCaught && _isoRigidbody ) {
+				_isoRigidbody.velocity = Vector3.zero;
 			}
 		}
 

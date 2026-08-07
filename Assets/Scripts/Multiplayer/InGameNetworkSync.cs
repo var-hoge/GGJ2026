@@ -192,6 +192,9 @@ public class InGameNetworkSync : MonoBehaviour
     {
         if (packet.WasPhantom)
         {
+            // 捕獲判定が走らないこちら側でも、猫を同じように止める。
+            // 止めないと猫プレイヤーは捕まった後も動かせてしまう
+            MarkPhantomCatCaught();
             SEManager.Instance.Play(SEPath.SFX_GAME_CORRECT);
             return;
         }
@@ -199,6 +202,26 @@ public class InGameNetworkSync : MonoBehaviour
         var sounds = IsoTools.Examples.Kenney.CatDetector.WrongSounds;
         var index = Mathf.Clamp(packet.WrongSoundIndex, 0, sounds.Length - 1);
         SEManager.Instance.Play(sounds[index]);
+    }
+
+    /// <summary>
+    /// 怪盗猫を捕まった状態にする。
+    /// 怪盗猫はこちらの操作キャラのことも相手のキャラのこともあるので、両方を見る。
+    /// </summary>
+    void MarkPhantomCatCaught()
+    {
+        if (_binder == null) return;
+
+        MarkIfPhantomCat(_binder.ControlledCharacter);
+        MarkIfPhantomCat(_binder.RemoteCharacter);
+    }
+
+    static void MarkIfPhantomCat(Transform target)
+    {
+        if (target == null) return;
+
+        var cat = target.GetComponent<IsoTools.Examples.Kenney.Cat>();
+        if (cat != null && cat.IsPhantom) cat.MarkCaught();
     }
 
     /// <summary>相手の端末が下した決着を、こちらでも同じ画面へ反映する。</summary>

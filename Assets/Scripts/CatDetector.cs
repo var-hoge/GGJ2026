@@ -47,6 +47,13 @@ namespace IsoTools.Examples.Kenney {
 		private IEnumerator Correct()
 		{
 			CatCaught = true;
+
+			// 捕まえた猫はその場から動けなくする
+			if (_targetCat != null)
+			{
+				_targetCat.MarkCaught();
+			}
+
 			// 捕獲判定はポリスドッグ側の端末でしか走らないので、
 			// 猫プレイヤーにも同じ音が鳴るように知らせる
 			NotifyCatchAttempt(wasPhantom: true, wrongSoundIndex: 0);
