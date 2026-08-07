@@ -56,7 +56,11 @@ public abstract class StoryTextManager : MonoBehaviour
         longWait = new(charInterval * 4);
     }
 
-    private void Update()
+    /// <summary>
+    /// 継承先が入力を横取りできるように virtual にしてある。
+    /// (通信対戦で相手を待っている間は文字送りを止めたいなど)
+    /// </summary>
+    protected virtual void Update()
     {
         if (!SubmitInput.WasPressed(out var gamepad)) return;
 

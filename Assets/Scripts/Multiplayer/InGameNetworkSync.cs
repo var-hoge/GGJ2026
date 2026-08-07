@@ -1,5 +1,6 @@
 using IsoTools;
 using IsoTools.Physics;
+using KanKikuchi.AudioManager;
 using PhantomCatWorks.RealtimeP2PKit;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -85,6 +86,7 @@ public class InGameNetworkSync : MonoBehaviour
         var session = NetSession.Instance;
         session.RegisterPacketHandler<PlayerStatePacket>(GameNetPacketId.PlayerState, OnRemoteState);
         session.RegisterPacketHandler<GameResultPacket>(GameNetPacketId.GameResult, OnRemoteResult);
+        session.RegisterPacketHandler<CatchAttemptPacket>(GameNetPacketId.CatchAttempt, OnRemoteCatchAttempt);
         session.Disconnected += OnDisconnected;
     }
 
@@ -95,6 +97,7 @@ public class InGameNetworkSync : MonoBehaviour
         var session = NetSession.Instance;
         session.UnregisterPacketHandler(GameNetPacketId.PlayerState);
         session.UnregisterPacketHandler(GameNetPacketId.GameResult);
+        session.UnregisterPacketHandler(GameNetPacketId.CatchAttempt);
         session.Disconnected -= OnDisconnected;
     }
 
@@ -178,6 +181,24 @@ public class InGameNetworkSync : MonoBehaviour
         {
             _remoteLight.rotation = Quaternion.Euler(0f, 0f, _remoteTargetLightAngle);
         }
+    }
+
+    /// <summary>
+    /// ポリスドッグ側が捕獲を試みたことの通知。
+    /// 捕獲判定は犬側の端末でしか走らないため、猫プレイヤーの端末では
+    /// この通知を受けて初めて音が鳴る。
+    /// </summary>
+    void OnRemoteCatchAttempt(CatchAttemptPacket packet)
+    {
+        if (packet.WasPhantom)
+        {
+            SEManager.Instance.Play(SEPath.SFX_GAME_CORRECT);
+            return;
+        }
+
+        var sounds = IsoTools.Examples.Kenney.CatDetector.WrongSounds;
+        var index = Mathf.Clamp(packet.WrongSoundIndex, 0, sounds.Length - 1);
+        SEManager.Instance.Play(sounds[index]);
     }
 
     /// <summary>相手の端末が下した決着を、こちらでも同じ画面へ反映する。</summary>

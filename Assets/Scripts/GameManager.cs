@@ -55,6 +55,7 @@ public class GameManager : SingletonBehaviour<GameManager>
             NetSession.Instance.Send(GameNetPacketId.GameResult, new GameResultPacket { Caught = caught });
         }
 
+        StopInGameSounds();
         SceneManager.LoadScene(caught ? "VeryHappyEnd" : "HappyEnd");
     }
 
@@ -67,7 +68,21 @@ public class GameManager : SingletonBehaviour<GameManager>
         if (finished) return;
         finished = true;
 
+        StopInGameSounds();
         SceneManager.LoadScene(caught ? "VeryHappyEnd" : "HappyEnd");
+    }
+
+    /// <summary>
+    /// InGame で鳴っている効果音を止める。
+    ///
+    /// 隠れたときのヘリコプター音 (PhantomCatOcclusionDetector) のように長めの SE は、
+    /// 止めずにシーンを切り替えると次の画面まで鳴り続ける。決着の経路は
+    /// 「自分で判定した」「相手から通知された」「時間切れ」の3つがあるため、
+    /// どれを通っても必ず止まるようここに集約している。
+    /// </summary>
+    static void StopInGameSounds()
+    {
+        KanKikuchi.AudioManager.SEManager.Instance.Stop();
     }
 
     public float RemainTimeSecond {
