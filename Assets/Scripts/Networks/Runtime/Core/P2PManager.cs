@@ -54,6 +54,8 @@ namespace PhantomCatWorks.RealtimeP2PKit
         public event Action OpponentLeft;
 
         public P2PSessionInfo Session { get; private set; } = new() { State = P2PSessionState.Idle };
+        /// <summary>True only for a session started through the online room flow.</summary>
+        public bool IsOnlineMatch { get; private set; }
 
         private P2PConfig _config;
         private HttpMatchmakingClient _matchmakingClient;
@@ -146,6 +148,7 @@ namespace PhantomCatWorks.RealtimeP2PKit
         public async void StartMatchmaking(string localPlayerId)
         {
             EnsureInitialized();
+            IsOnlineMatch = true;
             _peerConnectionStarted = false;
             _dataChannelReadyRaised = false;
             _opponentLeftRaised = false;
@@ -213,6 +216,7 @@ namespace PhantomCatWorks.RealtimeP2PKit
         private void PrepareNewSession(string localPlayerId)
         {
             EnsureInitialized();
+            IsOnlineMatch = true;
             _peerConnectionStarted = false;
             _dataChannelReadyRaised = false;
             _opponentLeftRaised = false;
@@ -394,6 +398,9 @@ namespace PhantomCatWorks.RealtimeP2PKit
         public async void Disconnect()
         {
             if (P2PLog.ShouldLog(P2PLogLevel.Info)) Debug.Log("[RealtimeP2PKit][P2PManager] disconnect requested");
+            // Make scene/UI mode checks immediately safe; the asynchronous
+            // leave request below still informs the server and peer.
+            IsOnlineMatch = false;
             if (_matchmakingClient != null && Session.LocalPlayerId != null)
                 await _matchmakingClient.LeaveQueueAsync(Session.LocalPlayerId);
 

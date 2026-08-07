@@ -170,9 +170,10 @@ public class CharacterSelectionScreenManager : MonoBehaviour
     {
         // Local multiplayer and standalone character selection must remain
         // usable without creating a P2P session.
-        if (P2PManager.Instance.Session.State != P2PSessionState.Connected)
+        if (!P2PManager.Instance.IsOnlineMatch ||
+            P2PManager.Instance.Session.State != P2PSessionState.Connected)
         {
-            Debug.LogWarning($"[CharacterSelection] online sync unavailable: P2P session state={P2PManager.Instance.Session.State}");
+            Debug.Log("[CharacterSelection] offline/local mode; network selection sync is disabled");
             return;
         }
 
