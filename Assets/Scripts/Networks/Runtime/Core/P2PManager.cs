@@ -298,6 +298,8 @@ namespace PhantomCatWorks.RealtimeP2PKit
 
             _peerConnection.ConnectionStateChanged += state =>
             {
+                if (!IsOnlineMatch) return;
+
                 // Unity.WebRTC can report Disconnected transiently while a
                 // synchronous scene load is in progress. The data channel is
                 // the gameplay transport, so only mark the session terminal
@@ -316,6 +318,7 @@ namespace PhantomCatWorks.RealtimeP2PKit
             _peerConnection.DataChannelOpened += NotifyDataChannelReady;
             _peerConnection.DataChannelClosed += () =>
             {
+                if (!IsOnlineMatch) return;
                 SetState(P2PSessionState.Disconnected);
                 ConnectionClosed?.Invoke("data channel closed");
             };
@@ -330,6 +333,8 @@ namespace PhantomCatWorks.RealtimeP2PKit
 
         private void OnSignalMessage(RoomSignalEnvelope msg)
         {
+            if (!IsOnlineMatch) return;
+
             switch (msg.type)
             {
                 case "peer-ready":
@@ -381,7 +386,7 @@ namespace PhantomCatWorks.RealtimeP2PKit
 
         private void NotifyDataChannelReady()
         {
-            if (_dataChannelReadyRaised) return;
+            if (!IsOnlineMatch || _dataChannelReadyRaised) return;
             _dataChannelReadyRaised = true;
             SetState(P2PSessionState.Connected);
             DataChannelReady?.Invoke();
@@ -389,7 +394,7 @@ namespace PhantomCatWorks.RealtimeP2PKit
 
         private void NotifyOpponentLeft()
         {
-            if (_opponentLeftRaised) return;
+            if (!IsOnlineMatch || _opponentLeftRaised) return;
             _opponentLeftRaised = true;
             if (P2PLog.ShouldLog(P2PLogLevel.Warn)) Debug.LogWarning("[RealtimeP2PKit][P2PManager] opponent left the room");
             OpponentLeft?.Invoke();
@@ -406,19 +411,35 @@ namespace PhantomCatWorks.RealtimeP2PKit
         }
 
         /// <summary>Tears down the current session and leaves the matchmaking queue if still waiting.</summary>
-        public async void Disconnect()
+        public void Disconnect()
         {
             if (P2PLog.ShouldLog(P2PLogLevel.Info)) Debug.Log("[RealtimeP2PKit][P2PManager] disconnect requested");
-            // Make scene/UI mode checks immediately safe; the asynchronous
-            // leave request below still informs the server and peer.
-            IsOnlineMatch = false;
-            if (_matchmakingClient != null && Session.LocalPlayerId != null)
-                await _matchmakingClient.LeaveQueueAsync(Session.LocalPlayerId);
 
+            // Leave the server asynchronously, but do not keep WebRTC or
+            // signaling alive while a scene is changing.
+            var playerId = Session.LocalPlayerId;
+            if (_matchmakingClient != null && !string.IsNullOrEmpty(playerId))
+            {
+                LeaveMatchmakingAsync(_matchmakingClient, playerId);
+            }
+
+            IsOnlineMatch = false;
             _peerConnection?.Dispose();
             _signalingClient?.Dispose();
             _lobbyListener?.Dispose();
+            _peerConnection = null;
+            _signalingClient = null;
+            _lobbyListener = null;
+            _peerConnectionStarted = false;
+            _dataChannelReadyRaised = false;
+            _opponentLeftRaised = false;
             SetState(P2PSessionState.Idle);
+            Session = new P2PSessionInfo { State = P2PSessionState.Idle };
+        }
+
+        private async void LeaveMatchmakingAsync(HttpMatchmakingClient matchmakingClient, string playerId)
+        {
+            await matchmakingClient.LeaveQueueAsync(playerId);
         }
 
         private void OnDestroy()
