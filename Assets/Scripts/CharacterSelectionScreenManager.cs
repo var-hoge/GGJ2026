@@ -6,6 +6,8 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.UI;
+using MessagePack;
+using PhantomCatWorks.RealtimeP2PKit;
 
 /// <summary>
 /// キャラクター選択画面の遷移とキー操作を管理する。
@@ -13,6 +15,16 @@ using UnityEngine.InputSystem.UI;
 /// </summary>
 public class CharacterSelectionScreenManager : MonoBehaviour
 {
+    // packetId=1 is the P2P demo position packet. Keep game UI packets separate.
+    private const byte CharacterSelectionPacketId = 2;
+    private const float SelectionResendIntervalSeconds = 0.5f;
+
+    [MessagePackObject(AllowPrivate = true)]
+    internal struct CharacterSelectionPacket
+    {
+        [Key(0)] public int Character;
+        [Key(1)] public bool Confirmed;
+    }
     [SerializeField] GameObject _defaultSelectedButton;
 
     [Header("キャラクターのボタン")]
@@ -55,6 +67,11 @@ public class CharacterSelectionScreenManager : MonoBehaviour
     PlayableCharacter? _opponentCharacter;
 
     bool _wasDebugMode;
+    bool _networkSyncEnabled;
+    float _nextSelectionSyncTime;
+    bool _localCharacterConfirmed;
+    bool _opponentCharacterConfirmed;
+    bool _transitioningToStory;
 
     /// <summary>UI の移動操作。デバッグ中だけ A / D の割り当てを外すために持っておく。</summary>
     InputAction _moveAction;
@@ -69,6 +86,7 @@ public class CharacterSelectionScreenManager : MonoBehaviour
         ApplyCursors(instant: true);
 
         FindDebugKeyBindings();
+        StartOnlineSelectionSync();
     }
 
     void OnDisable()
@@ -80,6 +98,8 @@ public class CharacterSelectionScreenManager : MonoBehaviour
 
     void OnDestroy()
     {
+        if (_networkSyncEnabled && P2PManager.TryGetExistingInstance(out var p2pManager))
+            p2pManager.UnregisterPacketHandler(CharacterSelectionPacketId);
         _youCursor.DOKill();
         _opponentCursor.DOKill();
     }
@@ -87,6 +107,14 @@ public class CharacterSelectionScreenManager : MonoBehaviour
     void Update()
     {
         UpdateDebugOpponent();
+
+        // The channel is usually configured as unreliable for gameplay. Re-send
+        // the current selection so a lost packet is automatically corrected.
+        if (_networkSyncEnabled && Time.unscaledTime >= _nextSelectionSyncTime)
+        {
+            SendLocalCharacter();
+            _nextSelectionSyncTime = Time.unscaledTime + SelectionResendIntervalSeconds;
+        }
 
         if (EventSystem.current == null)
         {
@@ -135,7 +163,82 @@ public class CharacterSelectionScreenManager : MonoBehaviour
 
         _youCharacter = character;
         ApplyCursors(instant: false);
+        SendLocalCharacter();
     }
+
+    private void StartOnlineSelectionSync()
+    {
+        // Local multiplayer and standalone character selection must remain
+        // usable without creating a P2P session.
+        if (!P2PManager.Instance.IsOnlineMatch ||
+            P2PManager.Instance.Session.State != P2PSessionState.Connected)
+        {
+            Debug.Log("[CharacterSelection] offline/local mode; network selection sync is disabled");
+            return;
+        }
+
+        _networkSyncEnabled = true;
+        P2PManager.Instance.RegisterPacketHandler<CharacterSelectionPacket>(
+            CharacterSelectionPacketId, OnOpponentCharacterPacket);
+        SendLocalCharacter();
+        _nextSelectionSyncTime = Time.unscaledTime + SelectionResendIntervalSeconds;
+        Debug.Log("[CharacterSelection] P2P session retained; opponent selection sync enabled");
+    }
+
+    private void SendLocalCharacter()
+    {
+        if (!_networkSyncEnabled) return;
+        P2PManager.Instance.Send(CharacterSelectionPacketId, new CharacterSelectionPacket
+        {
+            Character = (int)_youCharacter,
+            Confirmed = _localCharacterConfirmed,
+        });
+    }
+
+    private void OnOpponentCharacterPacket(CharacterSelectionPacket packet)
+    {
+        if (packet.Character < (int)PlayableCharacter.PhantomCat ||
+            packet.Character > (int)PlayableCharacter.PoliceDog)
+        {
+            Debug.LogWarning($"[CharacterSelection] ignored invalid opponent character: {packet.Character}");
+            return;
+        }
+
+        SetOpponentCharacter((PlayableCharacter)packet.Character);
+        if (packet.Confirmed)
+            HandleOpponentCharacterConfirmed((PlayableCharacter)packet.Character);
+        if (P2PLog.ShouldLog(P2PLogLevel.Info))
+            Debug.Log($"[CharacterSelection] opponent selected {(PlayableCharacter)packet.Character} confirmed={packet.Confirmed}");
+    }
+
+    private void HandleOpponentCharacterConfirmed(PlayableCharacter opponentCharacter)
+    {
+        _opponentCharacterConfirmed = true;
+
+        if (!_localCharacterConfirmed)
+        {
+            // The player who receives the first confirmation is assigned the
+            // other role and immediately acknowledges it to the chooser.
+            ConfirmLocalCharacter(OtherCharacter(opponentCharacter), wasAutoSelected: true);
+            return;
+        }
+
+        // If both peers confirm at nearly the same time, the room creator is
+        // authoritative. This makes the outcome deterministic and still keeps
+        // the two roles different.
+        if (!P2PManager.Instance.Session.IsInitiator && _youCharacter == opponentCharacter)
+        {
+            _youCharacter = OtherCharacter(opponentCharacter);
+            CharacterSelection.Select(_youCharacter);
+            ApplyCursors(instant: false);
+            SendLocalCharacter();
+        }
+
+        TryEnterIntroStory();
+    }
+
+    private static PlayableCharacter OtherCharacter(PlayableCharacter character) =>
+        character == PlayableCharacter.PhantomCat ? PlayableCharacter.PoliceDog : PlayableCharacter.PhantomCat;
 
     /// <summary>
     /// カーソルを、それぞれが選んでいるキャラクターのボタンへ動かす。
@@ -284,7 +387,42 @@ public class CharacterSelectionScreenManager : MonoBehaviour
     /// <summary>選んだキャラクターは後続の画面から参照されるので記録してから次へ進む。</summary>
     void SelectCharacter(PlayableCharacter character)
     {
+        if (_localCharacterConfirmed) return;
+
+        // Keep local multiplayer behaviour unchanged. Online play waits for
+        // the peer to receive the choice and confirm the opposite role.
+        if (!_networkSyncEnabled)
+        {
+            CharacterSelection.Select(character);
+            LoadScene("IntroStory");
+            return;
+        }
+
+        ConfirmLocalCharacter(character, wasAutoSelected: false);
+    }
+
+    private void ConfirmLocalCharacter(PlayableCharacter character, bool wasAutoSelected)
+    {
+        _youCharacter = character;
+        _localCharacterConfirmed = true;
         CharacterSelection.Select(character);
+        ApplyCursors(instant: false);
+        SendLocalCharacter();
+
+        Debug.Log(wasAutoSelected
+            ? $"[CharacterSelection] automatically assigned {character} for opponent's choice"
+            : $"[CharacterSelection] selected {character}; waiting for opponent confirmation");
+
+        TryEnterIntroStory();
+    }
+
+    private void TryEnterIntroStory()
+    {
+        if (_transitioningToStory || !_localCharacterConfirmed || !_opponentCharacterConfirmed)
+            return;
+
+        _transitioningToStory = true;
+        Debug.Log($"[CharacterSelection] roles confirmed: local={_youCharacter}, opponent={_opponentCharacter}; loading IntroStory");
         LoadScene("IntroStory");
     }
 

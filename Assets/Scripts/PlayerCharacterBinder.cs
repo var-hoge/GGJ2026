@@ -1,4 +1,5 @@
 using UnityEngine;
+using PhantomCatWorks.RealtimeP2PKit;
 
 // CatController は同名のクラスがグローバル名前空間にも存在し (Miura 版)、using で取り込むと
 // そちらが優先されて GetComponent が空振りする。InGame で使うのは Kenney 版なので、
@@ -40,6 +41,17 @@ public class PlayerCharacterBinder : MonoBehaviour
         // 猫の生成は CatSpawner の Start なので、Awake のうちに購読しておく
         _catSpawner.PhantomCatSpawned += OnPhantomCatSpawned;
         ApplyToPoliceDog();
+
+        // オンライン対戦だけ、同じ IsoWorld 上の相手キャラクターを WebRTC で同期する。
+        // ソロ・ローカルプレイではコンポーネント自体を追加しない。
+        if (IsOnlineMatch())
+        {
+            var synchronizer = gameObject.AddComponent<InGameP2PSynchronizer>();
+            synchronizer.Initialize(
+                _policeDogController != null ? _policeDogController.transform : null,
+                _catSpawner,
+                CharacterSelection.Selected ?? _fallbackCharacter);
+        }
     }
 
     void OnDestroy()
@@ -88,7 +100,9 @@ public class PlayerCharacterBinder : MonoBehaviour
         var cat = phantomCat.GetComponent<KenneyCat>();
         if (cat != null)
         {
-            cat._autoMove = !controlledHere;
+            // P2P 対戦では非操作側のファントムキャットは相手から座標を受信して動かす。
+            // ローカルプレイ時だけ従来どおり NPC として自動移動させる。
+            cat._autoMove = !controlledHere && !IsOnlineMatch();
         }
     }
 
@@ -129,5 +143,12 @@ public class PlayerCharacterBinder : MonoBehaviour
     bool IsControlledHere(PlayableCharacter character)
     {
         return (CharacterSelection.Selected ?? _fallbackCharacter) == character;
+    }
+
+    bool IsOnlineMatch()
+    {
+        return P2PManager.TryGetExistingInstance(out var p2pManager)
+            && p2pManager.IsOnlineMatch
+            && p2pManager.Session.State == P2PSessionState.Connected;
     }
 }

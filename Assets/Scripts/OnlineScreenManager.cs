@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using PhantomCatWorks.RealtimeP2PKit;
 
 /// <summary>
 /// オンライン対戦画面の遷移とキー操作を管理する。
@@ -13,6 +14,7 @@ public class OnlineScreenManager : MonoBehaviour
 {
     const int MaxLobbyCount = 3;
 
+    [SerializeField] private RoomsAdminView roomsAdminView;
     [SerializeField] GameObject _defaultSelectedButton;
 
     [Header("ロビー")]
@@ -42,21 +44,27 @@ public class OnlineScreenManager : MonoBehaviour
 
     void Awake()
     {
+        // The public online room flow always uses the deployed Cloudflare
+        // backend. Local settings remain available for local-server testing.
+        P2PManager.Instance.Initialize(null, P2PEnvironment.Remote);
+        roomsAdminView.EndpointEnvironment = P2PEnvironment.Remote;
+
         if (_verticalNavigationOrder.Length > 0 && _verticalNavigationOrder[0] != null)
         {
             _firstUpNeighbour = _verticalNavigationOrder[0].navigation.selectOnUp;
         }
+        roomsAdminView.OnStartEnterLobby = OnEnterLobby;
     }
 
     void Start()
     {
-        SetFoundLobbyCount(_debugFoundLobbyCount);
+        //SetFoundLobbyCount(_debugFoundLobbyCount);
     }
 
     void Update()
     {
         // インスペクターでデバッグ用の数を変えたら再生中でも反映する
-        SetFoundLobbyCount(_debugFoundLobbyCount);
+        //SetFoundLobbyCount(_debugFoundLobbyCount);
 
         if (EventSystem.current == null)
         {
@@ -121,6 +129,12 @@ public class OnlineScreenManager : MonoBehaviour
             navigation.selectOnDown = i < _navigableBuffer.Count - 1 ? _navigableBuffer[i + 1] : null;
             _navigableBuffer[i].navigation = navigation;
         }
+    }
+
+    /// <summary>ロビーを新規作成した場合も既存のロビーに入った場合も、次はキャラクター選択に進む。</summary>
+    public void OnEnterLobby()
+    {
+        LoadScene("CharacterSelectionScreen");
     }
 
     public void OnBack()

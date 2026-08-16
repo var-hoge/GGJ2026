@@ -2,6 +2,7 @@ using KanKikuchi.AudioManager;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using PhantomCatWorks.RealtimeP2PKit;
 
 /// <summary>
 /// ゲームモード選択画面の遷移とキー操作を管理する。
@@ -38,11 +39,13 @@ public class GameSettingsScreenManager : MonoBehaviour
 
     public void OnSolo()
     {
+        P2PManager.Instance.Disconnect();
         LoadScene("IntroStory");
     }
 
     public void OnLocalMultiplay()
     {
+        P2PManager.Instance.Disconnect();
         LoadScene("LocalMultiplayerScreen");
     }
 

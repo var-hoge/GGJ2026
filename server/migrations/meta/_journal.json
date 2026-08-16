@@ -1,0 +1,20 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1784427030653,
+      "tag": "0000_sour_slyde",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1786060800000,
+      "tag": "0001_game_rooms",
+      "breakpoints": true
+    }
+  ]
+}

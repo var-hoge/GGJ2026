@@ -1,0 +1,25 @@
+{
+  "name": "phantomcat-game-server",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate:local": "wrangler d1 migrations apply phantomcat-game-db --local",
+    "db:migrate:remote": "wrangler d1 migrations apply phantomcat-game-db --remote",
+    "typecheck": "tsc --noEmit",
+    "wrangler": "wrangler"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.45.2",
+    "hono": "^4.12.31",
+    "partyserver": "^0.5.8"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260719.1",
+    "@types/node": "^26.1.1",
+    "drizzle-kit": "^0.31.10",
+    "typescript": "^7.0.2",
+    "wrangler": "^4.112.0"
+  }
+}

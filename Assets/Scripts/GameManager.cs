@@ -1,10 +1,18 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections;
+using PhantomCatWorks.RealtimeP2PKit;
 
 public class GameManager : SingletonBehaviour<GameManager>
 {
     [SerializeField] private float timeLimitSecond;
     private float remainSecond;
+    private bool gameEnded;
+    private bool waitForNetworkAuthority;
+    private const float NetworkResultFlushDelaySeconds = 0.15f;
+
+    /// <summary>Raised immediately before moving to an ending scene.</summary>
+    public event System.Action<bool> GameEnded;
 
     void Start()
     {
@@ -16,7 +24,7 @@ public class GameManager : SingletonBehaviour<GameManager>
     void Update()
     {
         remainSecond = Mathf.Max(remainSecond - Time.deltaTime, 0);
-        if (remainSecond <= 0f)
+        if (!gameEnded && !waitForNetworkAuthority && remainSecond <= 0f)
         {
             this.MoveToFailScene();
         }
@@ -24,12 +32,61 @@ public class GameManager : SingletonBehaviour<GameManager>
 
     public void MoveToFailScene()
     {
-        SceneManager.LoadScene("HappyEnd");
+        MoveToEnding(success: false);
     }
 
     public void MoveToSuccessScene()
     {
-        SceneManager.LoadScene("VeryHappyEnd");
+        MoveToEnding(success: true);
+    }
+
+    /// <summary>
+    /// In an online match, PhantomCat waits for PoliceDog's authoritative
+    /// result. Standalone and local play continue using their normal timer.
+    /// </summary>
+    public void WaitForNetworkAuthority()
+    {
+        waitForNetworkAuthority = true;
+    }
+
+    private void MoveToEnding(bool success)
+    {
+        if (gameEnded)
+        {
+            return;
+        }
+
+        gameEnded = true;
+        GameEnded?.Invoke(success);
+
+        // 隠れたときのヘリコプター音 (PhantomCatOcclusionDetector) のような長い SE は、
+        // 止めずにシーンを切り替えると結果画面まで鳴り続ける。
+        // 決着の経路は「自分で判定」「相手から通知」「時間切れ」の3つあるが
+        // すべてここを通るので、ここで止めれば取りこぼしがない
+        KanKikuchi.AudioManager.SEManager.Instance.Stop();
+
+        // Give the final result packet one frame to enter WebRTC's send queue,
+        // then clear all online-session state before the ending scene loads.
+        if (P2PManager.TryGetExistingInstance(out var p2pManager)
+            && p2pManager.IsOnlineMatch)
+        {
+            StartCoroutine(DisconnectThenLoadEnding(success));
+            return;
+        }
+
+        SceneManager.LoadScene(success ? "VeryHappyEnd" : "HappyEnd");
+    }
+
+    private IEnumerator DisconnectThenLoadEnding(bool success)
+    {
+        yield return new WaitForSecondsRealtime(NetworkResultFlushDelaySeconds);
+
+        if (P2PManager.TryGetExistingInstance(out var p2pManager))
+        {
+            p2pManager.Disconnect();
+        }
+
+        SceneManager.LoadScene(success ? "VeryHappyEnd" : "HappyEnd");
     }
 
     public float RemainTimeSecond {

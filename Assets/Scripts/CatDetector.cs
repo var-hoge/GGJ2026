@@ -12,6 +12,8 @@ namespace IsoTools.Examples.Kenney {
 		private Cat _targetCat = null;
 		private int _wrongCount = 0;
 		public bool CatCaught { get; private set; } = false;
+		/// <summary>正しいファントムキャットを捕獲した直後に一度だけ発火する。</summary>
+		public event System.Action PhantomCatCaught;
 
 		[Header("捕獲したときのコントローラーの振動")]
 		[SerializeField, Range(0f, 1f)] private float _correctRumbleStrength = 0.6f;
@@ -36,6 +38,7 @@ namespace IsoTools.Examples.Kenney {
 		private IEnumerator Correct()
 		{
 			CatCaught = true;
+			PhantomCatCaught?.Invoke();
 			SEManager.Instance.Play(SEPath.SFX_GAME_CORRECT);
 			GamepadRumble.Play(_correctRumbleStrength, _correctRumbleDuration);
 
