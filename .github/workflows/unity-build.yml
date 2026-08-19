@@ -102,13 +102,23 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v6
 
+      # unity-setup v2 currently misreads a Unity Hub maintenance message as
+      # part of the install path on Windows, so its post-job cache save fails.
+      # Cache the same installation directory directly until that is fixed.
+      - name: Cache Unity installation on Windows
+        if: runner.os == 'Windows'
+        uses: actions/cache@v5
+        with:
+          path: C:\Program Files\Unity\Hub\Editor
+          key: unity-install-${{ runner.os }}-${{ hashFiles('ProjectSettings/ProjectVersion.txt') }}-${{ matrix.target }}
+
       - name: Set up Unity
         uses: RageAgainstThePixel/unity-setup@v2
         with:
           version-file: ProjectSettings/ProjectVersion.txt
           build-targets: ${{ matrix.target }}
           hub-version: ${{ matrix.hub-version }}
-          cache-installation: true
+          cache-installation: ${{ runner.os != 'Windows' }}
 
       - name: Activate Unity Personal license
         uses: buildalon/activate-unity-license@v2

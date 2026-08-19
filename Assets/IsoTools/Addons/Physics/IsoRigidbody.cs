@@ -236,7 +236,11 @@ namespace IsoTools.Physics {
 
 		public void SetDensity(float density) {
 			if ( realRigidbody ) {
+				// Kept for compatibility with the legacy IsoTools API. Unity 6 retains
+				// Rigidbody.SetDensity only as an obsolete no-op.
+#pragma warning disable CS0618
 				realRigidbody.SetDensity(density);
+#pragma warning restore CS0618
 			}
 		}
 
