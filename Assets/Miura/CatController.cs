@@ -19,7 +19,6 @@ public class CatController : MonoBehaviour
     Dictionary<Vector2Int, bool> _isCanWalkTilesDict = new Dictionary<Vector2Int, bool>();
     CanMoveDirection _canMoveDirection = CanMoveDirection.None;
     // パラメーター関連
-    bool _isCnaChangeState = false;
     float _moveSpeed = 0.001f;
     float _moveX = 1f;
     float _moveY = 0.5f;

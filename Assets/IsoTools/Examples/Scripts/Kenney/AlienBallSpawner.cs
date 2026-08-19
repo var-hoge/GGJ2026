@@ -17,7 +17,7 @@ namespace IsoTools.Examples.Kenney {
 		
 		IEnumerator SpawnAlienBall(IsoWorld iso_world) {
 			while ( true ) {
-				var aliens = GameObject.FindObjectsOfType<AlienBallController>();
+				var aliens = GameObject.FindObjectsByType<AlienBallController>(FindObjectsSortMode.None);
 				if ( aliens.Length < maxAlienCount ) {
 					var dx = Random.Range(2.0f, 3.0f);
 					var dy = Random.Range(2.0f, 3.0f);

@@ -15,7 +15,7 @@ public abstract class SingletonBehaviour<T> : MonoBehaviour
 		{
 			if (instance == null)
 			{
-				instance = (T)FindObjectOfType(typeof(T));
+				instance = FindFirstObjectByType<T>();
 				//if (instance == null) throw new System.Exception("Error: " + typeof(T) + " is nothing.");
 			}
 			return instance;
