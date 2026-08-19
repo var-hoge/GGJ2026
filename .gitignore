@@ -98,5 +98,9 @@ InitTestScene*.unity*
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
 
-/[Aa]ssets/Packages*
+# NuGetForUnity installs the managed DLLs used by runtime asmdefs here.
+# Keep them in source control so a clean/batchmode Unity import can compile
+# before NuGetForUnity's editor-time restore callback is able to run.
+!/[Aa]ssets/Packages/
+!/[Aa]ssets/Packages/**
 .opencode

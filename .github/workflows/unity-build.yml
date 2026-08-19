@@ -25,6 +25,7 @@ jobs:
           - name: Linux 64-bit
             os: ubuntu-latest
             target: StandaloneLinux64
+            hub-version: 3.12.0
             output: Builds/Linux64/NightOfThePhantomCat.x86_64
             artifact: Night-of-the-Phantom-Cat-linux-x64
             artifact-path: Builds/Linux64
@@ -103,6 +104,7 @@ jobs:
         with:
           version-file: ProjectSettings/ProjectVersion.txt
           build-targets: ${{ matrix.target }}
+          hub-version: ${{ matrix.hub-version }}
           cache-installation: true
 
       - name: Activate Unity Personal license
