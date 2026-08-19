@@ -25,6 +25,7 @@ jobs:
           - name: Linux 64-bit
             os: ubuntu-latest
             target: StandaloneLinux64
+            build-argument: -buildLinux64Player
             hub-version: 3.12.0
             output: Builds/Linux64/NightOfThePhantomCat.x86_64
             artifact: Night-of-the-Phantom-Cat-linux-x64
@@ -32,12 +33,14 @@ jobs:
           - name: Windows 64-bit
             os: windows-latest
             target: StandaloneWindows64
+            build-argument: -buildWindows64Player
             output: Builds/Windows64/NightOfThePhantomCat.exe
             artifact: Night-of-the-Phantom-Cat-windows-x64
             artifact-path: Builds/Windows64
           - name: macOS
             os: macos-latest
             target: StandaloneOSX
+            build-argument: -buildOSXUniversalPlayer
             output: Builds/macOS/NightOfThePhantomCat.app
             artifact: Night-of-the-Phantom-Cat-macos
             artifact-path: Builds/macOS
@@ -123,7 +126,7 @@ jobs:
             -quit \
             -projectPath "$GITHUB_WORKSPACE" \
             -buildTarget "${{ matrix.target }}" \
-            -build "$GITHUB_WORKSPACE/${{ matrix.output }}" \
+            "${{ matrix.build-argument }}" "$GITHUB_WORKSPACE/${{ matrix.output }}" \
             -logFile -
 
       - name: Upload build artifact
