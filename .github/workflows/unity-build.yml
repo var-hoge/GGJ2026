@@ -1,0 +1,133 @@
+name: Unity Build
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: unity-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Linux 64-bit
+            os: ubuntu-latest
+            target: StandaloneLinux64
+            output: Builds/Linux64/NightOfThePhantomCat.x86_64
+            artifact: Night-of-the-Phantom-Cat-linux-x64
+            artifact-path: Builds/Linux64
+          - name: Windows 64-bit
+            os: windows-latest
+            target: StandaloneWindows64
+            output: Builds/Windows64/NightOfThePhantomCat.exe
+            artifact: Night-of-the-Phantom-Cat-windows-x64
+            artifact-path: Builds/Windows64
+          - name: macOS
+            os: macos-latest
+            target: StandaloneOSX
+            output: Builds/macOS/NightOfThePhantomCat.app
+            artifact: Night-of-the-Phantom-Cat-macos
+            artifact-path: Builds/macOS
+
+          # Enable a platform by removing the leading "#" from every line in
+          # one block below. Some platforms require additional project settings,
+          # SDK credentials, signing certificates, or platform access from Unity.
+
+          # - name: Windows 32-bit
+          #   os: windows-latest
+          #   target: StandaloneWindows
+          #   output: Builds/Windows32/NightOfThePhantomCat.exe
+          #   artifact: Night-of-the-Phantom-Cat-windows-x86
+          #   artifact-path: Builds/Windows32
+
+          # - name: WebGL
+          #   os: ubuntu-latest
+          #   target: WebGL
+          #   output: Builds/WebGL
+          #   artifact: Night-of-the-Phantom-Cat-webgl
+          #   artifact-path: Builds/WebGL
+
+          # - name: Android
+          #   os: ubuntu-latest
+          #   target: Android
+          #   output: Builds/Android/NightOfThePhantomCat.apk
+          #   artifact: Night-of-the-Phantom-Cat-android
+          #   artifact-path: Builds/Android
+
+          # - name: iOS Xcode project
+          #   os: macos-latest
+          #   target: iOS
+          #   output: Builds/iOS
+          #   artifact: Night-of-the-Phantom-Cat-ios-xcode
+          #   artifact-path: Builds/iOS
+
+          # - name: tvOS Xcode project
+          #   os: macos-latest
+          #   target: tvOS
+          #   output: Builds/tvOS
+          #   artifact: Night-of-the-Phantom-Cat-tvos-xcode
+          #   artifact-path: Builds/tvOS
+
+          # - name: visionOS Xcode project
+          #   os: macos-latest
+          #   target: VisionOS
+          #   output: Builds/visionOS
+          #   artifact: Night-of-the-Phantom-Cat-visionos-xcode
+          #   artifact-path: Builds/visionOS
+
+          # - name: Universal Windows Platform
+          #   os: windows-latest
+          #   target: WSAPlayer
+          #   output: Builds/UWP
+          #   artifact: Night-of-the-Phantom-Cat-uwp
+          #   artifact-path: Builds/UWP
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Unity
+        uses: RageAgainstThePixel/unity-setup@v2
+        with:
+          version-file: ProjectSettings/ProjectVersion.txt
+          build-targets: ${{ matrix.target }}
+          cache-installation: true
+
+      - name: Activate Unity Personal license
+        uses: buildalon/activate-unity-license@v2
+        with:
+          license: Personal
+          username: ${{ secrets.UNITY_EMAIL }}
+          password: ${{ secrets.UNITY_PASSWORD }}
+
+      - name: Build player
+        shell: bash
+        run: |
+          "$UNITY_EDITOR_PATH" \
+            -batchmode \
+            -nographics \
+            -quit \
+            -projectPath "$GITHUB_WORKSPACE" \
+            -buildTarget "${{ matrix.target }}" \
+            -build "$GITHUB_WORKSPACE/${{ matrix.output }}" \
+            -logFile -
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.artifact-path }}
+          if-no-files-found: error
+          retention-days: 14
